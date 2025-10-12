@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Causas</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    
+    <style>
+        /* Base y tipografía */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Logo y título */
+        .header-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background-color: #2e7d32;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .title-container h1 {
+            margin: 0;
+            color: #2e7d32;
+        }
+        
+        .title-container p {
+            margin: 5px 0 0 0;
+            color: #666;
+        }
+
+        /* Contenedor principal del encabezado */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Barra de Herramientas (Filtro, Selector, Botón Nuevo) */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            gap: 15px;
+        }
+        
+        /* Título al margen derecho */
+        h1 {
+            text-align: right;
+            color: #2e7d32;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        #filtroBusqueda {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 250px;
+        }
+
+        #btnNuevoRegistro {
+            padding: 10px 15px;
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        #btnNuevoRegistro:hover {
+            background-color: #1b5e20;
+        }
+
+        #btnImprimirListado {
+            padding: 10px 15px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        #btnImprimirListado:hover {
+            background-color: #388e3c;
+        }
+
+        /* Estilos de la Tabla */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        #tablaCausas {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        #tablaCausas th, #tablaCausas td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #tablaCausas th {
+            background-color: #2e7d32;
+            color: white;
+        }
+
+        #tablaCausas tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Botones de Acción en la Tabla */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons button {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+        }
+
+        .btn-ver { background-color: #388e3c; }
+        .btn-editar { background-color: #43a047; }
+        .btn-eliminar { background-color: #c62828; }
+        .btn-imprimir { background-color: #4caf50; }
+
+        /* Estilos de Paginación */
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            user-select: none;
+            gap: 5px;
+        }
+
+        .pagination-controls.centered {
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .pagination-controls button {
+            padding: 8px 12px;
+            border: 1px solid #2e7d32;
+            background-color: #fff;
+            color: #2e7d32;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .pagination-controls button.active {
+            background-color: #2e7d32;
+            color: white;
+        }
+
+        .pagination-controls button:disabled {
+            border: 1px solid #ccc;
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .pagination-controls span {
+            margin: 0 10px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        /* ALERTAS VISUALES MODERNAS (TOAST NOTIFICATIONS) */
+        #alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .toast-alert {
+            min-width: 280px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+            transform: translateY(100%);
+        }
+
+        .toast-alert.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-success {
+            background-color: #2e7d32;
+        }
+
+        .toast-error {
+            background-color: #c62828;
+        }
+        
+        /* Estilos de Modal */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0, 0, 0, 0.6); 
+        }
+        
+        .modal-content { 
+            background-color: #fff; 
+            margin: 5% auto; 
+            padding: 20px; 
+            border: 1px solid #888; 
+            border-radius: 8px; 
+            position: relative; 
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19); 
+            animation-name: animatetop; 
+            animation-duration: 0.4s; 
+        }
+        
+        .medium-modal { width: 80%; max-width: 800px; }
+        .small-modal { width: 60%; max-width: 600px; }
+        
+        @keyframes animatetop { 
+            from {top: -300px; opacity: 0} 
+            to {top: 0; opacity: 1} 
+        }
+        
+        .close-btn { 
+            color: #aaa; 
+            float: right; 
+            font-size: 28px; 
+            font-weight: bold; 
+            text-decoration: none; 
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            color: #000;
+        }
+        
+        /* Estilos para pestañas */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+        
+        .tab.active {
+            background-color: #2e7d32;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        /* Estilos para tabla de seguimiento */
+        .seguimiento-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .seguimiento-table th, 
+        .seguimiento-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        .seguimiento-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .seguimiento-table input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        .btn-agregar-fila {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .btn-eliminar-fila {
+            background-color: #c62828;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        /* Estilos para el calendario */
+        .date-input-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .date-input-container input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        /* Estilo para el calendario en navegadores que no soportan type="date" */
+        .date-input-container input[type="text"].date-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        #btnGuardar { 
+            background-color: #2e7d32; 
+            color: white; 
+            padding: 10px 15px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            width: 100%; 
+            margin-top: 15px; 
+        }
+
+        #btnGuardar:hover {
+            background-color: #1b5e20;
+        }
+
+        /* Estado de carga */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        /* Responsividad */
+        @media (max-width: 850px) {
+            .header-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            h1 {
+                text-align: left;
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+                gap: 10px;
+            }
+            #filtroBusqueda {
+                width: 100%;
+            }
+            .pagination-controls {
+                justify-content: space-between;
+                width: 100%;
+            }
+            .pagination-controls.centered {
+                justify-content: center;
+            }
+            .modal-content {
+                margin: 5% auto;
+                width: 95% !important;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .tabs {
+                flex-direction: column;
+            }
+            .tab {
+                margin-bottom: 5px;
+                border-radius: 5px;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .seguimiento-table {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <div class="toolbar">
+                <input type="text" id="filtroBusqueda" placeholder="Buscar por número, carátula..." title="Filtro de búsqueda">
+                <div id="topPagination" class="pagination-controls"></div>
+                <button id="btnNuevoRegistro" title="Abrir modal de Nuevo Registro">➕ Nuevo Registro</button>
+                <button id="btnImprimirListado" title="Imprimir listado completo">🖨️ Imprimir Listado</button>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table id="tablaCausas">
+                <thead>
+                    <tr>
+                        <th>Número y Carátula</th>
+                        <th>Tipo de Proceso</th>
+                        <th>Juzgado</th>
+                        <th>Empleado</th>
+                        <th>Audiencias y Vencimientos</th>
+                        <th>Observaciones</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Los datos se cargarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="bottomPagination" class="pagination-controls centered"></div>
+    </div>
+    
+    <div id="alert-container"></div>
+
+    <!-- Modal para nuevo/editar registro -->
+    <div id="modalRegistro" class="modal">
+        <div class="modal-content medium-modal">
+            <a href="#" class="close-btn">&times;</a>
+            <h2><span id="modalTitle">Nuevo</span> Registro de Causa</h2>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="datos-expediente">Datos del Expediente</div>
+                <div class="tab" data-tab="documental">Documental</div>
+                <div class="tab" data-tab="firma-digital">Firma Digital</div>
+                <div class="tab" data-tab="situacion-procesal">Situación Procesal</div>
+                <div class="tab" data-tab="audiencias-vencimientos">Audiencias y Vencimientos</div>
+                <div class="tab" data-tab="observaciones">Observaciones</div>
+            </div>
+            
+            <form id="formRegistro">
+                <!-- Pestaña 1: Datos del Expediente -->
+                <div class="tab-content active" id="datos-expediente">
+                    <div class="form-group">
+                        <label for="numeroCaratula">Número y Carátula:</label>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <input type="text" id="numeroCaratula" list="causasList" placeholder="Buscar o escribir nuevo expediente..." required>
+                                <datalist id="causasList">
+                                    <!-- Se llenará dinámicamente con datos de Firestore -->
+                                </datalist>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <button type="button" id="btnNuevoExpediente" class="btn-agregar-fila">➕ Nuevo Expediente</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tipoProceso">Tipo de Proceso:</label>
+                            <input type="text" id="tipoProceso" placeholder="Ej: Civil, Penal, Laboral...">
+                        </div>
+                        <div class="form-group">
+                            <label for="juzgado">Juzgado:</label>
+                            <input type="text" id="juzgado" placeholder="Ej: Juzgado Civil y Comercial N°1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="empleado">Empleado Asignado:</label>
+                        <input type="text" id="empleado" placeholder="Ej: Juan Pérez">
+                    </div>
+                </div>
+                
+                <!-- Pestaña 2: Documental -->
+                <div class="tab-content" id="documental">
+                    <div class="form-group">
+                        <label for="documentosPresentados">Documentos Presentados:</label>
+                        <textarea id="documentosPresentados" rows="4" placeholder="Lista de documentos presentados"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="estadoDocumental">Estado Documental:</label>
+                        <input type="text" id="estadoDocumental" placeholder="Ej: Completo, Incompleto, Pendiente...">
+                    </div>
+                </div>
+                
+                <!-- Pestaña 3: Firma Digital -->
+                <div class="tab-content" id="firma-digital">
+                    <div class="form-group">
+                        <table class="seguimiento-table" id="tablaFirmaDigital">
+                            <thead>
+                                <tr>
+                                    <th>Pieza Procesal</th>
+                                    <th>Fecha Firma</th>
+                                    <th>Firma de</th>
+                                    <th>Tipo Defensor</th>
+                                    <th>Detalle Subrogante</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las filas se agregarán dinámicamente -->
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn-agregar-fila" id="btnAgregarFirma">+ Agregar Firma</button>
+                    </div>
+                </div>
+                
+                <!-- Pestaña 4: Situación Procesal -->
+                <div class="tab-content" id="situacion-procesal">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="modoIntervencion">Modo de Intervención:</label>
+                            <input type="text" id="modoIntervencion" placeholder="Ej: Demanda, Contestación, Apelación...">
+                        </div>
+                        <div class="form-group">
+                            <label for="prioridadTarea">Prioridad de Tarea:</label>
+                            <input type="text" id="prioridadTarea" placeholder="Ej: Alta, Media, Baja, Urgente">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="estadoProcesal">Estado Procesal:</label>
+                            <input type="text" id="estadoProcesal" placeholder="Ej: Iniciado, En Trámite, Sentencia...">
+                        </div>
+                        <div class="form-group">
+                            <label for="fechaEstado">Fecha del Estado:</label>
+                            <div class="date-input-container">
+                                <input type="date" id="fechaEstado">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Seguimiento:</label>
+                        <table class="seguimiento-table" id="tablaSeguimiento">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Detalles</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las filas se agregarán dinámicamente -->
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn-agregar-fila" id="btnAgregarSeguimiento">+ Agregar Seguimiento</button>
+                    </div>
+                </div>
+                
+                <!-- Pestaña 5: Audiencias y Vencimientos -->
+                <div class="tab-content" id="audiencias-vencimientos">
+                    <div class="form-group">
+                        <h3>Audiencias</h3>
+                        <table class="seguimiento-table" id="tablaAudiencias">
+                            <thead>
+                                <tr>
+                                    <th>Fecha y Hora</th>
+                                    <th>Detalle</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las filas se agregarán dinámicamente -->
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn-agregar-fila" id="btnAgregarAudiencia">+ Agregar Audiencia</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>Vencimientos</h3>
+                        <table class="seguimiento-table" id="tablaVencimientos">
+                            <thead>
+                                <tr>
+                                    <th>Fecha y Hora</th>
+                                    <th>Detalle</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las filas se agregarán dinámicamente -->
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn-agregar-fila" id="btnAgregarVencimiento">+ Agregar Vencimiento</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>Otras Actividades</h3>
+                        <table class="seguimiento-table" id="tablaActividades">
+                            <thead>
+                                <tr>
+                                    <th>Fecha y Hora</th>
+                                    <th>Detalle</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las filas se agregarán dinámicamente -->
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn-agregar-fila" id="btnAgregarActividad">+ Agregar Actividad</button>
+                    </div>
+                </div>
+                
+                <!-- Pestaña 6: Observaciones -->
+                <div class="tab-content" id="observaciones">
+                    <div class="form-group">
+                        <label for="observaciones">Observaciones Generales:</label>
+                        <textarea id="observaciones" rows="6" placeholder="Observaciones adicionales sobre la causa"></textarea>
+                    </div>
+                </div>
+                
+                <button type="submit" id="btnGuardar">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para ver detalles -->
+    <div id="modalVer" class="modal">
+        <div class="modal-content small-modal">
+            <a href="#" class="close-btn">&times;</a>
+            <h2>Detalle de la Causa</h2>
+            <div id="detalleContenido">
+                <!-- Los detalles se cargarán dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN FIREBASE ---
+        // Configuración para cargar expedientes (base original)
+        const firebaseConfigOriginal = {
+            apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
+            authDomain: "causas-defensoria.firebaseapp.com",
+            databaseURL: "https://causas-defensoria-default-rtdb.firebaseio.com",
+            projectId: "causas-defensoria",
+            storageBucket: "causas-defensoria.firebasestorage.app",
+            messagingSenderId: "186064671470",
+            appId: "1:186064671470:web:b58bae5eadbe6e469f19ff"
+        };
+
+        // Configuración NUEVA para guardar datos en secretarios-def
+        const firebaseConfigNueva = {
+            apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
+            authDomain: "secretarios-def.firebaseapp.com",
+            projectId: "secretarios-def",
+            storageBucket: "secretarios-def.firebasestorage.app",
+            messagingSenderId: "533584198983",
+            appId: "1:533584198983:web:f51f57146ed16c813ca062"
+        };
+
+        // Inicializar Firebase para la base original (solo lectura para autocompletar)
+        const appOriginal = firebase.initializeApp(firebaseConfigOriginal, "original");
+        const dbOriginal = firebase.firestore(appOriginal);
+
+        // Inicializar Firebase para la nueva base (lectura/escritura)
+        const appNueva = firebase.initializeApp(firebaseConfigNueva, "nueva");
+        const dbNueva = firebase.firestore(appNueva);
+
+        // --- CONFIGURACIÓN Y DATOS PARA PRODUCCIÓN ---
+        
+        const RECORDS_PER_PAGE = 10;
+        let currentPage = 1;
+        let causas = []; // Array principal para almacenar las causas
+        let filteredCausas = [];
+        let editingId = null;
+        let causasData = []; // Para almacenar datos de la colección "causas" original
+        
+        // --- ELEMENTOS DEL DOM ---
+        const tablaBody = document.querySelector('#tablaCausas tbody');
+        const filtroBusqueda = document.getElementById('filtroBusqueda');
+        const modalRegistro = document.getElementById('modalRegistro');
+        const btnNuevoRegistro = document.getElementById('btnNuevoRegistro');
+        const btnImprimirListado = document.getElementById('btnImprimirListado');
+        const modalVer = document.getElementById('modalVer');
+        const formRegistro = document.getElementById('formRegistro');
+        const modalTitle = document.getElementById('modalTitle');
+        const detalleContenido = document.getElementById('detalleContenido');
+        const topPagination = document.getElementById('topPagination');
+        const bottomPagination = document.getElementById('bottomPagination');
+        const alertContainer = document.getElementById('alert-container');
+        const tablaSeguimiento = document.getElementById('tablaSeguimiento');
+        const btnAgregarSeguimiento = document.getElementById('btnAgregarSeguimiento');
+        const tablaAudiencias = document.getElementById('tablaAudiencias');
+        const btnAgregarAudiencia = document.getElementById('btnAgregarAudiencia');
+        const tablaVencimientos = document.getElementById('tablaVencimientos');
+        const btnAgregarVencimiento = document.getElementById('btnAgregarVencimiento');
+        const tablaActividades = document.getElementById('tablaActividades');
+        const btnAgregarActividad = document.getElementById('btnAgregarActividad');
+        const tablaFirmaDigital = document.getElementById('tablaFirmaDigital');
+        const btnAgregarFirma = document.getElementById('btnAgregarFirma');
+        const btnNuevoExpediente = document.getElementById('btnNuevoExpediente');
+
+        // --- UTILIDADES ---
+
+        /**
+         * Convierte una fecha de formato YYYY-MM-DD a formato DD/MM/AAAA.
+         */
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                const [year, month, day] = parts;
+                return `${day}/${month}/${year}`;
+            }
+            return dateString;
+        }
+
+        /**
+         * Convierte una fecha y hora de formato ISO a formato DD/MM/AAAA HH:MM.
+         */
+        function formatDateTime(dateTimeString) {
+            if (!dateTimeString) return 'N/A';
+            try {
+                const date = new Date(dateTimeString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${day}/${month}/${year} ${hours}:${minutes}`;
+            } catch (e) {
+                return dateTimeString;
+            }
+        }
+
+        /**
+         * Muestra una alerta visual moderna (toast).
+         * @param {string} message - Mensaje a mostrar.
+         * @param {string} type - Tipo de alerta ('success' o 'error').
+         */
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast-alert toast-${type}`;
+            toast.textContent = message;
+            
+            alertContainer.appendChild(toast);
+
+            // Muestra el toast con animación
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10); 
+
+            // Oculta y elimina el toast después de 4 segundos
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => {
+                    toast.remove();
+                });
+            }, 4000); 
+        }
+
+        /**
+         * Muestra un estado de carga en la tabla
+         */
+        function showLoading() {
+            tablaBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="loading">
+                        Cargando datos...
+                    </td>
+                </tr>
+            `;
+        }
+
+        // --- FUNCIONES DE AUTORRELLENADO ---
+
+        // Cargar datos de expedientes desde la base original
+        async function cargarDatosCausas() {
+            try {
+                const causasSnapshot = await dbOriginal.collection('causas').get();
+                causasData = [];
+                const causasList = document.getElementById('causasList');
+                causasList.innerHTML = '';
+                
+                causasSnapshot.forEach(doc => {
+                    const causa = doc.data();
+                    causa.id = doc.id;
+                    causasData.push(causa);
+                    
+                    // Agregar opción al datalist
+                    const option = document.createElement('option');
+                    option.value = `${causa.numCausa} - ${causa.caratula || ''}`;
+                    option.textContent = `${causa.numCausa} - ${causa.caratula || ''}`;
+                    causasList.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error cargando datos de causas:', error);
+                showToast('Error al cargar datos de causas', 'error');
+            }
+        }
+
+        // Cuando se selecciona una causa, rellenar automáticamente los campos
+        document.getElementById('numeroCaratula').addEventListener('change', function() {
+            const valorSeleccionado = this.value;
+            
+            // Buscar tanto por número de causa como por el texto completo
+            const causaEncontrada = causasData.find(c => 
+                valorSeleccionado === `${c.numCausa} - ${c.caratula || ''}` || 
+                valorSeleccionado === c.numCausa
+            );
+            
+            if (causaEncontrada) {
+                // Actualizar el campo con número y carátula
+                this.value = `${causaEncontrada.numCausa} - ${causaEncontrada.caratula || ''}`;
+                
+                // Rellenar los demás campos
+                document.getElementById('tipoProceso').value = causaEncontrada.tipoProceso || '';
+                document.getElementById('juzgado').value = causaEncontrada.juzgado || '';
+                document.getElementById('empleado').value = causaEncontrada.usuarioAsignado || '';
+                document.getElementById('modoIntervencion').value = causaEncontrada.intervencion || '';
+            }
+        });
+
+        // Botón para nuevo expediente
+        btnNuevoExpediente.addEventListener('click', function() {
+            document.getElementById('numeroCaratula').value = '';
+            document.getElementById('numeroCaratula').focus();
+        });
+
+        // --- FUNCIONES DE RENDERING Y LÓGICA DE DATOS ---
+
+        function renderTable(data) {
+            filteredCausas = data;
+            
+            const totalPages = Math.ceil(filteredCausas.length / RECORDS_PER_PAGE);
+            
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+
+            const start = (currentPage - 1) * RECORDS_PER_PAGE;
+            const end = start + RECORDS_PER_PAGE;
+            const paginatedData = filteredCausas.slice(start, end);
+            
+            tablaBody.innerHTML = '';
+            
+            if (paginatedData.length === 0 && data.length === 0) {
+                const row = tablaBody.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 7;
+                cell.textContent = "No hay causas registradas para mostrar.";
+                cell.style.textAlign = 'center';
+                cell.style.padding = '30px';
+                cell.style.color = '#666';
+            }
+
+            paginatedData.forEach(causa => {
+                const row = tablaBody.insertRow();
+                
+                // Celda para Número y Carátula
+                const numeroCaratulaCell = row.insertCell();
+                numeroCaratulaCell.innerHTML = `
+                    <div><strong>${causa.numeroCaratula || 'N/A'}</strong></div>
+                `;
+                
+                row.insertCell().textContent = causa.tipoProceso || 'N/A';
+                row.insertCell().textContent = causa.juzgado || 'N/A';
+                row.insertCell().textContent = causa.empleado || 'N/A';
+                
+                // Celda para Audiencias y Vencimientos
+                const audienciasVencimientosCell = row.insertCell();
+                let audienciasVencimientosText = '';
+                
+                if (causa.audiencias && causa.audiencias.length > 0) {
+                    audienciasVencimientosText += `Audiencias: ${causa.audiencias.length}<br>`;
+                }
+                
+                if (causa.vencimientos && causa.vencimientos.length > 0) {
+                    audienciasVencimientosText += `Vencimientos: ${causa.vencimientos.length}<br>`;
+                }
+                
+                if (causa.actividades && causa.actividades.length > 0) {
+                    audienciasVencimientosText += `Actividades: ${causa.actividades.length}`;
+                }
+                
+                audienciasVencimientosCell.innerHTML = audienciasVencimientosText || 'N/A';
+                
+                row.insertCell().textContent = causa.observaciones || 'N/A';
+                
+                const actionsCell = row.insertCell();
+                actionsCell.classList.add('action-buttons');
+                
+                const btnVer = document.createElement('button');
+                btnVer.textContent = '👁️ Ver';
+                btnVer.title = 'Ver detalles completos';
+                btnVer.classList.add('btn-ver');
+                btnVer.addEventListener('click', () => verRegistro(causa.id));
+                actionsCell.appendChild(btnVer);
+
+                const btnEditar = document.createElement('button');
+                btnEditar.textContent = '✏️ Editar';
+                btnEditar.title = 'Editar registro';
+                btnEditar.classList.add('btn-editar');
+                btnEditar.addEventListener('click', () => abrirModalRegistro(causa.id));
+                actionsCell.appendChild(btnEditar);
+                
+                const btnEliminar = document.createElement('button');
+                btnEliminar.textContent = '🗑️ Eliminar';
+                btnEliminar.title = 'Eliminar registro';
+                btnEliminar.classList.add('btn-eliminar');
+                btnEliminar.addEventListener('click', () => confirmAndDelete(causa.id, causa.numeroCaratula));
+                actionsCell.appendChild(btnEliminar);
+            });
+            
+            renderPaginationSelectors(totalPages);
+        }
+
+        // --- PAGINACIÓN ---
+        function changePage(page) {
+            if (page < 1) page = 1;
+            const totalPages = Math.ceil(filteredCausas.length / RECORDS_PER_PAGE);
+            if (page > totalPages) page = totalPages;
+            
+            currentPage = page;
+            renderTable(filteredCausas);
+        }
+
+        function renderPaginationSelectors(totalPages) {
+            const paginationHTML = () => {
+                if (totalPages <= 1) return '';
+
+                const disabledPrev = currentPage === 1 ? 'disabled' : '';
+                const disabledNext = currentPage === totalPages ? 'disabled' : '';
+
+                let html = `
+                    <button onclick="changePage(${currentPage - 1})" ${disabledPrev}>« Anterior</button>
+                    <span>Página ${currentPage} de ${totalPages}</span>
+                `;
+                
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
+
+                if (currentPage <= 3) endPage = Math.min(totalPages, 5);
+                if (currentPage > totalPages - 2) startPage = Math.max(1, totalPages - 4);
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    const activeClass = i === currentPage ? 'active' : '';
+                    html += `<button onclick="changePage(${i})" class="${activeClass}">${i}</button>`;
+                }
+
+                html += `<button onclick="changePage(${currentPage + 1})" ${disabledNext}>Siguiente »</button>`;
+                return html;
+            };
+
+            const htmlContent = paginationHTML();
+            topPagination.innerHTML = htmlContent;
+            bottomPagination.innerHTML = htmlContent;
+        }
+
+        // --- GESTIÓN DE PESTAÑAS ---
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remover clase activa de todas las pestañas y contenidos
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Activar la pestaña clickeada
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+
+        // --- GESTIÓN DE TABLA DE SEGUIMIENTO ---
+        function agregarFilaSeguimiento(fecha = '', detalles = '') {
+            const tbody = tablaSeguimiento.querySelector('tbody');
+            const row = tbody.insertRow();
+            
+            const cellFecha = row.insertCell();
+            const inputFecha = document.createElement('input');
+            inputFecha.type = 'date';
+            inputFecha.value = fecha;
+            cellFecha.appendChild(inputFecha);
+            
+            const cellDetalles = row.insertCell();
+            const inputDetalles = document.createElement('input');
+            inputDetalles.type = 'text';
+            inputDetalles.placeholder = 'Detalles del seguimiento';
+            inputDetalles.value = detalles;
+            cellDetalles.appendChild(inputDetalles);
+            
+            const cellAccion = row.insertCell();
+            const btnEliminar = document.createElement('button');
+            btnEliminar.textContent = 'Eliminar';
+            btnEliminar.classList.add('btn-eliminar-fila');
+            btnEliminar.addEventListener('click', () => {
+                tbody.removeChild(row);
+            });
+            cellAccion.appendChild(btnEliminar);
+        }
+
+        function obtenerDatosSeguimiento() {
+            const tbody = tablaSeguimiento.querySelector('tbody');
+            const filas = tbody.querySelectorAll('tr');
+            const seguimiento = [];
+            
+            filas.forEach(fila => {
+                const inputs = fila.querySelectorAll('input');
+                const fecha = inputs[0].value;
+                const detalles = inputs[1].value;
+                
+                if (fecha || detalles) {
+                    seguimiento.push({ fecha, detalles });
+                }
+            });
+            
+            return seguimiento;
+        }
+
+        function cargarSeguimiento(seguimiento) {
+            const tbody = tablaSeguimiento.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            if (seguimiento && seguimiento.length > 0) {
+                seguimiento.forEach(item => {
+                    agregarFilaSeguimiento(item.fecha, item.detalles);
+                });
+            } else {
+                agregarFilaSeguimiento();
+            }
+        }
+
+        // --- GESTIÓN DE TABLAS DE AUDIENCIAS, VENCIMIENTOS Y ACTIVIDADES ---
+
+        // Función genérica para agregar filas a las tablas de fecha/hora
+        function agregarFilaFechaHora(tabla, fechaHora = '', detalle = '') {
+            const tbody = tabla.querySelector('tbody');
+            const row = tbody.insertRow();
+            
+            const cellFechaHora = row.insertCell();
+            const inputFechaHora = document.createElement('input');
+            inputFechaHora.type = 'datetime-local';
+            inputFechaHora.value = fechaHora;
+            cellFechaHora.appendChild(inputFechaHora);
+            
+            const cellDetalle = row.insertCell();
+            const inputDetalle = document.createElement('input');
+            inputDetalle.type = 'text';
+            inputDetalle.placeholder = 'Detalle';
+            inputDetalle.value = detalle;
+            cellDetalle.appendChild(inputDetalle);
+            
+            const cellAccion = row.insertCell();
+            const btnEliminar = document.createElement('button');
+            btnEliminar.textContent = 'Eliminar';
+            btnEliminar.classList.add('btn-eliminar-fila');
+            btnEliminar.addEventListener('click', () => {
+                tbody.removeChild(row);
+            });
+            cellAccion.appendChild(btnEliminar);
+        }
+
+        // Función genérica para obtener datos de las tablas de fecha/hora
+        function obtenerDatosFechaHora(tabla) {
+            const tbody = tabla.querySelector('tbody');
+            const filas = tbody.querySelectorAll('tr');
+            const datos = [];
+            
+            filas.forEach(fila => {
+                const inputs = fila.querySelectorAll('input');
+                const fechaHora = inputs[0].value;
+                const detalle = inputs[1].value;
+                
+                if (fechaHora || detalle) {
+                    datos.push({ fechaHora, detalle });
+                }
+            });
+            
+            return datos;
+        }
+
+        // Función genérica para cargar datos en las tablas de fecha/hora
+        function cargarDatosFechaHora(tabla, datos) {
+            const tbody = tabla.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            if (datos && datos.length > 0) {
+                datos.forEach(item => {
+                    agregarFilaFechaHora(tabla, item.fechaHora, item.detalle);
+                });
+            } else {
+                agregarFilaFechaHora(tabla);
+            }
+        }
+
+        // --- GESTIÓN DE TABLA DE FIRMA DIGITAL ---
+
+        function agregarFilaFirmaDigital(piezaProcesal = '', fechaFirma = '', firmaDe = '', tipoDefensor = '', detalleSubrogante = '') {
+            const tbody = tablaFirmaDigital.querySelector('tbody');
+            const row = tbody.insertRow();
+            
+            // Celda Pieza Procesal
+            const cellPiezaProcesal = row.insertCell();
+            const inputPiezaProcesal = document.createElement('input');
+            inputPiezaProcesal.type = 'text';
+            inputPiezaProcesal.placeholder = 'Pieza procesal';
+            inputPiezaProcesal.value = piezaProcesal;
+            cellPiezaProcesal.appendChild(inputPiezaProcesal);
+            
+            // Celda Fecha Firma
+            const cellFechaFirma = row.insertCell();
+            const inputFechaFirma = document.createElement('input');
+            inputFechaFirma.type = 'date';
+            inputFechaFirma.value = fechaFirma;
+            cellFechaFirma.appendChild(inputFechaFirma);
+            
+            // Celda Firma de
+            const cellFirmaDe = row.insertCell();
+            const selectFirmaDe = document.createElement('select');
+            
+            const optionDefault = document.createElement('option');
+            optionDefault.value = '';
+            optionDefault.textContent = 'Seleccionar';
+            selectFirmaDe.appendChild(optionDefault);
+            
+            const optionSecretario = document.createElement('option');
+            optionSecretario.value = 'Secretario';
+            optionSecretario.textContent = 'Secretario';
+            selectFirmaDe.appendChild(optionSecretario);
+            
+            const optionDefensor = document.createElement('option');
+            optionDefensor.value = 'Defensor';
+            optionDefensor.textContent = 'Defensor';
+            selectFirmaDe.appendChild(optionDefensor);
+            
+            selectFirmaDe.value = firmaDe;
+            cellFirmaDe.appendChild(selectFirmaDe);
+            
+            // Celda Tipo Defensor
+            const cellTipoDefensor = row.insertCell();
+            const selectTipoDefensor = document.createElement('select');
+            
+            const optionDefaultDefensor = document.createElement('option');
+            optionDefaultDefensor.value = '';
+            optionDefaultDefensor.textContent = 'Seleccionar';
+            selectTipoDefensor.appendChild(optionDefaultDefensor);
+            
+            const optionTitular = document.createElement('option');
+            optionTitular.value = 'Titular';
+            optionTitular.textContent = 'Titular';
+            selectTipoDefensor.appendChild(optionTitular);
+            
+            const optionSubrogante = document.createElement('option');
+            optionSubrogante.value = 'Subrogante';
+            optionSubrogante.textContent = 'Subrogante';
+            selectTipoDefensor.appendChild(optionSubrogante);
+            
+            selectTipoDefensor.value = tipoDefensor;
+            selectTipoDefensor.disabled = (firmaDe !== 'Defensor');
+            cellTipoDefensor.appendChild(selectTipoDefensor);
+            
+            // Celda Detalle Subrogante
+            const cellDetalleSubrogante = row.insertCell();
+            const inputDetalleSubrogante = document.createElement('input');
+            inputDetalleSubrogante.type = 'text';
+            inputDetalleSubrogante.placeholder = 'Detalle subrogante';
+            inputDetalleSubrogante.value = detalleSubrogante;
+            inputDetalleSubrogante.disabled = (tipoDefensor !== 'Subrogante');
+            cellDetalleSubrogante.appendChild(inputDetalleSubrogante);
+            
+            // Celda Acción
+            const cellAccion = row.insertCell();
+            const btnEliminar = document.createElement('button');
+            btnEliminar.textContent = 'Eliminar';
+            btnEliminar.classList.add('btn-eliminar-fila');
+            btnEliminar.addEventListener('click', () => {
+                tbody.removeChild(row);
+            });
+            cellAccion.appendChild(btnEliminar);
+            
+            // Event listeners para actualizar dependencias
+            selectFirmaDe.addEventListener('change', function() {
+                const esDefensor = this.value === 'Defensor';
+                selectTipoDefensor.disabled = !esDefensor;
+                
+                if (!esDefensor) {
+                    selectTipoDefensor.value = '';
+                    inputDetalleSubrogante.value = '';
+                    inputDetalleSubrogante.disabled = true;
+                }
+            });
+            
+            selectTipoDefensor.addEventListener('change', function() {
+                const esSubrogante = this.value === 'Subrogante';
+                inputDetalleSubrogante.disabled = !esSubrogante;
+                
+                if (!esSubrogante) {
+                    inputDetalleSubrogante.value = '';
+                }
+            });
+        }
+
+        function obtenerDatosFirmaDigital() {
+            const tbody = tablaFirmaDigital.querySelector('tbody');
+            const filas = tbody.querySelectorAll('tr');
+            const firmas = [];
+            
+            filas.forEach(fila => {
+                const inputs = fila.querySelectorAll('input, select');
+                const piezaProcesal = inputs[0].value;
+                const fechaFirma = inputs[1].value;
+                const firmaDe = inputs[2].value;
+                const tipoDefensor = inputs[3].value;
+                const detalleSubrogante = inputs[4].value;
+                
+                if (piezaProcesal || fechaFirma || firmaDe) {
+                    firmas.push({
+                        piezaProcesal,
+                        fechaFirma,
+                        firmaDe,
+                        tipoDefensor,
+                        detalleSubrogante
+                    });
+                }
+            });
+            
+            return firmas;
+        }
+
+        function cargarFirmaDigital(firmas) {
+            const tbody = tablaFirmaDigital.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            if (firmas && firmas.length > 0) {
+                firmas.forEach(firma => {
+                    agregarFilaFirmaDigital(
+                        firma.piezaProcesal,
+                        firma.fechaFirma,
+                        firma.firmaDe,
+                        firma.tipoDefensor,
+                        firma.detalleSubrogante
+                    );
+                });
+            } else {
+                agregarFilaFirmaDigital();
+            }
+        }
+
+        // --- FUNCIONES DE FIREBASE (NUEVAS) ---
+
+        // Cargar causas desde Firebase
+        async function cargarCausasDesdeFirebase() {
+            try {
+                showLoading();
+                const querySnapshot = await dbNueva.collection('miscausas').get();
+                causas = [];
+                
+                querySnapshot.forEach((doc) => {
+                    const causa = doc.data();
+                    causa.id = doc.id;
+                    causas.push(causa);
+                });
+                
+                renderTable(causas);
+                showToast('Datos cargados desde Firebase correctamente', 'success');
+            } catch (error) {
+                console.error('Error cargando datos desde Firebase:', error);
+                showToast('Error al cargar datos desde Firebase', 'error');
+                // Si hay error, cargar desde localStorage como respaldo
+                const storedCausas = localStorage.getItem('causas');
+                if (storedCausas) {
+                    causas = JSON.parse(storedCausas);
+                    renderTable(causas);
+                    showToast('Datos cargados desde respaldo local', 'info');
+                }
+            }
+        }
+
+        // Guardar causa en Firebase
+        async function guardarCausaEnFirebase(causa) {
+            try {
+                if (editingId) {
+                    // Actualizar documento existente
+                    await dbNueva.collection('miscausas').doc(editingId).update(causa);
+                    showToast('Registro actualizado en Firebase correctamente', 'success');
+                } else {
+                    // Crear nuevo documento
+                    const docRef = await dbNueva.collection('miscausas').add(causa);
+                    causa.id = docRef.id;
+                    showToast('Registro guardado en Firebase correctamente', 'success');
+                }
+                return true;
+            } catch (error) {
+                console.error('Error guardando en Firebase:', error);
+                showToast('Error al guardar en Firebase', 'error');
+                return false;
+            }
+        }
+
+        // Eliminar causa de Firebase
+        async function eliminarCausaDeFirebase(id) {
+            try {
+                await dbNueva.collection('miscausas').doc(id).delete();
+                showToast('Registro eliminado de Firebase correctamente', 'success');
+                return true;
+            } catch (error) {
+                console.error('Error eliminando de Firebase:', error);
+                showToast('Error al eliminar de Firebase', 'error');
+                return false;
+            }
+        }
+
+        // --- GESTIÓN DE MODALES ---
+
+        function abrirModalRegistro(id = null) {
+            editingId = id;
+            
+            // Cargar datos de causas cada vez que se abre el modal
+            cargarDatosCausas();
+            
+            if (id) {
+                modalTitle.textContent = 'Editar';
+                const causa = causas.find(c => c.id === id);
+                
+                if (causa) {
+                    document.getElementById('numeroCaratula').value = causa.numeroCaratula || '';
+                    document.getElementById('tipoProceso').value = causa.tipoProceso || '';
+                    document.getElementById('juzgado').value = causa.juzgado || '';
+                    document.getElementById('empleado').value = causa.empleado || '';
+                    document.getElementById('documentosPresentados').value = causa.documentosPresentados || '';
+                    document.getElementById('estadoDocumental').value = causa.estadoDocumental || '';
+                    document.getElementById('modoIntervencion').value = causa.modoIntervencion || '';
+                    document.getElementById('prioridadTarea').value = causa.prioridadTarea || '';
+                    document.getElementById('estadoProcesal').value = causa.estadoProcesal || '';
+                    document.getElementById('fechaEstado').value = causa.fechaEstado || '';
+                    document.getElementById('observaciones').value = causa.observaciones || '';
+                    
+                    // Cargar seguimiento
+                    cargarSeguimiento(causa.seguimiento);
+                    
+                    // Cargar audiencias, vencimientos y actividades
+                    cargarDatosFechaHora(tablaAudiencias, causa.audiencias);
+                    cargarDatosFechaHora(tablaVencimientos, causa.vencimientos);
+                    cargarDatosFechaHora(tablaActividades, causa.actividades);
+                    
+                    // Cargar firmas digitales
+                    cargarFirmaDigital(causa.firmaDigital);
+                }
+            } else {
+                modalTitle.textContent = 'Nuevo';
+                formRegistro.reset();
+                
+                // Limpiar tablas dinámicas
+                cargarSeguimiento([]);
+                cargarDatosFechaHora(tablaAudiencias, []);
+                cargarDatosFechaHora(tablaVencimientos, []);
+                cargarDatosFechaHora(tablaActividades, []);
+                cargarFirmaDigital([]);
+            }
+            
+            // Activar primera pestaña
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector('.tab').classList.add('active');
+            document.querySelector('.tab-content').classList.add('active');
+            
+            modalRegistro.style.display = 'block';
+        }
+
+        function verRegistro(id) {
+            const causa = causas.find(c => c.id === id);
+            
+            if (causa) {
+                let contenidoHTML = `
+                    <div class="form-group">
+                        <label><strong>Número y Carátula:</strong></label>
+                        <p>${causa.numeroCaratula || 'N/A'}</p>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><strong>Tipo de Proceso:</strong></label>
+                            <p>${causa.tipoProceso || 'N/A'}</p>
+                        </div>
+                        <div class="form-group">
+                            <label><strong>Juzgado:</strong></label>
+                            <p>${causa.juzgado || 'N/A'}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><strong>Empleado Asignado:</strong></label>
+                        <p>${causa.empleado || 'N/A'}</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><strong>Documentos Presentados:</strong></label>
+                        <p>${causa.documentosPresentados || 'N/A'}</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><strong>Estado Documental:</strong></label>
+                        <p>${causa.estadoDocumental || 'N/A'}</p>
+                    </div>
+                `;
+                
+                // Mostrar firmas digitales
+                if (causa.firmaDigital && causa.firmaDigital.length > 0) {
+                    contenidoHTML += `
+                        <div class="form-group">
+                            <label><strong>Firma Digital:</strong></label>
+                            <table class="seguimiento-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pieza Procesal</th>
+                                        <th>Fecha Firma</th>
+                                        <th>Firma de</th>
+                                        <th>Tipo Defensor</th>
+                                        <th>Detalle Subrogante</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    causa.firmaDigital.forEach(firma => {
+                        contenidoHTML += `
+                            <tr>
+                                <td>${firma.piezaProcesal || 'N/A'}</td>
+                                <td>${formatDate(firma.fechaFirma) || 'N/A'}</td>
+                                <td>${firma.firmaDe || 'N/A'}</td>
+                                <td>${firma.tipoDefensor || 'N/A'}</td>
+                                <td>${firma.detalleSubrogante || 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    contenidoHTML += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+                
+                // Mostrar seguimiento
+                if (causa.seguimiento && causa.seguimiento.length > 0) {
+                    contenidoHTML += `
+                        <div class="form-group">
+                            <label><strong>Seguimiento:</strong></label>
+                            <table class="seguimiento-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Detalles</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    causa.seguimiento.forEach(item => {
+                        contenidoHTML += `
+                            <tr>
+                                <td>${formatDate(item.fecha) || 'N/A'}</td>
+                                <td>${item.detalles || 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    contenidoHTML += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+                
+                // Mostrar audiencias
+                if (causa.audiencias && causa.audiencias.length > 0) {
+                    contenidoHTML += `
+                        <div class="form-group">
+                            <label><strong>Audiencias:</strong></label>
+                            <table class="seguimiento-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha y Hora</th>
+                                        <th>Detalle</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    causa.audiencias.forEach(item => {
+                        contenidoHTML += `
+                            <tr>
+                                <td>${formatDateTime(item.fechaHora) || 'N/A'}</td>
+                                <td>${item.detalle || 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    contenidoHTML += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+                
+                // Mostrar vencimientos
+                if (causa.vencimientos && causa.vencimientos.length > 0) {
+                    contenidoHTML += `
+                        <div class="form-group">
+                            <label><strong>Vencimientos:</strong></label>
+                            <table class="seguimiento-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha y Hora</th>
+                                        <th>Detalle</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    causa.vencimientos.forEach(item => {
+                        contenidoHTML += `
+                            <tr>
+                                <td>${formatDateTime(item.fechaHora) || 'N/A'}</td>
+                                <td>${item.detalle || 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    contenidoHTML += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+                
+                // Mostrar actividades
+                if (causa.actividades && causa.actividades.length > 0) {
+                    contenidoHTML += `
+                        <div class="form-group">
+                            <label><strong>Otras Actividades:</strong></label>
+                            <table class="seguimiento-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha y Hora</th>
+                                        <th>Detalle</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    causa.actividades.forEach(item => {
+                        contenidoHTML += `
+                            <tr>
+                                <td>${formatDateTime(item.fechaHora) || 'N/A'}</td>
+                                <td>${item.detalle || 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    contenidoHTML += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+                
+                // Mostrar observaciones
+                contenidoHTML += `
+                    <div class="form-group">
+                        <label><strong>Observaciones Generales:</strong></label>
+                        <p>${causa.observaciones || 'N/A'}</p>
+                    </div>
+                `;
+                
+                detalleContenido.innerHTML = contenidoHTML;
+                modalVer.style.display = 'block';
+            }
+        }
+
+        // --- GESTIÓN DE DATOS ---
+
+        async function guardarRegistro(event) {
+            event.preventDefault();
+            
+            const numeroCaratula = document.getElementById('numeroCaratula').value;
+            
+            if (!numeroCaratula.trim()) {
+                showToast('El campo "Número y Carátula" es obligatorio.', 'error');
+                return;
+            }
+            
+            const causa = {
+                numeroCaratula: numeroCaratula,
+                tipoProceso: document.getElementById('tipoProceso').value,
+                juzgado: document.getElementById('juzgado').value,
+                empleado: document.getElementById('empleado').value,
+                documentosPresentados: document.getElementById('documentosPresentados').value,
+                estadoDocumental: document.getElementById('estadoDocumental').value,
+                modoIntervencion: document.getElementById('modoIntervencion').value,
+                prioridadTarea: document.getElementById('prioridadTarea').value,
+                estadoProcesal: document.getElementById('estadoProcesal').value,
+                fechaEstado: document.getElementById('fechaEstado').value,
+                observaciones: document.getElementById('observaciones').value,
+                seguimiento: obtenerDatosSeguimiento(),
+                audiencias: obtenerDatosFechaHora(tablaAudiencias),
+                vencimientos: obtenerDatosFechaHora(tablaVencimientos),
+                actividades: obtenerDatosFechaHora(tablaActividades),
+                firmaDigital: obtenerDatosFirmaDigital()
+            };
+            
+            // Guardar en Firebase
+            const exitoFirebase = await guardarCausaEnFirebase(causa);
+            
+            if (exitoFirebase) {
+                if (editingId) {
+                    // Editar registro existente
+                    const index = causas.findIndex(c => c.id === editingId);
+                    if (index !== -1) {
+                        causa.id = editingId;
+                        causas[index] = causa;
+                    }
+                } else {
+                    // Nuevo registro
+                    // El ID se asigna en la función guardarCausaEnFirebase
+                    causas.push(causa);
+                }
+                
+                // Guardar también en localStorage como respaldo
+                localStorage.setItem('causas', JSON.stringify(causas));
+                
+                // Cerrar modal y actualizar tabla
+                modalRegistro.style.display = 'none';
+                renderTable(causas);
+            }
+        }
+
+        async function confirmAndDelete(id, numeroCaratula) {
+            const confirmacion = confirm(`¿Está seguro de que desea eliminar la causa:\n"${numeroCaratula}"?`);
+            
+            if (confirmacion) {
+                // Eliminar de Firebase
+                const exitoFirebase = await eliminarCausaDeFirebase(id);
+                
+                if (exitoFirebase) {
+                    causas = causas.filter(c => c.id !== id);
+                    localStorage.setItem('causas', JSON.stringify(causas));
+                    renderTable(causas);
+                }
+            }
+        }
+
+        // --- INICIALIZACIÓN ---
+
+        function init() {
+            // Cargar datos desde Firebase
+            cargarCausasDesdeFirebase();
+            
+            // Inicializar elementos
+            initTabs();
+            
+            // Agregar fila inicial a las tablas dinámicas
+            agregarFilaSeguimiento();
+            agregarFilaFechaHora(tablaAudiencias);
+            agregarFilaFechaHora(tablaVencimientos);
+            agregarFilaFechaHora(tablaActividades);
+            agregarFilaFirmaDigital();
+            
+            // Event Listeners
+            btnNuevoRegistro.addEventListener('click', () => abrirModalRegistro());
+            btnImprimirListado.addEventListener('click', () => window.print());
+            
+            // Cerrar modales al hacer clic en la X
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modalRegistro.style.display = 'none';
+                    modalVer.style.display = 'none';
+                });
+            });
+            
+            // Cerrar modales al hacer clic fuera del contenido
+            window.addEventListener('click', (e) => {
+                if (e.target === modalRegistro) modalRegistro.style.display = 'none';
+                if (e.target === modalVer) modalVer.style.display = 'none';
+            });
+            
+            // Filtro de búsqueda
+            filtroBusqueda.addEventListener('input', () => {
+                const filtro = filtroBusqueda.value.toLowerCase();
+                const filtered = causas.filter(causa => 
+                    (causa.numeroCaratula && causa.numeroCaratula.toLowerCase().includes(filtro)) ||
+                    (causa.tipoProceso && causa.tipoProceso.toLowerCase().includes(filtro)) ||
+                    (causa.juzgado && causa.juzgado.toLowerCase().includes(filtro)) ||
+                    (causa.empleado && causa.empleado.toLowerCase().includes(filtro)) ||
+                    (causa.observaciones && causa.observaciones.toLowerCase().includes(filtro))
+                );
+                
+                currentPage = 1;
+                renderTable(filtered);
+            });
+            
+            // Formulario de registro
+            formRegistro.addEventListener('submit', guardarRegistro);
+            
+            // Botones para agregar filas
+            btnAgregarSeguimiento.addEventListener('click', () => agregarFilaSeguimiento());
+            btnAgregarAudiencia.addEventListener('click', () => agregarFilaFechaHora(tablaAudiencias));
+            btnAgregarVencimiento.addEventListener('click', () => agregarFilaFechaHora(tablaVencimientos));
+            btnAgregarActividad.addEventListener('click', () => agregarFilaFechaHora(tablaActividades));
+            btnAgregarFirma.addEventListener('click', () => agregarFilaFirmaDigital());
+        }
+
+        // Inicializar la aplicación cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario Judicial</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #month-year-display {
+            font-size: 1.5em;
+            min-width: 180px;
+            text-align: center;
+        }
+        #search-filter {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        button {
+            padding: 8px 15px;
+            background: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+        }
+        .btn-activities {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+        }
+        .btn-audiencias {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+        }
+        .btn-vencimientos {
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+        .day-name {
+            font-weight: bold;
+            color: #555;
+            padding: 10px 0;
+        }
+        .day {
+            padding: 20px 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #eee;
+            min-height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .day:hover:not(.empty) {
+            background-color: #f0f0f0;
+        }
+        .empty {
+            background-color: #f8f8f8;
+            cursor: default;
+        }
+        .current-day {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+        }
+        .has-event {
+            background-color: #ff9800 !important;
+            color: #333 !important;
+            border: 2px solid #ff9800;
+        }
+        .event-count {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background: #ff5722;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 40px;
+            overflow: auto;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .audiencia {
+            border-left: 5px solid #ff9800;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #ffe0b2;
+            border-radius: 5px;
+        }
+        .vencimiento {
+            border-left: 5px solid #e91e63;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #ffcdd2;
+            border-radius: 5px;
+        }
+        .actividad {
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #d4edda;
+            border-radius: 5px;
+        }
+        .event-details {
+            margin-top: 8px;
+        }
+        .event-details div {
+            margin-bottom: 5px;
+        }
+        .event-source {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+            color: #666;
+        }
+        .search-match {
+            box-shadow: 0 0 0 3px #007bff;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+        }
+        .events-buttons {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="calendar-controls">
+                <input type="text" id="search-filter" placeholder="Buscar Expediente, Detalle..." onkeyup="handleSearchFilter()">
+                <div class="month-nav">
+                    <button onclick="prevMonth()">←</button>
+                    <h3 id="month-year-display"></h3>
+                    <button onclick="nextMonth()">→</button>
+                    <button class="btn-primary" onclick="goToToday()">HOY</button>
+                    <div class="events-buttons">
+                        <button class="btn-audiencias" onclick="openAudienciasModal()">🎯 Audiencias</button>
+                        <button class="btn-vencimientos" onclick="openVencimientosModal()">⏰ Vencimientos</button>
+                        <button class="btn-activities" onclick="openActivitiesModal()">📋 Actividades</button>
+                    </div>
+                    <button class="btn-primary" onclick="loadEventsFromFirebase()" id="reload-btn">🔄 Actualizar</button>
+                </div>
+            </div>
+            <div class="calendar-grid" id="calendar-grid">
+                <div class="loading">Cargando eventos...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para eventos del día -->
+    <div id="view-day-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('view-day-modal')">&times;</span>
+            <h2 id="view-day-title" style="color: #28a745;"></h2>
+            <div id="day-events-list"></div>
+            <p id="no-events-message" style="display: none; color: gray;">No hay eventos registrados para esta fecha.</p>
+        </div>
+    </div>
+
+    <!-- Modal para actividades -->
+    <div id="activities-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('activities-modal')">&times;</span>
+            <h2 style="color: #28a745;">Todas las Actividades</h2>
+            <div id="activities-list"></div>
+            <p id="no-activities-message" style="display: none; color: gray;">No hay actividades registradas.</p>
+        </div>
+    </div>
+
+    <!-- Modal para audiencias -->
+    <div id="audiencias-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('audiencias-modal')">&times;</span>
+            <h2 style="color: #ff9800;">Todas las Audiencias</h2>
+            <div id="audiencias-list"></div>
+            <p id="no-audiencias-message" style="display: none; color: gray;">No hay audiencias registradas.</p>
+        </div>
+    </div>
+
+    <!-- Modal para vencimientos -->
+    <div id="vencimientos-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('vencimientos-modal')">&times;</span>
+            <h2 style="color: #e91e63;">Todos los Vencimientos</h2>
+            <div id="vencimientos-list"></div>
+            <p id="no-vencimientos-message" style="display: none; color: gray;">No hay vencimientos registrados.</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
+            authDomain: "secretarios-def.firebaseapp.com",
+            projectId: "secretarios-def",
+            storageBucket: "secretarios-def.firebasestorage.app",
+            messagingSenderId: "533584198983",
+            appId: "1:533584198983:web:f51f57146ed16c813ca062"
+        };
+        
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let judicialEvents = [];
+        let currentCalendarDate = new Date();
+        const DAYS_OF_WEEK = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        const MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+        // Cargar eventos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEventsFromFirebase();
+        });
+
+        // Función para cargar eventos desde Firebase
+        async function loadEventsFromFirebase() {
+            try {
+                judicialEvents = [];
+                
+                // Mostrar estado de carga
+                document.getElementById('calendar-grid').innerHTML = '<div class="loading">Cargando eventos desde Firebase...</div>';
+
+                let eventosCargados = 0;
+
+                // ===== CARGAR DESDE COLECCIÓN "CAUSAS" =====
+                const causasSnapshot = await db.collection('causas').get();
+
+                causasSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const docId = doc.id;
+                    
+                    // Obtener el expediente del documento principal de CAUSAS
+                    const expedientePrincipal = data.expediente || data.numeroExpediente || data.caratula || "Sin expediente";
+                    const juzgadoPrincipal = data.juzgado || "No especificado";
+                    const modoIntervencionPrincipal = data.modoIntervencion || "No especificado";
+                    
+                    // Procesar audiencias
+                    if (data.audiencias && Array.isArray(data.audiencias)) {
+                        data.audiencias.forEach((evento, index) => {
+                            if (evento && (evento.fecha || evento.dia)) {
+                                const nuevoEvento = crearEventoDesdeCausa(
+                                    evento, 
+                                    expedientePrincipal, 
+                                    juzgadoPrincipal,
+                                    modoIntervencionPrincipal,
+                                    docId, 
+                                    "Audiencia", 
+                                    'audiencia', 
+                                    'causas', 
+                                    index
+                                );
+                                if (nuevoEvento) {
+                                    judicialEvents.push(nuevoEvento);
+                                    eventosCargados++;
+                                }
+                            }
+                        });
+                    }
+
+                    // Procesar vencimientos
+                    if (data.vencimientos && Array.isArray(data.vencimientos)) {
+                        data.vencimientos.forEach((evento, index) => {
+                            if (evento && (evento.fecha || evento.dia)) {
+                                const nuevoEvento = crearEventoDesdeCausa(
+                                    evento, 
+                                    expedientePrincipal, 
+                                    juzgadoPrincipal,
+                                    modoIntervencionPrincipal,
+                                    docId, 
+                                    "Vencimiento", 
+                                    'vencimiento', 
+                                    'causas', 
+                                    index
+                                );
+                                if (nuevoEvento) {
+                                    judicialEvents.push(nuevoEvento);
+                                    eventosCargados++;
+                                }
+                            }
+                        });
+                    }
+
+                    // Procesar otrasActividades (CAUSAS)
+                    if (data.otrasActividades && Array.isArray(data.otrasActividades)) {
+                        data.otrasActividades.forEach((evento, index) => {
+                            if (evento && (evento.fecha || evento.dia)) {
+                                const nuevoEvento = crearEventoDesdeCausa(
+                                    evento, 
+                                    expedientePrincipal, 
+                                    juzgadoPrincipal,
+                                    modoIntervencionPrincipal,
+                                    docId, 
+                                    "Actividad", 
+                                    'actividad', 
+                                    'causas', 
+                                    index
+                                );
+                                if (nuevoEvento) {
+                                    judicialEvents.push(nuevoEvento);
+                                    eventosCargados++;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // ===== CARGAR DESDE COLECCIÓN "MISCAUSAS" =====
+                const miscausasSnapshot = await db.collection('miscausas').get();
+
+                miscausasSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const docId = doc.id;
+                    
+                    // Obtener el expediente del documento principal de MISCAUSAS
+                    const expedientePrincipal = data.numeroCaratula || data.expediente || data.caratula || "Sin expediente";
+                    const juzgadoPrincipal = data.juzgado || "No especificado";
+                    const modoIntervencionPrincipal = data.modoIntervencion || "No especificado";
+                    
+                    // Procesar actividades (MISCAUSAS) - con fechaHora
+                    if (data.actividades && Array.isArray(data.actividades)) {
+                        data.actividades.forEach((evento, index) => {
+                            if (evento) {
+                                const nuevoEvento = crearEventoDesdeMiscausa(
+                                    evento, 
+                                    expedientePrincipal, 
+                                    juzgadoPrincipal,
+                                    modoIntervencionPrincipal,
+                                    docId, 
+                                    "Actividad", 
+                                    'actividad', 
+                                    'miscausas', 
+                                    index
+                                );
+                                if (nuevoEvento) {
+                                    judicialEvents.push(nuevoEvento);
+                                    eventosCargados++;
+                                }
+                            }
+                        });
+                    }
+
+                    // Procesar audiencias (MISCAUSAS)
+                    if (data.audiencias && Array.isArray(data.audiencias)) {
+                        data.audiencias.forEach((evento, index) => {
+                            if (evento) {
+                                const nuevoEvento = crearEventoDesdeMiscausa(
+                                    evento, 
+                                    expedientePrincipal, 
+                                    juzgadoPrincipal,
+                                    modoIntervencionPrincipal,
+                                    docId, 
+                                    "Audiencia", 
+                                    'audiencia', 
+                                    'miscausas', 
+                                    index
+                                );
+                                if (nuevoEvento) {
+                                    judicialEvents.push(nuevoEvento);
+                                    eventosCargados++;
+                                }
+                            }
+                        });
+                    }
+
+                    // Procesar vencimientos (MISCAUSAS)
+                    if (data.vencimientos && Array.isArray(data.vencimientos)) {
+                        data.vencimientos.forEach((evento, index) => {
+                            if (evento && (evento.fecha || evento.dia)) {
+                                const nuevoEvento = crearEventoDesdeMiscausa(
+                                    evento, 
+                                    expedientePrincipal, 
+                                    juzgadoPrincipal,
+                                    modoIntervencionPrincipal,
+                                    docId, 
+                                    "Vencimiento", 
+                                    'vencimiento', 
+                                    'miscausas', 
+                                    index
+                                );
+                                if (nuevoEvento) {
+                                    judicialEvents.push(nuevoEvento);
+                                    eventosCargados++;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                if (eventosCargados === 0) {
+                    document.getElementById('calendar-grid').innerHTML = 
+                        '<div class="loading">No se encontraron eventos en las colecciones.</div>';
+                } else {
+                    renderCalendar(currentCalendarDate);
+                }
+
+            } catch (error) {
+                console.error("Error al cargar datos:", error);
+                document.getElementById('calendar-grid').innerHTML = 
+                    '<div class="loading">Error al cargar los eventos: ' + error.message + '</div>';
+            }
+        }
+
+        // Función para crear eventos desde CAUSAS
+        function crearEventoDesdeCausa(evento, expedientePrincipal, juzgadoPrincipal, modoIntervencionPrincipal, docId, tipo, clase, fuente, index) {
+            try {
+                // Obtener fecha
+                const fecha = evento.fecha || evento.dia;
+                if (!fecha) {
+                    return null;
+                }
+
+                // Formatear fecha
+                const fechaFormateada = formatDate(fecha);
+                if (!fechaFormateada) {
+                    return null;
+                }
+
+                // Para CAUSAS: usar el expediente del documento principal
+                let expte = expedientePrincipal;
+                if (!expte || expte === "Sin expediente") {
+                    // Intentar obtener del evento individual si no está en el principal
+                    expte = evento.expediente || evento.numeroExpediente || evento.caratula || "Sin expediente";
+                }
+                
+                // Para CAUSAS: detalle del campo 'detalle'
+                const detalle = evento.detalle || tipo;
+
+                return {
+                    date: fechaFormateada,
+                    time: evento.horario || evento.hora || "00:00",
+                    type: tipo,
+                    expte: expte,
+                    juzgado: juzgadoPrincipal,
+                    modoIntervencion: modoIntervencionPrincipal,
+                    description: detalle,
+                    class: clase,
+                    source: fuente,
+                    id: `${fuente}-${docId}-${tipo}-${index}`
+                };
+            } catch (error) {
+                console.error("Error creando evento desde causas:", error);
+                return null;
+            }
+        }
+
+        // Función para crear eventos desde MISCAUSAS
+        function crearEventoDesdeMiscausa(evento, expedientePrincipal, juzgadoPrincipal, modoIntervencionPrincipal, docId, tipo, clase, fuente, index) {
+            try {
+                // Para actividades en miscausas que tienen fechaHora
+                if (evento.fechaHora) {
+                    try {
+                        let fechaHora;
+                        
+                        // Si es un Timestamp de Firebase
+                        if (evento.fechaHora.toDate) {
+                            fechaHora = evento.fechaHora.toDate();
+                        } 
+                        // Si es un string ISO
+                        else if (typeof evento.fechaHora === 'string') {
+                            fechaHora = new Date(evento.fechaHora);
+                        }
+                        // Si ya es un objeto Date
+                        else if (evento.fechaHora instanceof Date) {
+                            fechaHora = evento.fechaHora;
+                        }
+                        
+                        if (!fechaHora || isNaN(fechaHora.getTime())) {
+                            return null;
+                        }
+                        
+                        const fechaFormateada = formatDate(fechaHora);
+                        const horaFormateada = fechaHora.toTimeString().substring(0, 5);
+                        
+                        // Para MISCAUSAS: usar el expediente del documento principal
+                        let expte = expedientePrincipal;
+                        if (!expte || expte === "Sin expediente") {
+                            // Intentar obtener del evento individual si no está en el principal
+                            expte = evento.numeroCaratula || evento.expediente || evento.caratula || "Sin expediente";
+                        }
+                        
+                        // Para MISCAUSAS: detalle del campo 'detalle'
+                        const detalle = evento.detalle || tipo;
+
+                        return {
+                            date: fechaFormateada,
+                            time: horaFormateada,
+                            type: tipo,
+                            expte: expte,
+                            juzgado: juzgadoPrincipal,
+                            modoIntervencion: modoIntervencionPrincipal,
+                            description: detalle,
+                            class: clase,
+                            source: fuente,
+                            id: `${fuente}-${docId}-${tipo}-${index}`
+                        };
+                    } catch (error) {
+                        console.error("Error procesando fechaHora:", error);
+                        return null;
+                    }
+                }
+                
+                // Para otros eventos en miscausas (con fecha y horario separados)
+                const fecha = evento.fecha || evento.dia;
+                if (!fecha) {
+                    return null;
+                }
+
+                const fechaFormateada = formatDate(fecha);
+                if (!fechaFormateada) {
+                    return null;
+                }
+
+                // Para MISCAUSAS: usar el expediente del documento principal
+                let expte = expedientePrincipal;
+                if (!expte || expte === "Sin expediente") {
+                    // Intentar obtener del evento individual si no está en el principal
+                    expte = evento.numeroCaratula || evento.expediente || evento.caratula || "Sin expediente";
+                }
+                
+                // Para MISCAUSAS: detalle del campo 'detalle'
+                const detalle = evento.detalle || tipo;
+
+                return {
+                    date: fechaFormateada,
+                    time: evento.horario || evento.hora || "00:00",
+                    type: tipo,
+                    expte: expte,
+                    juzgado: juzgadoPrincipal,
+                    modoIntervencion: modoIntervencionPrincipal,
+                    description: detalle,
+                    class: clase,
+                    source: fuente,
+                    id: `${fuente}-${docId}-${tipo}-${index}`
+                };
+            } catch (error) {
+                console.error("Error creando evento desde miscausas:", error);
+                return null;
+            }
+        }
+
+        // Función para formatear fecha
+        function formatDate(date) {
+            if (!date) return null;
+            
+            try {
+                // Si es un objeto Timestamp de Firebase
+                if (date.toDate) {
+                    date = date.toDate();
+                }
+                
+                if (date instanceof Date) {
+                    // Validar que sea una fecha válida
+                    if (isNaN(date.getTime())) {
+                        return null;
+                    }
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${day}/${month}/${year}`;
+                }
+                
+                if (typeof date === 'string') {
+                    // Si ya está en formato DD/MM/AAAA
+                    if (date.includes('/')) {
+                        const parts = date.split('/');
+                        if (parts.length === 3) {
+                            const day = parts[0].padStart(2, '0');
+                            const month = parts[1].padStart(2, '0');
+                            const year = parts[2];
+                            // Validar que sea una fecha válida
+                            const testDate = new Date(`${year}-${month}-${day}`);
+                            if (isNaN(testDate.getTime())) {
+                                return null;
+                            }
+                            return `${day}/${month}/${year}`;
+                        }
+                        return date;
+                    }
+                    // Si está en formato YYYY-MM-DD
+                    if (date.includes('-')) {
+                        const parts = date.split('-');
+                        if (parts.length === 3) {
+                            const day = parts[2].padStart(2, '0');
+                            const month = parts[1].padStart(2, '0');
+                            const year = parts[0];
+                            // Validar que sea una fecha válida
+                            const testDate = new Date(`${year}-${month}-${day}`);
+                            if (isNaN(testDate.getTime())) {
+                                return null;
+                            }
+                            return `${day}/${month}/${year}`;
+                        }
+                    }
+                }
+                
+                return null;
+            } catch (error) {
+                console.error("Error formateando fecha:", error, date);
+                return null;
+            }
+        }
+
+        // Función para renderizar el calendario
+        function renderCalendar(date, searchDates = []) {
+            try {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const firstDayOfMonth = new Date(year, month, 1);
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const startDayIndex = firstDayOfMonth.getDay();
+
+                document.getElementById('month-year-display').textContent = `${MONTH_NAMES[month]} ${year}`;
+                const calendarGrid = document.getElementById('calendar-grid');
+                calendarGrid.innerHTML = '';
+
+                // Agregar nombres de días
+                DAYS_OF_WEEK.forEach(dayName => {
+                    const dayNameDiv = document.createElement('div');
+                    dayNameDiv.className = 'day-name';
+                    dayNameDiv.textContent = dayName;
+                    calendarGrid.appendChild(dayNameDiv);
+                });
+
+                // Agregar días vacíos al inicio
+                for (let i = 0; i < startDayIndex; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'day empty';
+                    calendarGrid.appendChild(emptyCell);
+                }
+
+                // Obtener fecha actual formateada
+                const today = new Date();
+                const todayFormatted = formatDate(today);
+
+                // Agregar días del mes
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'day';
+                    dayCell.textContent = day;
+                    
+                    const fullDateStr = `${String(day).padStart(2, '0')}/${String(month + 1).padStart(2, '0')}/${year}`;
+                    
+                    // Resaltar día actual
+                    if (fullDateStr === todayFormatted) {
+                        dayCell.classList.add('current-day');
+                    }
+                    
+                    // Verificar si hay eventos en este día
+                    const eventsOnThisDay = judicialEvents.filter(event => event.date === fullDateStr);
+                    if (eventsOnThisDay.length > 0) {
+                        dayCell.classList.add('has-event');
+                        
+                        // Agregar contador de eventos
+                        const eventCount = document.createElement('div');
+                        eventCount.className = 'event-count';
+                        eventCount.textContent = eventsOnThisDay.length;
+                        dayCell.appendChild(eventCount);
+                        
+                        // Agregar tooltip con información
+                        dayCell.title = `${eventsOnThisDay.length} evento(s)`;
+                    }
+
+                    // Resaltar si coincide con búsqueda
+                    if (searchDates.includes(fullDateStr)) {
+                        dayCell.classList.add('search-match');
+                    }
+
+                    dayCell.setAttribute('data-date', fullDateStr);
+                    dayCell.onclick = () => openViewDayModal(fullDateStr);
+
+                    calendarGrid.appendChild(dayCell);
+                }
+            } catch (error) {
+                console.error("Error renderizando calendario:", error);
+            }
+        }
+
+        // Navegación del calendario
+        function prevMonth() {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar(currentCalendarDate);
+        }
+
+        function nextMonth() {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar(currentCalendarDate);
+        }
+        
+        function goToToday() {
+            currentCalendarDate = new Date();
+            renderCalendar(currentCalendarDate);
+        }
+        
+        // Función de búsqueda
+        function handleSearchFilter() {
+            const filterText = document.getElementById('search-filter').value.toLowerCase();
+            let matchingDates = [];
+
+            if (filterText.length > 0) {
+                matchingDates = judicialEvents
+                    .filter(event => 
+                        (event.expte && event.expte.toLowerCase().includes(filterText)) ||
+                        (event.description && event.description.toLowerCase().includes(filterText)) ||
+                        (event.type && event.type.toLowerCase().includes(filterText)) ||
+                        (event.juzgado && event.juzgado.toLowerCase().includes(filterText)) ||
+                        (event.modoIntervencion && event.modoIntervencion.toLowerCase().includes(filterText))
+                    )
+                    .map(event => event.date);
+                
+                // Eliminar duplicados
+                matchingDates = [...new Set(matchingDates)];
+            }
+            
+            renderCalendar(currentCalendarDate, matchingDates);
+        }
+
+        // Abrir modal para ver eventos del día
+        function openViewDayModal(dateStr) {
+            try {
+                const dateObj = parseDate(dateStr);
+                const formattedDate = dateObj.toLocaleDateString('es-AR', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric'
+                });
+
+                document.getElementById('view-day-title').textContent = `Eventos para el ${formattedDate}`;
+                
+                const dayEventsList = document.getElementById('day-events-list');
+                const noEventsMessage = document.getElementById('no-events-message');
+                dayEventsList.innerHTML = '';
+
+                // Obtener eventos del día y ordenar por hora
+                const eventsOfTheDay = judicialEvents
+                    .filter(event => event.date === dateStr)
+                    .sort((a, b) => a.time.localeCompare(b.time));
+
+                if (eventsOfTheDay.length > 0) {
+                    noEventsMessage.style.display = 'none';
+                    eventsOfTheDay.forEach(event => {
+                        const eventDiv = document.createElement('div');
+                        eventDiv.className = event.class;
+                        
+                        eventDiv.innerHTML = `
+                            <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">
+                                ${event.time} - ${event.type}
+                            </div>
+                            <div class="event-details">
+                                <div><strong>Expediente:</strong> ${event.expte}</div>
+                                <div><strong>Juzgado:</strong> ${event.juzgado}</div>
+                                <div><strong>Modo de Intervención:</strong> ${event.modoIntervencion}</div>
+                                <div><strong>Detalle:</strong> ${event.description}</div>
+                            </div>
+                            <div class="event-source">
+                                Fuente: ${event.source}
+                            </div>
+                        `;
+                        dayEventsList.appendChild(eventDiv);
+                    });
+                } else {
+                    noEventsMessage.style.display = 'block';
+                }
+
+                document.getElementById('view-day-modal').style.display = 'block';
+            } catch (error) {
+                console.error("Error abriendo modal:", error);
+            }
+        }
+
+        // Abrir modal para ver todas las actividades
+        function openActivitiesModal() {
+            try {
+                const activitiesList = document.getElementById('activities-list');
+                const noActivitiesMessage = document.getElementById('no-activities-message');
+                activitiesList.innerHTML = '';
+
+                // Obtener solo actividades de ambas colecciones y ordenar por fecha y hora
+                const actividades = judicialEvents
+                    .filter(event => event.type === "Actividad")
+                    .sort((a, b) => {
+                        // Ordenar por fecha y luego por hora
+                        const dateCompare = a.date.localeCompare(b.date);
+                        if (dateCompare !== 0) return dateCompare;
+                        return a.time.localeCompare(b.time);
+                    });
+
+                if (actividades.length > 0) {
+                    noActivitiesMessage.style.display = 'none';
+                    actividades.forEach(actividad => {
+                        const activityDiv = document.createElement('div');
+                        activityDiv.className = 'actividad';
+                        
+                        activityDiv.innerHTML = `
+                            <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">
+                                ${actividad.date} - ${actividad.time} - ${actividad.type}
+                            </div>
+                            <div class="event-details">
+                                <div><strong>Expediente:</strong> ${actividad.expte}</div>
+                                <div><strong>Juzgado:</strong> ${actividad.juzgado}</div>
+                                <div><strong>Modo de Intervención:</strong> ${actividad.modoIntervencion}</div>
+                                <div><strong>Detalle:</strong> ${actividad.description}</div>
+                            </div>
+                            <div class="event-source">
+                                Fuente: ${actividad.source}
+                            </div>
+                        `;
+                        activitiesList.appendChild(activityDiv);
+                    });
+                } else {
+                    noActivitiesMessage.style.display = 'block';
+                }
+
+                document.getElementById('activities-modal').style.display = 'block';
+            } catch (error) {
+                console.error("Error abriendo modal de actividades:", error);
+            }
+        }
+
+        // Abrir modal para ver todas las audiencias
+        function openAudienciasModal() {
+            try {
+                const audienciasList = document.getElementById('audiencias-list');
+                const noAudienciasMessage = document.getElementById('no-audiencias-message');
+                audienciasList.innerHTML = '';
+
+                // Obtener solo audiencias de ambas colecciones y ordenar por fecha y hora
+                const audiencias = judicialEvents
+                    .filter(event => event.type === "Audiencia")
+                    .sort((a, b) => {
+                        // Ordenar por fecha y luego por hora
+                        const dateCompare = a.date.localeCompare(b.date);
+                        if (dateCompare !== 0) return dateCompare;
+                        return a.time.localeCompare(b.time);
+                    });
+
+                if (audiencias.length > 0) {
+                    noAudienciasMessage.style.display = 'none';
+                    audiencias.forEach(audiencia => {
+                        const audienciaDiv = document.createElement('div');
+                        audienciaDiv.className = 'audiencia';
+                        
+                        audienciaDiv.innerHTML = `
+                            <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">
+                                ${audiencia.date} - ${audiencia.time} - ${audiencia.type}
+                            </div>
+                            <div class="event-details">
+                                <div><strong>Expediente:</strong> ${audiencia.expte}</div>
+                                <div><strong>Juzgado:</strong> ${audiencia.juzgado}</div>
+                                <div><strong>Modo de Intervención:</strong> ${audiencia.modoIntervencion}</div>
+                                <div><strong>Detalle:</strong> ${audiencia.description}</div>
+                            </div>
+                            <div class="event-source">
+                                Fuente: ${audiencia.source}
+                            </div>
+                        `;
+                        audienciasList.appendChild(audienciaDiv);
+                    });
+                } else {
+                    noAudienciasMessage.style.display = 'block';
+                }
+
+                document.getElementById('audiencias-modal').style.display = 'block';
+            } catch (error) {
+                console.error("Error abriendo modal de audiencias:", error);
+            }
+        }
+
+        // Abrir modal para ver todos los vencimientos
+        function openVencimientosModal() {
+            try {
+                const vencimientosList = document.getElementById('vencimientos-list');
+                const noVencimientosMessage = document.getElementById('no-vencimientos-message');
+                vencimientosList.innerHTML = '';
+
+                // Obtener solo vencimientos de ambas colecciones y ordenar por fecha y hora
+                const vencimientos = judicialEvents
+                    .filter(event => event.type === "Vencimiento")
+                    .sort((a, b) => {
+                        // Ordenar por fecha y luego por hora
+                        const dateCompare = a.date.localeCompare(b.date);
+                        if (dateCompare !== 0) return dateCompare;
+                        return a.time.localeCompare(b.time);
+                    });
+
+                if (vencimientos.length > 0) {
+                    noVencimientosMessage.style.display = 'none';
+                    vencimientos.forEach(vencimiento => {
+                        const vencimientoDiv = document.createElement('div');
+                        vencimientoDiv.className = 'vencimiento';
+                        
+                        vencimientoDiv.innerHTML = `
+                            <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">
+                                ${vencimiento.date} - ${vencimiento.time} - ${vencimiento.type}
+                            </div>
+                            <div class="event-details">
+                                <div><strong>Expediente:</strong> ${vencimiento.expte}</div>
+                                <div><strong>Juzgado:</strong> ${vencimiento.juzgado}</div>
+                                <div><strong>Modo de Intervención:</strong> ${vencimiento.modoIntervencion}</div>
+                                <div><strong>Detalle:</strong> ${vencimiento.description}</div>
+                            </div>
+                            <div class="event-source">
+                                Fuente: ${vencimiento.source}
+                            </div>
+                        `;
+                        vencimientosList.appendChild(vencimientoDiv);
+                    });
+                } else {
+                    noVencimientosMessage.style.display = 'block';
+                }
+
+                document.getElementById('vencimientos-modal').style.display = 'block';
+            } catch (error) {
+                console.error("Error abriendo modal de vencimientos:", error);
+            }
+        }
+
+        // Función para parsear fecha
+        function parseDate(dateStr) {
+            const parts = dateStr.split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+
+        // Cerrar modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

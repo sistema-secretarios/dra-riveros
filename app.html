@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Secretarios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f4;
+            min-height: 100vh;
+            color: #000;
+        }
+
+        .app-container {
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1b5e20;
+        }
+
+        .navbar-btn {
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .navbar-btn + .navbar-btn {
+            margin-left: 10px;
+        }
+
+        .btn-green {
+            background-color: #1b5e20;
+        }
+        
+        .btn-green:hover {
+            background-color: #2e7d32;
+        }
+
+        .navbar-toggle {
+            background: #1b5e20;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #1b5e20;
+            cursor: pointer;
+        }
+
+        .profile-pic-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1b5e20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .welcome-message {
+            color: #000;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #b71c1c;
+        }
+
+        .main-content {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 70px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .sidebar.expanded {
+            width: 280px;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: #000;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(27, 94, 32, 0.1);
+            border-left-color: #1b5e20;
+            color: #1b5e20;
+        }
+
+        .sidebar-menu .icon {
+            font-size: 20px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .sidebar-menu .text {
+            margin-left: 15px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar.expanded .sidebar-menu .text {
+            opacity: 1;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 0;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .welcome-screen {
+            padding: 40px;
+        }
+
+        .welcome-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .welcome-card h1 {
+            color: #000;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .welcome-card p {
+            color: #333;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        @media (min-width: 1200px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, minmax(300px, 1fr));
+            }
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card h3 {
+            color: #000;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .feature-card .btn-link {
+            background: #1b5e20;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .feature-card .btn-link:hover {
+            background: #2e7d32;
+        }
+
+        .iframe-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .iframe-header {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e1e5e9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .iframe-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .close-iframe {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .close-iframe:hover {
+            background: #b71c1c;
+        }
+
+        .content-iframe {
+            width: 100%;
+            height: calc(100vh - 140px);
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 80px;
+                height: calc(100vh - 80px);
+                z-index: 999;
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .sidebar.show .sidebar-menu .text {
+                opacity: 1;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .welcome-screen {
+                padding: 20px;
+            }
+
+            .welcome-card {
+                padding: 25px;
+            }
+
+            .welcome-card h1 {
+                font-size: 24px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .user-info {
+                gap: 10px;
+            }
+
+            .welcome-message {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 10px 15px;
+            }
+
+            .navbar-brand {
+                font-size: 20px;
+            }
+
+            .welcome-screen {
+                padding: 15px;
+            }
+
+            .welcome-card {
+                padding: 20px;
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+        }
+
+        @supports (height: 100svh) {
+            .content-iframe {
+                height: calc(100svh - 140px);
+            }
+            .sidebar {
+                height: calc(100svh - 80px);
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .file-input {
+            margin: 20px 0;
+        }
+
+        .error-message {
+            color: #c62828;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            color: #2e7d32;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div style="display: flex; align-items: center;">
+                <button class="navbar-toggle" onclick="toggleSidebar()">☰</button>
+                <div class="navbar-brand">Sistema Secretarios</div>
+            </div>
+            <div>
+                <button class="navbar-btn btn-green" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</button>
+                <button class="navbar-btn btn-green" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</button>
+                <button class="navbar-btn btn-green" onclick="openSection('control.html', 'Control de Causas')">Control de causas</button>
+                <button class="navbar-btn btn-green" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</button>
+            </div>
+            <div class="user-info">
+                <span class="welcome-message">Bienvenido, <span id="userName">Usuario</span></span>
+                <div id="profilePicContainer">
+                    <div class="profile-pic-placeholder" id="profilePlaceholder">U</div>
+                    <img class="profile-pic" id="profilePic" style="display: none;" alt="Foto de perfil">
+                </div>
+                <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <aside class="sidebar" id="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a onclick="openSection('causas.html', 'Mis Causas')">
+                        <span class="icon">⚖️</span>
+                        <span class="text">Mis causas</span>
+                    </a></li>
+                    <li><a onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">
+                        <span class="icon">🗓️</span>
+                        <span class="text">Agenda de Clientes</span>
+                    </a></li>
+                    <li><a onclick="openSection('control.html', 'Control de Causas')">
+                        <span class="icon">🔍</span>
+                        <span class="text">Control de causas</span>
+                    </a></li>
+                    <li><a onclick="openSection('agenda.html', 'Calendario de Tareas')">
+                        <span class="icon">📅</span>
+                        <span class="text">Calendario de Tareas</span>
+                    </a></li>
+                    <li><a onclick="openExternalSystem()">
+                        <span class="icon">⚖️</span>
+                        <span class="text">Sistema Digital</span>
+                    </a></li>
+                    <li><a onclick="openSection('estadisticas.html', 'Estadísticas')">
+                        <span class="icon">📊</span>
+                        <span class="text">Estadistica de Tareas</span>
+                    </a></li>
+                </ul>
+            </aside>
+
+            <main class="content-area">
+                <div id="welcomeScreen" class="welcome-screen">
+                    <div class="welcome-card">
+                        <h1>Bienvenido al Sistema Secretarios</h1>
+                        <p>Accede a todas las herramientas y recursos necesarios para gestionar eficientemente los procesos. Utiliza el menú lateral para navegar entre las diferentes secciones del sistema.</p>
+                    </div>
+
+                    <div class="cards-grid">
+                         <div class="feature-card" onclick="openSection('causas.html', 'Mis Causas')">
+                            <h3>Mis causas</h3>
+                            <p>Gestiona y consulta tus causas asignadas</p>
+                        </div>
+		
+                        <div class="feature-card" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">
+                            <h3>Agenda de Clientes</h3>
+                            <p>Administra tus citas y contactos</p>
+                        </div>
+
+                        <div class="feature-card" onclick="openSection('control.html', 'Control de Causas')">
+                            <h3>Control de causas</h3>
+                            <p>Seguimiento y control de procesos</p>
+                        </div>
+
+                        <div class="feature-card" onclick="openSection('agenda.html', 'Calendario de Tareas')">
+                            <h3>Calendario de Tareas</h3>
+                            <p>Organiza tus actividades y plazos</p>
+                        </div>
+
+                        <div class="feature-card" onclick="openExternalSystem()">
+                            <h3>Sistema Digital</h3>
+                            <p>Acceso al sistema externo de causas</p>
+                        </div>
+
+                        <div class="feature-card" onclick="openSection('estadisticas.html', 'Estadísticas')">
+                            <h3>Estadisticas</h3>
+                            <p>Reportes y análisis de datos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="iframeContainer" class="iframe-container">
+                    <div class="iframe-header">
+                        <div class="iframe-title" id="iframeTitle">Cargando...</div>
+                        <button class="close-iframe" onclick="closeIframe()">✕ Cerrar</button>
+                    </div>
+                    <iframe id="contentIframe" class="content-iframe" src=""></iframe>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar la aplicación automáticamente sin login
+        document.addEventListener('DOMContentLoaded', function() {
+            showApp();
+        });
+
+        function showApp() {
+            document.getElementById('userName').textContent = 'Usuario';
+            const placeholder = document.getElementById('profilePlaceholder');
+            placeholder.textContent = 'U';
+        }
+
+        function logout() {
+            if (confirm('¿Está seguro que desea cerrar sesión?')) {
+                // Redirigir a la página de login
+                window.location.href = 'index.html';
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('show');
+            } else {
+                sidebar.classList.toggle('expanded');
+            }
+        }
+
+        function openSection(url, title) {
+            const iframeContainer = document.getElementById("iframeContainer");
+            const iframe = document.getElementById("contentIframe");
+            const iframeTitle = document.getElementById("iframeTitle");
+            const welcomeScreen = document.getElementById("welcomeScreen");
+
+            // Mostrar el iframe y ocultar la pantalla de bienvenida
+            iframeContainer.style.display = "block";
+            if (welcomeScreen) welcomeScreen.style.display = "none";
+            
+            // Establecer título y cargar la URL
+            iframeTitle.textContent = title;
+            iframe.src = url;
+        }
+
+        function openExternalSystem() {
+            // Abrir en nueva ventana/pestaña
+            window.open('https://defensoria6.github.io/sistemacausas/', '_blank');
+        }
+
+        function closeIframe() {
+            const iframeContainer = document.getElementById("iframeContainer");
+            const iframe = document.getElementById("contentIframe");
+            const welcomeScreen = document.getElementById("welcomeScreen");
+
+            // Ocultar el iframe y mostrar la pantalla de bienvenida
+            iframeContainer.style.display = "none";
+            iframe.src = "";
+            
+            if (welcomeScreen) welcomeScreen.style.display = "block";
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.querySelector('.navbar-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !toggleBtn.contains(event.target) && 
+                sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
