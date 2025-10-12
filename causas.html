@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Causas</title>
     
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     
     <style>
-        /* Base y tipografía */
+        /* --- ESTILOS GENERALES (Sin cambios) --- */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -27,38 +26,6 @@
             border-radius: 8px;
         }
 
-        /* Logo y título */
-        .header-logo {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 15px;
-        }
-        
-        .logo {
-            width: 60px;
-            height: 60px;
-            background-color: #2e7d32;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .title-container h1 {
-            margin: 0;
-            color: #2e7d32;
-        }
-        
-        .title-container p {
-            margin: 5px 0 0 0;
-            color: #666;
-        }
-
-        /* Contenedor principal del encabezado */
         .header-container {
             display: flex;
             justify-content: space-between;
@@ -66,20 +33,11 @@
             margin-bottom: 20px;
         }
 
-        /* Barra de Herramientas (Filtro, Selector, Botón Nuevo) */
         .toolbar {
             display: flex;
             align-items: center;
             flex-grow: 1;
             gap: 15px;
-        }
-        
-        /* Título al margen derecho */
-        h1 {
-            text-align: right;
-            color: #2e7d32;
-            margin: 0;
-            white-space: nowrap;
         }
 
         #filtroBusqueda {
@@ -89,7 +47,7 @@
             width: 250px;
         }
 
-        #btnNuevoRegistro {
+        #btnNuevoRegistro, #btnImprimirListado {
             padding: 10px 15px;
             background-color: #2e7d32;
             color: white;
@@ -100,26 +58,10 @@
             white-space: nowrap;
         }
 
-        #btnNuevoRegistro:hover {
+        #btnNuevoRegistro:hover, #btnImprimirListado:hover {
             background-color: #1b5e20;
         }
 
-        #btnImprimirListado {
-            padding: 10px 15px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        #btnImprimirListado:hover {
-            background-color: #388e3c;
-        }
-
-        /* Estilos de la Tabla */
         .table-responsive {
             overflow-x: auto;
             margin-top: 20px;
@@ -146,7 +88,6 @@
             background-color: #f5f5f5;
         }
 
-        /* Botones de Acción en la Tabla */
         .action-buttons {
             display: flex;
             gap: 5px;
@@ -165,9 +106,7 @@
         .btn-ver { background-color: #388e3c; }
         .btn-editar { background-color: #43a047; }
         .btn-eliminar { background-color: #c62828; }
-        .btn-imprimir { background-color: #4caf50; }
 
-        /* Estilos de Paginación */
         .pagination-controls {
             display: flex;
             align-items: center;
@@ -207,7 +146,6 @@
             white-space: nowrap;
         }
         
-        /* ALERTAS VISUALES MODERNAS (TOAST NOTIFICATIONS) */
         #alert-container {
             position: fixed;
             top: 20px;
@@ -241,7 +179,6 @@
             background-color: #c62828;
         }
         
-        /* Estilos de Modal */
         .modal { 
             display: none; 
             position: fixed; 
@@ -287,7 +224,6 @@
             color: #000;
         }
         
-        /* Estilos para pestañas */
         .tabs {
             display: flex;
             flex-wrap: wrap;
@@ -334,7 +270,8 @@
         }
         
         .form-group input, 
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select { /* MEJORA: Estilo unificado para selects */
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
@@ -352,7 +289,6 @@
             flex: 1;
         }
         
-        /* Estilos para tabla de seguimiento */
         .seguimiento-table {
             width: 100%;
             border-collapse: collapse;
@@ -364,6 +300,7 @@
             padding: 10px;
             text-align: left;
             border: 1px solid #ddd;
+            vertical-align: middle; /* MEJORA: Alineación vertical */
         }
         
         .seguimiento-table th {
@@ -371,7 +308,8 @@
             font-weight: bold;
         }
         
-        .seguimiento-table input {
+        .seguimiento-table input,
+        .seguimiento-table select { /* MEJORA: Estilo unificado para selects */
             width: 100%;
             padding: 5px;
             border: 1px solid #ccc;
@@ -397,7 +335,6 @@
             cursor: pointer;
         }
         
-        /* Estilos para el calendario */
         .date-input-container {
             position: relative;
             display: inline-block;
@@ -405,14 +342,6 @@
         }
         
         .date-input-container input[type="date"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        
-        /* Estilo para el calendario en navegadores que no soportan type="date" */
-        .date-input-container input[type="text"].date-input {
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
@@ -434,24 +363,60 @@
         #btnGuardar:hover {
             background-color: #1b5e20;
         }
+        
+        /* MEJORA: Estilo para botón deshabilitado */
+        #btnGuardar:disabled {
+            background-color: #9e9e9e;
+            cursor: not-allowed;
+        }
 
-        /* Estado de carga */
         .loading {
             text-align: center;
             padding: 20px;
             color: #666;
         }
+        
+        /* MEJORA: Estilos de Impresión */
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border: none;
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+            }
+            .header-container, .modal, .action-buttons, .pagination-controls, #alert-container {
+                display: none !important;
+            }
+            #tablaCausas th, #tablaCausas td {
+                border: 1px solid #000;
+                padding: 8px;
+                font-size: 10pt;
+            }
+            #tablaCausas th {
+                background-color: #eee !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            #tablaCausas {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            @page {
+                size: A4 landscape;
+                margin: 2cm;
+            }
+        }
 
-        /* Responsividad */
         @media (max-width: 850px) {
             .header-container {
                 flex-direction: column;
                 align-items: flex-start;
-            }
-            h1 {
-                text-align: left;
-                width: 100%;
-                margin-bottom: 15px;
             }
             .toolbar {
                 flex-direction: column;
@@ -497,7 +462,7 @@
     <div class="container">
         <div class="header-container">
             <div class="toolbar">
-                <input type="text" id="filtroBusqueda" placeholder="Buscar por número, carátula..." title="Filtro de búsqueda">
+                <input type="text" id="filtroBusqueda" placeholder="Buscar por número, carátula, observaciones..." title="Filtro de búsqueda">
                 <div id="topPagination" class="pagination-controls"></div>
                 <button id="btnNuevoRegistro" title="Abrir modal de Nuevo Registro">➕ Nuevo Registro</button>
                 <button id="btnImprimirListado" title="Imprimir listado completo">🖨️ Imprimir Listado</button>
@@ -518,8 +483,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Los datos se cargarán dinámicamente -->
-                </tbody>
+                    </tbody>
             </table>
         </div>
         
@@ -528,7 +492,6 @@
     
     <div id="alert-container"></div>
 
-    <!-- Modal para nuevo/editar registro -->
     <div id="modalRegistro" class="modal">
         <div class="modal-content medium-modal">
             <a href="#" class="close-btn">&times;</a>
@@ -544,7 +507,6 @@
             </div>
             
             <form id="formRegistro">
-                <!-- Pestaña 1: Datos del Expediente -->
                 <div class="tab-content active" id="datos-expediente">
                     <div class="form-group">
                         <label for="numeroCaratula">Número y Carátula:</label>
@@ -552,8 +514,7 @@
                             <div class="form-group" style="flex: 2;">
                                 <input type="text" id="numeroCaratula" list="causasList" placeholder="Buscar o escribir nuevo expediente..." required>
                                 <datalist id="causasList">
-                                    <!-- Se llenará dinámicamente con datos de Firestore -->
-                                </datalist>
+                                    </datalist>
                             </div>
                             <div class="form-group" style="flex: 1;">
                                 <button type="button" id="btnNuevoExpediente" class="btn-agregar-fila">➕ Nuevo Expediente</button>
@@ -578,7 +539,6 @@
                     </div>
                 </div>
                 
-                <!-- Pestaña 2: Documental -->
                 <div class="tab-content" id="documental">
                     <div class="form-group">
                         <label for="documentosPresentados">Documentos Presentados:</label>
@@ -591,7 +551,6 @@
                     </div>
                 </div>
                 
-                <!-- Pestaña 3: Firma Digital -->
                 <div class="tab-content" id="firma-digital">
                     <div class="form-group">
                         <table class="seguimiento-table" id="tablaFirmaDigital">
@@ -606,14 +565,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Las filas se agregarán dinámicamente -->
-                            </tbody>
+                                </tbody>
                         </table>
                         <button type="button" class="btn-agregar-fila" id="btnAgregarFirma">+ Agregar Firma</button>
                     </div>
                 </div>
                 
-                <!-- Pestaña 4: Situación Procesal -->
                 <div class="tab-content" id="situacion-procesal">
                     <div class="form-row">
                         <div class="form-group">
@@ -650,14 +607,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Las filas se agregarán dinámicamente -->
-                            </tbody>
+                                </tbody>
                         </table>
                         <button type="button" class="btn-agregar-fila" id="btnAgregarSeguimiento">+ Agregar Seguimiento</button>
                     </div>
                 </div>
                 
-                <!-- Pestaña 5: Audiencias y Vencimientos -->
                 <div class="tab-content" id="audiencias-vencimientos">
                     <div class="form-group">
                         <h3>Audiencias</h3>
@@ -670,8 +625,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Las filas se agregarán dinámicamente -->
-                            </tbody>
+                                </tbody>
                         </table>
                         <button type="button" class="btn-agregar-fila" id="btnAgregarAudiencia">+ Agregar Audiencia</button>
                     </div>
@@ -687,8 +641,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Las filas se agregarán dinámicamente -->
-                            </tbody>
+                                </tbody>
                         </table>
                         <button type="button" class="btn-agregar-fila" id="btnAgregarVencimiento">+ Agregar Vencimiento</button>
                     </div>
@@ -704,18 +657,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Las filas se agregarán dinámicamente -->
-                            </tbody>
+                                </tbody>
                         </table>
                         <button type="button" class="btn-agregar-fila" id="btnAgregarActividad">+ Agregar Actividad</button>
                     </div>
                 </div>
                 
-                <!-- Pestaña 6: Observaciones -->
                 <div class="tab-content" id="observaciones">
                     <div class="form-group">
-                        <label for="observaciones">Observaciones Generales:</label>
-                        <textarea id="observaciones" rows="6" placeholder="Observaciones adicionales sobre la causa"></textarea>
+                        <label for="observacionesGenerales">Observaciones Generales:</label>
+                        <textarea id="observacionesGenerales" rows="6" placeholder="Observaciones adicionales sobre la causa"></textarea>
                     </div>
                 </div>
                 
@@ -724,20 +675,22 @@
         </div>
     </div>
 
-    <!-- Modal para ver detalles -->
     <div id="modalVer" class="modal">
         <div class="modal-content small-modal">
             <a href="#" class="close-btn">&times;</a>
             <h2>Detalle de la Causa</h2>
             <div id="detalleContenido">
-                <!-- Los detalles se cargarán dinámicamente -->
-            </div>
+                </div>
         </div>
     </div>
 
     <script>
+        // --- ADVERTENCIA DE SEGURIDAD ---
+        // Las claves de API y la configuración de Firebase no deben estar expuestas en el código del lado del cliente.
+        // Un atacante podría usarlas para abusar de tu proyecto de Firebase.
+        // Considera usar variables de entorno y un backend, o las Reglas de Seguridad de Firebase y App Check para proteger tu aplicación.
+
         // --- CONFIGURACIÓN FIREBASE ---
-        // Configuración para cargar expedientes (base original)
         const firebaseConfigOriginal = {
             apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
             authDomain: "causas-defensoria.firebaseapp.com",
@@ -748,7 +701,6 @@
             appId: "1:186064671470:web:b58bae5eadbe6e469f19ff"
         };
 
-        // Configuración NUEVA para guardar datos en secretarios-def
         const firebaseConfigNueva = {
             apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
             authDomain: "secretarios-def.firebaseapp.com",
@@ -770,10 +722,10 @@
         
         const RECORDS_PER_PAGE = 10;
         let currentPage = 1;
-        let causas = []; // Array principal para almacenar las causas
+        let causas = [];
         let filteredCausas = [];
         let editingId = null;
-        let causasData = []; // Para almacenar datos de la colección "causas" original
+        let causasData = [];
         
         // --- ELEMENTOS DEL DOM ---
         const tablaBody = document.querySelector('#tablaCausas tbody');
@@ -781,6 +733,7 @@
         const modalRegistro = document.getElementById('modalRegistro');
         const btnNuevoRegistro = document.getElementById('btnNuevoRegistro');
         const btnImprimirListado = document.getElementById('btnImprimirListado');
+        const btnGuardar = document.getElementById('btnGuardar');
         const modalVer = document.getElementById('modalVer');
         const formRegistro = document.getElementById('formRegistro');
         const modalTitle = document.getElementById('modalTitle');
@@ -802,9 +755,6 @@
 
         // --- UTILIDADES ---
 
-        /**
-         * Convierte una fecha de formato YYYY-MM-DD a formato DD/MM/AAAA.
-         */
         function formatDate(dateString) {
             if (!dateString) return 'N/A';
             const parts = dateString.split('-');
@@ -815,13 +765,11 @@
             return dateString;
         }
 
-        /**
-         * Convierte una fecha y hora de formato ISO a formato DD/MM/AAAA HH:MM.
-         */
         function formatDateTime(dateTimeString) {
             if (!dateTimeString) return 'N/A';
             try {
                 const date = new Date(dateTimeString);
+                if (isNaN(date)) return dateTimeString; // MEJORA: Validar fecha inválida
                 const day = String(date.getDate()).padStart(2, '0');
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 const year = date.getFullYear();
@@ -833,11 +781,6 @@
             }
         }
 
-        /**
-         * Muestra una alerta visual moderna (toast).
-         * @param {string} message - Mensaje a mostrar.
-         * @param {string} type - Tipo de alerta ('success' o 'error').
-         */
         function showToast(message, type) {
             const toast = document.createElement('div');
             toast.className = `toast-alert toast-${type}`;
@@ -845,23 +788,16 @@
             
             alertContainer.appendChild(toast);
 
-            // Muestra el toast con animación
             setTimeout(() => {
                 toast.classList.add('show');
             }, 10); 
 
-            // Oculta y elimina el toast después de 4 segundos
             setTimeout(() => {
                 toast.classList.remove('show');
-                toast.addEventListener('transitionend', () => {
-                    toast.remove();
-                });
+                toast.addEventListener('transitionend', () => toast.remove());
             }, 4000); 
         }
 
-        /**
-         * Muestra un estado de carga en la tabla
-         */
         function showLoading() {
             tablaBody.innerHTML = `
                 <tr>
@@ -874,46 +810,35 @@
 
         // --- FUNCIONES DE AUTORRELLENADO ---
 
-        // Cargar datos de expedientes desde la base original
         async function cargarDatosCausas() {
             try {
                 const causasSnapshot = await dbOriginal.collection('causas').get();
-                causasData = [];
                 const causasList = document.getElementById('causasList');
                 causasList.innerHTML = '';
                 
-                causasSnapshot.forEach(doc => {
-                    const causa = doc.data();
-                    causa.id = doc.id;
-                    causasData.push(causa);
-                    
-                    // Agregar opción al datalist
+                causasData = causasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                causasData.forEach(causa => {
                     const option = document.createElement('option');
                     option.value = `${causa.numCausa} - ${causa.caratula || ''}`;
-                    option.textContent = `${causa.numCausa} - ${causa.caratula || ''}`;
                     causasList.appendChild(option);
                 });
+
             } catch (error) {
-                console.error('Error cargando datos de causas:', error);
-                showToast('Error al cargar datos de causas', 'error');
+                console.error('Error cargando datos de causas para autocompletar:', error);
+                showToast('Error al cargar la lista de expedientes', 'error');
             }
         }
 
-        // Cuando se selecciona una causa, rellenar automáticamente los campos
         document.getElementById('numeroCaratula').addEventListener('change', function() {
             const valorSeleccionado = this.value;
-            
-            // Buscar tanto por número de causa como por el texto completo
             const causaEncontrada = causasData.find(c => 
                 valorSeleccionado === `${c.numCausa} - ${c.caratula || ''}` || 
                 valorSeleccionado === c.numCausa
             );
             
             if (causaEncontrada) {
-                // Actualizar el campo con número y carátula
                 this.value = `${causaEncontrada.numCausa} - ${causaEncontrada.caratula || ''}`;
-                
-                // Rellenar los demás campos
                 document.getElementById('tipoProceso').value = causaEncontrada.tipoProceso || '';
                 document.getElementById('juzgado').value = causaEncontrada.juzgado || '';
                 document.getElementById('empleado').value = causaEncontrada.usuarioAsignado || '';
@@ -921,8 +846,7 @@
             }
         });
 
-        // Botón para nuevo expediente
-        btnNuevoExpediente.addEventListener('click', function() {
+        btnNuevoExpediente.addEventListener('click', () => {
             document.getElementById('numeroCaratula').value = '';
             document.getElementById('numeroCaratula').focus();
         });
@@ -931,7 +855,6 @@
 
         function renderTable(data) {
             filteredCausas = data;
-            
             const totalPages = Math.ceil(filteredCausas.length / RECORDS_PER_PAGE);
             
             if (currentPage < 1) currentPage = 1;
@@ -943,473 +866,268 @@
             
             tablaBody.innerHTML = '';
             
-            if (paginatedData.length === 0 && data.length === 0) {
+            if (paginatedData.length === 0) {
                 const row = tablaBody.insertRow();
-                const cell = row.insertCell();
-                cell.colSpan = 7;
-                cell.textContent = "No hay causas registradas para mostrar.";
-                cell.style.textAlign = 'center';
-                cell.style.padding = '30px';
-                cell.style.color = '#666';
+                row.innerHTML = `<td colspan="7" style="text-align: center; padding: 30px; color: #666;">No hay causas para mostrar.</td>`;
+                renderPaginationSelectors(0); // MEJORA: Limpiar paginación si no hay datos
+                return;
             }
 
             paginatedData.forEach(causa => {
                 const row = tablaBody.insertRow();
-                
-                // Celda para Número y Carátula
-                const numeroCaratulaCell = row.insertCell();
-                numeroCaratulaCell.innerHTML = `
-                    <div><strong>${causa.numeroCaratula || 'N/A'}</strong></div>
-                `;
-                
-                row.insertCell().textContent = causa.tipoProceso || 'N/A';
-                row.insertCell().textContent = causa.juzgado || 'N/A';
-                row.insertCell().textContent = causa.empleado || 'N/A';
-                
-                // Celda para Audiencias y Vencimientos
-                const audienciasVencimientosCell = row.insertCell();
                 let audienciasVencimientosText = '';
                 
-                if (causa.audiencias && causa.audiencias.length > 0) {
-                    audienciasVencimientosText += `Audiencias: ${causa.audiencias.length}<br>`;
-                }
+                if (causa.audiencias && causa.audiencias.length > 0) audienciasVencimientosText += `Audiencias: ${causa.audiencias.length}<br>`;
+                if (causa.vencimientos && causa.vencimientos.length > 0) audienciasVencimientosText += `Vencimientos: ${causa.vencimientos.length}<br>`;
+                if (causa.actividades && causa.actividades.length > 0) audienciasVencimientosText += `Actividades: ${causa.actividades.length}`;
                 
-                if (causa.vencimientos && causa.vencimientos.length > 0) {
-                    audienciasVencimientosText += `Vencimientos: ${causa.vencimientos.length}<br>`;
-                }
+                // CORRECCIÓN/MEJORA: Uso de `observacionesGenerales` y truncado para mejor visualización
+                const obsText = causa.observacionesGenerales || '';
+                const shortObs = obsText.length > 50 ? obsText.substring(0, 50) + '...' : obsText;
                 
-                if (causa.actividades && causa.actividades.length > 0) {
-                    audienciasVencimientosText += `Actividades: ${causa.actividades.length}`;
-                }
-                
-                audienciasVencimientosCell.innerHTML = audienciasVencimientosText || 'N/A';
-                
-                row.insertCell().textContent = causa.observaciones || 'N/A';
-                
-                const actionsCell = row.insertCell();
-                actionsCell.classList.add('action-buttons');
-                
-                const btnVer = document.createElement('button');
-                btnVer.textContent = '👁️ Ver';
-                btnVer.title = 'Ver detalles completos';
-                btnVer.classList.add('btn-ver');
-                btnVer.addEventListener('click', () => verRegistro(causa.id));
-                actionsCell.appendChild(btnVer);
-
-                const btnEditar = document.createElement('button');
-                btnEditar.textContent = '✏️ Editar';
-                btnEditar.title = 'Editar registro';
-                btnEditar.classList.add('btn-editar');
-                btnEditar.addEventListener('click', () => abrirModalRegistro(causa.id));
-                actionsCell.appendChild(btnEditar);
-                
-                const btnEliminar = document.createElement('button');
-                btnEliminar.textContent = '🗑️ Eliminar';
-                btnEliminar.title = 'Eliminar registro';
-                btnEliminar.classList.add('btn-eliminar');
-                btnEliminar.addEventListener('click', () => confirmAndDelete(causa.id, causa.numeroCaratula));
-                actionsCell.appendChild(btnEliminar);
+                row.innerHTML = `
+                    <td><strong>${causa.numeroCaratula || 'N/A'}</strong></td>
+                    <td>${causa.tipoProceso || 'N/A'}</td>
+                    <td>${causa.juzgado || 'N/A'}</td>
+                    <td>${causa.empleado || 'N/A'}</td>
+                    <td>${audienciasVencimientosText || 'N/A'}</td>
+                    <td title="${obsText}">${shortObs || 'N/A'}</td>
+                    <td class="action-buttons">
+                        <button class="btn-ver" data-id="${causa.id}" title="Ver detalles completos">👁️ Ver</button>
+                        <button class="btn-editar" data-id="${causa.id}" title="Editar registro">✏️ Editar</button>
+                        <button class="btn-eliminar" data-id="${causa.id}" data-caratula="${causa.numeroCaratula}" title="Eliminar registro">🗑️ Eliminar</button>
+                    </td>
+                `;
             });
             
             renderPaginationSelectors(totalPages);
         }
+        
+        // MEJORA: Delegación de eventos para los botones de acción en la tabla
+        tablaBody.addEventListener('click', (event) => {
+            const target = event.target.closest('button');
+            if (!target) return;
+
+            const id = target.dataset.id;
+            if (target.classList.contains('btn-ver')) {
+                verRegistro(id);
+            } else if (target.classList.contains('btn-editar')) {
+                abrirModalRegistro(id);
+            } else if (target.classList.contains('btn-eliminar')) {
+                const caratula = target.dataset.caratula;
+                confirmAndDelete(id, caratula);
+            }
+        });
 
         // --- PAGINACIÓN ---
         function changePage(page) {
-            if (page < 1) page = 1;
             const totalPages = Math.ceil(filteredCausas.length / RECORDS_PER_PAGE);
-            if (page > totalPages) page = totalPages;
-            
+            if (page < 1 || page > totalPages) return;
             currentPage = page;
             renderTable(filteredCausas);
         }
 
         function renderPaginationSelectors(totalPages) {
-            const paginationHTML = () => {
-                if (totalPages <= 1) return '';
+            if (totalPages <= 1) {
+                topPagination.innerHTML = '';
+                bottomPagination.innerHTML = '';
+                return;
+            }
 
-                const disabledPrev = currentPage === 1 ? 'disabled' : '';
-                const disabledNext = currentPage === totalPages ? 'disabled' : '';
+            const disabledPrev = currentPage === 1 ? 'disabled' : '';
+            const disabledNext = currentPage === totalPages ? 'disabled' : '';
 
-                let html = `
-                    <button onclick="changePage(${currentPage - 1})" ${disabledPrev}>« Anterior</button>
-                    <span>Página ${currentPage} de ${totalPages}</span>
-                `;
-                
-                let startPage = Math.max(1, currentPage - 2);
-                let endPage = Math.min(totalPages, currentPage + 2);
+            let pagesHtml = '';
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
 
-                if (currentPage <= 3) endPage = Math.min(totalPages, 5);
-                if (currentPage > totalPages - 2) startPage = Math.max(1, totalPages - 4);
-                
-                for (let i = startPage; i <= endPage; i++) {
-                    const activeClass = i === currentPage ? 'active' : '';
-                    html += `<button onclick="changePage(${i})" class="${activeClass}">${i}</button>`;
-                }
+            if (currentPage <= 3) endPage = Math.min(totalPages, 5);
+            if (currentPage > totalPages - 2) startPage = Math.max(1, totalPages - 4);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                pagesHtml += `<button data-page="${i}" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+            }
 
-                html += `<button onclick="changePage(${currentPage + 1})" ${disabledNext}>Siguiente »</button>`;
-                return html;
-            };
-
-            const htmlContent = paginationHTML();
-            topPagination.innerHTML = htmlContent;
-            bottomPagination.innerHTML = htmlContent;
+            const paginationHTML = `
+                <button data-page="${currentPage - 1}" ${disabledPrev}>« Anterior</button>
+                <span>Página ${currentPage} de ${totalPages}</span>
+                ${pagesHtml}
+                <button data-page="${currentPage + 1}" ${disabledNext}>Siguiente »</button>
+            `;
+            
+            topPagination.innerHTML = paginationHTML;
+            bottomPagination.innerHTML = paginationHTML;
         }
+
+        function handlePaginationClick(event) {
+            const target = event.target.closest('button');
+            if (target && target.dataset.page) {
+                changePage(parseInt(target.dataset.page, 10));
+            }
+        }
+        topPagination.addEventListener('click', handlePaginationClick);
+        bottomPagination.addEventListener('click', handlePaginationClick);
 
         // --- GESTIÓN DE PESTAÑAS ---
         function initTabs() {
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    // Remover clase activa de todas las pestañas y contenidos
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    
-                    // Activar la pestaña clickeada
-                    tab.classList.add('active');
-                    const tabId = tab.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
-                });
+            const tabsContainer = document.querySelector('.tabs');
+            tabsContainer.addEventListener('click', (event) => {
+                const tab = event.target.closest('.tab');
+                if (!tab) return;
+                
+                tabsContainer.querySelector('.active').classList.remove('active');
+                tab.classList.add('active');
+                
+                const tabId = tab.dataset.tab;
+                document.querySelector('.tab-content.active').classList.remove('active');
+                document.getElementById(tabId).classList.add('active');
             });
         }
+        
+        // --- GESTIÓN DE TABLAS DINÁMICAS (Seguimiento, Firma, etc.) ---
 
-        // --- GESTIÓN DE TABLA DE SEGUIMIENTO ---
+        function setupDynamicTable(tableId, addButtonId, addRowFunction) {
+            const table = document.getElementById(tableId);
+            const addButton = document.getElementById(addButtonId);
+            
+            table.querySelector('tbody').addEventListener('click', (event) => {
+                const btn = event.target.closest('.btn-eliminar-fila');
+                if (btn) {
+                    btn.closest('tr').remove();
+                }
+            });
+            
+            addButton.addEventListener('click', () => addRowFunction());
+        }
+
+        function agregarFilaGenerica(tbody, rowHTML) {
+            const row = tbody.insertRow();
+            row.innerHTML = rowHTML;
+        }
+
         function agregarFilaSeguimiento(fecha = '', detalles = '') {
             const tbody = tablaSeguimiento.querySelector('tbody');
-            const row = tbody.insertRow();
-            
-            const cellFecha = row.insertCell();
-            const inputFecha = document.createElement('input');
-            inputFecha.type = 'date';
-            inputFecha.value = fecha;
-            cellFecha.appendChild(inputFecha);
-            
-            const cellDetalles = row.insertCell();
-            const inputDetalles = document.createElement('input');
-            inputDetalles.type = 'text';
-            inputDetalles.placeholder = 'Detalles del seguimiento';
-            inputDetalles.value = detalles;
-            cellDetalles.appendChild(inputDetalles);
-            
-            const cellAccion = row.insertCell();
-            const btnEliminar = document.createElement('button');
-            btnEliminar.textContent = 'Eliminar';
-            btnEliminar.classList.add('btn-eliminar-fila');
-            btnEliminar.addEventListener('click', () => {
-                tbody.removeChild(row);
-            });
-            cellAccion.appendChild(btnEliminar);
+            agregarFilaGenerica(tbody, `
+                <td><input type="date" value="${fecha}"></td>
+                <td><input type="text" placeholder="Detalles del seguimiento" value="${detalles}"></td>
+                <td><button type="button" class="btn-eliminar-fila">Eliminar</button></td>
+            `);
         }
 
-        function obtenerDatosSeguimiento() {
-            const tbody = tablaSeguimiento.querySelector('tbody');
-            const filas = tbody.querySelectorAll('tr');
-            const seguimiento = [];
-            
-            filas.forEach(fila => {
-                const inputs = fila.querySelectorAll('input');
-                const fecha = inputs[0].value;
-                const detalles = inputs[1].value;
-                
-                if (fecha || detalles) {
-                    seguimiento.push({ fecha, detalles });
-                }
-            });
-            
-            return seguimiento;
-        }
-
-        function cargarSeguimiento(seguimiento) {
-            const tbody = tablaSeguimiento.querySelector('tbody');
-            tbody.innerHTML = '';
-            
-            if (seguimiento && seguimiento.length > 0) {
-                seguimiento.forEach(item => {
-                    agregarFilaSeguimiento(item.fecha, item.detalles);
-                });
-            } else {
-                agregarFilaSeguimiento();
-            }
-        }
-
-        // --- GESTIÓN DE TABLAS DE AUDIENCIAS, VENCIMIENTOS Y ACTIVIDADES ---
-
-        // Función genérica para agregar filas a las tablas de fecha/hora
         function agregarFilaFechaHora(tabla, fechaHora = '', detalle = '') {
             const tbody = tabla.querySelector('tbody');
-            const row = tbody.insertRow();
-            
-            const cellFechaHora = row.insertCell();
-            const inputFechaHora = document.createElement('input');
-            inputFechaHora.type = 'datetime-local';
-            inputFechaHora.value = fechaHora;
-            cellFechaHora.appendChild(inputFechaHora);
-            
-            const cellDetalle = row.insertCell();
-            const inputDetalle = document.createElement('input');
-            inputDetalle.type = 'text';
-            inputDetalle.placeholder = 'Detalle';
-            inputDetalle.value = detalle;
-            cellDetalle.appendChild(inputDetalle);
-            
-            const cellAccion = row.insertCell();
-            const btnEliminar = document.createElement('button');
-            btnEliminar.textContent = 'Eliminar';
-            btnEliminar.classList.add('btn-eliminar-fila');
-            btnEliminar.addEventListener('click', () => {
-                tbody.removeChild(row);
-            });
-            cellAccion.appendChild(btnEliminar);
+            agregarFilaGenerica(tbody, `
+                <td><input type="datetime-local" value="${fechaHora}"></td>
+                <td><input type="text" placeholder="Detalle" value="${detalle}"></td>
+                <td><button type="button" class="btn-eliminar-fila">Eliminar</button></td>
+            `);
         }
 
-        // Función genérica para obtener datos de las tablas de fecha/hora
-        function obtenerDatosFechaHora(tabla) {
-            const tbody = tabla.querySelector('tbody');
-            const filas = tbody.querySelectorAll('tr');
-            const datos = [];
-            
-            filas.forEach(fila => {
-                const inputs = fila.querySelectorAll('input');
-                const fechaHora = inputs[0].value;
-                const detalle = inputs[1].value;
-                
-                if (fechaHora || detalle) {
-                    datos.push({ fechaHora, detalle });
-                }
-            });
-            
-            return datos;
-        }
-
-        // Función genérica para cargar datos en las tablas de fecha/hora
-        function cargarDatosFechaHora(tabla, datos) {
-            const tbody = tabla.querySelector('tbody');
-            tbody.innerHTML = '';
-            
-            if (datos && datos.length > 0) {
-                datos.forEach(item => {
-                    agregarFilaFechaHora(tabla, item.fechaHora, item.detalle);
-                });
-            } else {
-                agregarFilaFechaHora(tabla);
-            }
-        }
-
-        // --- GESTIÓN DE TABLA DE FIRMA DIGITAL ---
-
-        function agregarFilaFirmaDigital(piezaProcesal = '', fechaFirma = '', firmaDe = '', tipoDefensor = '', detalleSubrogante = '') {
+        function agregarFilaFirmaDigital(item = {}) {
             const tbody = tablaFirmaDigital.querySelector('tbody');
             const row = tbody.insertRow();
             
-            // Celda Pieza Procesal
-            const cellPiezaProcesal = row.insertCell();
-            const inputPiezaProcesal = document.createElement('input');
-            inputPiezaProcesal.type = 'text';
-            inputPiezaProcesal.placeholder = 'Pieza procesal';
-            inputPiezaProcesal.value = piezaProcesal;
-            cellPiezaProcesal.appendChild(inputPiezaProcesal);
-            
-            // Celda Fecha Firma
-            const cellFechaFirma = row.insertCell();
-            const inputFechaFirma = document.createElement('input');
-            inputFechaFirma.type = 'date';
-            inputFechaFirma.value = fechaFirma;
-            cellFechaFirma.appendChild(inputFechaFirma);
-            
-            // Celda Firma de
-            const cellFirmaDe = row.insertCell();
-            const selectFirmaDe = document.createElement('select');
-            
-            const optionDefault = document.createElement('option');
-            optionDefault.value = '';
-            optionDefault.textContent = 'Seleccionar';
-            selectFirmaDe.appendChild(optionDefault);
-            
-            const optionSecretario = document.createElement('option');
-            optionSecretario.value = 'Secretario';
-            optionSecretario.textContent = 'Secretario';
-            selectFirmaDe.appendChild(optionSecretario);
-            
-            const optionDefensor = document.createElement('option');
-            optionDefensor.value = 'Defensor';
-            optionDefensor.textContent = 'Defensor';
-            selectFirmaDe.appendChild(optionDefensor);
-            
-            selectFirmaDe.value = firmaDe;
-            cellFirmaDe.appendChild(selectFirmaDe);
-            
-            // Celda Tipo Defensor
-            const cellTipoDefensor = row.insertCell();
-            const selectTipoDefensor = document.createElement('select');
-            
-            const optionDefaultDefensor = document.createElement('option');
-            optionDefaultDefensor.value = '';
-            optionDefaultDefensor.textContent = 'Seleccionar';
-            selectTipoDefensor.appendChild(optionDefaultDefensor);
-            
-            const optionTitular = document.createElement('option');
-            optionTitular.value = 'Titular';
-            optionTitular.textContent = 'Titular';
-            selectTipoDefensor.appendChild(optionTitular);
-            
-            const optionSubrogante = document.createElement('option');
-            optionSubrogante.value = 'Subrogante';
-            optionSubrogante.textContent = 'Subrogante';
-            selectTipoDefensor.appendChild(optionSubrogante);
-            
-            selectTipoDefensor.value = tipoDefensor;
-            selectTipoDefensor.disabled = (firmaDe !== 'Defensor');
-            cellTipoDefensor.appendChild(selectTipoDefensor);
-            
-            // Celda Detalle Subrogante
-            const cellDetalleSubrogante = row.insertCell();
-            const inputDetalleSubrogante = document.createElement('input');
-            inputDetalleSubrogante.type = 'text';
-            inputDetalleSubrogante.placeholder = 'Detalle subrogante';
-            inputDetalleSubrogante.value = detalleSubrogante;
-            inputDetalleSubrogante.disabled = (tipoDefensor !== 'Subrogante');
-            cellDetalleSubrogante.appendChild(inputDetalleSubrogante);
-            
-            // Celda Acción
-            const cellAccion = row.insertCell();
-            const btnEliminar = document.createElement('button');
-            btnEliminar.textContent = 'Eliminar';
-            btnEliminar.classList.add('btn-eliminar-fila');
-            btnEliminar.addEventListener('click', () => {
-                tbody.removeChild(row);
-            });
-            cellAccion.appendChild(btnEliminar);
-            
-            // Event listeners para actualizar dependencias
-            selectFirmaDe.addEventListener('change', function() {
+            row.innerHTML = `
+                <td><input type="text" placeholder="Pieza procesal" value="${item.piezaProcesal || ''}"></td>
+                <td><input type="date" value="${item.fechaFirma || ''}"></td>
+                <td>
+                    <select class="firma-de-select">
+                        <option value="">Seleccionar</option>
+                        <option value="Secretario" ${item.firmaDe === 'Secretario' ? 'selected' : ''}>Secretario</option>
+                        <option value="Defensor" ${item.firmaDe === 'Defensor' ? 'selected' : ''}>Defensor</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="tipo-defensor-select" ${item.firmaDe !== 'Defensor' ? 'disabled' : ''}>
+                        <option value="">Seleccionar</option>
+                        <option value="Titular" ${item.tipoDefensor === 'Titular' ? 'selected' : ''}>Titular</option>
+                        <option value="Subrogante" ${item.tipoDefensor === 'Subrogante' ? 'selected' : ''}>Subrogante</option>
+                    </select>
+                </td>
+                <td><input type="text" class="detalle-subrogante-input" placeholder="Detalle subrogante" value="${item.detalleSubrogante || ''}" ${item.tipoDefensor !== 'Subrogante' ? 'disabled' : ''}></td>
+                <td><button type="button" class="btn-eliminar-fila">Eliminar</button></td>
+            `;
+
+            row.querySelector('.firma-de-select').addEventListener('change', function() {
+                const tipoDefensorSelect = row.querySelector('.tipo-defensor-select');
                 const esDefensor = this.value === 'Defensor';
-                selectTipoDefensor.disabled = !esDefensor;
-                
+                tipoDefensorSelect.disabled = !esDefensor;
                 if (!esDefensor) {
-                    selectTipoDefensor.value = '';
-                    inputDetalleSubrogante.value = '';
-                    inputDetalleSubrogante.disabled = true;
+                    tipoDefensorSelect.value = '';
+                    tipoDefensorSelect.dispatchEvent(new Event('change'));
                 }
             });
-            
-            selectTipoDefensor.addEventListener('change', function() {
+
+            row.querySelector('.tipo-defensor-select').addEventListener('change', function() {
+                const detalleSubroganteInput = row.querySelector('.detalle-subrogante-input');
                 const esSubrogante = this.value === 'Subrogante';
-                inputDetalleSubrogante.disabled = !esSubrogante;
-                
+                detalleSubroganteInput.disabled = !esSubrogante;
                 if (!esSubrogante) {
-                    inputDetalleSubrogante.value = '';
+                    detalleSubroganteInput.value = '';
                 }
             });
         }
-
-        function obtenerDatosFirmaDigital() {
-            const tbody = tablaFirmaDigital.querySelector('tbody');
-            const filas = tbody.querySelectorAll('tr');
-            const firmas = [];
-            
-            filas.forEach(fila => {
-                const inputs = fila.querySelectorAll('input, select');
-                const piezaProcesal = inputs[0].value;
-                const fechaFirma = inputs[1].value;
-                const firmaDe = inputs[2].value;
-                const tipoDefensor = inputs[3].value;
-                const detalleSubrogante = inputs[4].value;
-                
-                if (piezaProcesal || fechaFirma || firmaDe) {
-                    firmas.push({
-                        piezaProcesal,
-                        fechaFirma,
-                        firmaDe,
-                        tipoDefensor,
-                        detalleSubrogante
-                    });
-                }
-            });
-            
-            return firmas;
-        }
-
-        function cargarFirmaDigital(firmas) {
-            const tbody = tablaFirmaDigital.querySelector('tbody');
-            tbody.innerHTML = '';
-            
-            if (firmas && firmas.length > 0) {
-                firmas.forEach(firma => {
-                    agregarFilaFirmaDigital(
-                        firma.piezaProcesal,
-                        firma.fechaFirma,
-                        firma.firmaDe,
-                        firma.tipoDefensor,
-                        firma.detalleSubrogante
-                    );
+        
+        function obtenerDatosTabla(tbodySelector, fields) {
+            const tbody = document.querySelector(tbodySelector);
+            return Array.from(tbody.querySelectorAll('tr')).map(row => {
+                const item = {};
+                row.querySelectorAll('input, select').forEach((input, index) => {
+                    if(fields[index]) item[fields[index]] = input.value;
                 });
-            } else {
-                agregarFilaFirmaDigital();
-            }
+                return item;
+            }).filter(item => Object.values(item).some(val => val));
         }
 
-        // --- FUNCIONES DE FIREBASE (NUEVAS) ---
+        // --- FUNCIONES DE FIREBASE ---
 
-        // Cargar causas desde Firebase
         async function cargarCausasDesdeFirebase() {
             try {
                 showLoading();
                 const querySnapshot = await dbNueva.collection('miscausas').get();
-                causas = [];
+                causas = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 
-                querySnapshot.forEach((doc) => {
-                    const causa = doc.data();
-                    causa.id = doc.id;
-                    causas.push(causa);
-                });
-                
+                localStorage.setItem('causas', JSON.stringify(causas));
                 renderTable(causas);
-                showToast('Datos cargados desde Firebase correctamente', 'success');
+                showToast(`Se cargaron ${causas.length} registros desde Firebase.`, 'success');
             } catch (error) {
                 console.error('Error cargando datos desde Firebase:', error);
-                showToast('Error al cargar datos desde Firebase', 'error');
-                // Si hay error, cargar desde localStorage como respaldo
+                showToast('Error al cargar datos. Intentando cargar desde respaldo local.', 'error');
                 const storedCausas = localStorage.getItem('causas');
                 if (storedCausas) {
                     causas = JSON.parse(storedCausas);
                     renderTable(causas);
-                    showToast('Datos cargados desde respaldo local', 'info');
+                    showToast('Datos cargados desde respaldo local.', 'success');
                 }
             }
         }
 
-        // Guardar causa en Firebase
         async function guardarCausaEnFirebase(causa) {
             try {
                 if (editingId) {
-                    // Actualizar documento existente
                     await dbNueva.collection('miscausas').doc(editingId).update(causa);
-                    showToast('Registro actualizado en Firebase correctamente', 'success');
+                    showToast('Registro actualizado correctamente.', 'success');
                 } else {
-                    // Crear nuevo documento
                     const docRef = await dbNueva.collection('miscausas').add(causa);
-                    causa.id = docRef.id;
-                    showToast('Registro guardado en Firebase correctamente', 'success');
+                    causa.id = docRef.id; // Asignar el nuevo ID para la actualización local
+                    showToast('Registro guardado correctamente.', 'success');
                 }
-                return true;
+                return causa;
             } catch (error) {
                 console.error('Error guardando en Firebase:', error);
-                showToast('Error al guardar en Firebase', 'error');
-                return false;
+                showToast('Error al guardar en Firebase. Verifique la conexión.', 'error');
+                return null;
             }
         }
 
-        // Eliminar causa de Firebase
         async function eliminarCausaDeFirebase(id) {
             try {
                 await dbNueva.collection('miscausas').doc(id).delete();
-                showToast('Registro eliminado de Firebase correctamente', 'success');
+                showToast('Registro eliminado correctamente.', 'success');
                 return true;
             } catch (error) {
                 console.error('Error eliminando de Firebase:', error);
-                showToast('Error al eliminar de Firebase', 'error');
+                showToast('Error al eliminar. Verifique la conexión.', 'error');
                 return false;
             }
         }
@@ -1417,15 +1135,15 @@
         // --- GESTIÓN DE MODALES ---
 
         function abrirModalRegistro(id = null) {
+            formRegistro.reset();
             editingId = id;
-            
-            // Cargar datos de causas cada vez que se abre el modal
-            cargarDatosCausas();
-            
+
+            // Limpiar y preparar tablas dinámicas
+            ['#tablaSeguimiento tbody', '#tablaAudiencias tbody', '#tablaVencimientos tbody', '#tablaActividades tbody', '#tablaFirmaDigital tbody'].forEach(sel => document.querySelector(sel).innerHTML = '');
+
             if (id) {
                 modalTitle.textContent = 'Editar';
                 const causa = causas.find(c => c.id === id);
-                
                 if (causa) {
                     document.getElementById('numeroCaratula').value = causa.numeroCaratula || '';
                     document.getElementById('tipoProceso').value = causa.tipoProceso || '';
@@ -1437,256 +1155,83 @@
                     document.getElementById('prioridadTarea').value = causa.prioridadTarea || '';
                     document.getElementById('estadoProcesal').value = causa.estadoProcesal || '';
                     document.getElementById('fechaEstado').value = causa.fechaEstado || '';
-                    document.getElementById('observaciones').value = causa.observaciones || '';
+                    // CORRECCIÓN: Cargar observaciones en el textarea correcto
+                    document.getElementById('observacionesGenerales').value = causa.observacionesGenerales || '';
                     
-                    // Cargar seguimiento
-                    cargarSeguimiento(causa.seguimiento);
-                    
-                    // Cargar audiencias, vencimientos y actividades
-                    cargarDatosFechaHora(tablaAudiencias, causa.audiencias);
-                    cargarDatosFechaHora(tablaVencimientos, causa.vencimientos);
-                    cargarDatosFechaHora(tablaActividades, causa.actividades);
-                    
-                    // Cargar firmas digitales
-                    cargarFirmaDigital(causa.firmaDigital);
+                    (causa.seguimiento || []).forEach(item => agregarFilaSeguimiento(item.fecha, item.detalles));
+                    (causa.audiencias || []).forEach(item => agregarFilaFechaHora(tablaAudiencias, item.fechaHora, item.detalle));
+                    (causa.vencimientos || []).forEach(item => agregarFilaFechaHora(tablaVencimientos, item.fechaHora, item.detalle));
+                    (causa.actividades || []).forEach(item => agregarFilaFechaHora(tablaActividades, item.fechaHora, item.detalle));
+                    (causa.firmaDigital || []).forEach(item => agregarFilaFirmaDigital(item));
                 }
             } else {
                 modalTitle.textContent = 'Nuevo';
-                formRegistro.reset();
-                
-                // Limpiar tablas dinámicas
-                cargarSeguimiento([]);
-                cargarDatosFechaHora(tablaAudiencias, []);
-                cargarDatosFechaHora(tablaVencimientos, []);
-                cargarDatosFechaHora(tablaActividades, []);
-                cargarFirmaDigital([]);
+                // Añadir una fila vacía por defecto para una mejor UX
+                agregarFilaSeguimiento();
+                agregarFilaFechaHora(tablaAudiencias);
+                agregarFilaFechaHora(tablaVencimientos);
+                agregarFilaFechaHora(tablaActividades);
+                agregarFilaFirmaDigital();
             }
             
-            // Activar primera pestaña
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelector('.tab').classList.add('active');
-            document.querySelector('.tab-content').classList.add('active');
+            // Resetear pestañas
+            document.querySelector('.tab.active').classList.remove('active');
+            document.querySelector('.tab-content.active').classList.remove('active');
+            document.querySelector('.tab[data-tab="datos-expediente"]').classList.add('active');
+            document.getElementById('datos-expediente').classList.add('active');
             
             modalRegistro.style.display = 'block';
         }
 
         function verRegistro(id) {
             const causa = causas.find(c => c.id === id);
+            if (!causa) return;
+
+            // MEJORA: Función para generar tablas de detalles de forma limpia
+            const createDetailTable = (title, headers, data, formatters) => {
+                if (!data || data.length === 0) return '';
+                let tableHTML = `
+                    <div class="form-group">
+                        <label><strong>${title}:</strong></label>
+                        <table class="seguimiento-table">
+                            <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                            <tbody>
+                `;
+                data.forEach(item => {
+                    tableHTML += `<tr>${Object.keys(item).map((key, i) => `<td>${formatters[i](item[key]) || 'N/A'}</td>`).join('')}</tr>`;
+                });
+                tableHTML += `</tbody></table></div>`;
+                return tableHTML;
+            };
+
+            let contenidoHTML = `
+                <div class="form-group"><label><strong>Número y Carátula:</strong></label><p>${causa.numeroCaratula || 'N/A'}</p></div>
+                <div class="form-row">
+                    <div class="form-group"><label><strong>Tipo de Proceso:</strong></label><p>${causa.tipoProceso || 'N/A'}</p></div>
+                    <div class="form-group"><label><strong>Juzgado:</strong></label><p>${causa.juzgado || 'N/A'}</p></div>
+                </div>
+                <div class="form-group"><label><strong>Empleado Asignado:</strong></label><p>${causa.empleado || 'N/A'}</p></div>
+                <div class="form-group"><label><strong>Documentos Presentados:</strong></label><p>${causa.documentosPresentados || 'N/A'}</p></div>
+                <div class="form-group"><label><strong>Estado Documental:</strong></label><p>${causa.estadoDocumental || 'N/A'}</p></div>
+            `;
             
-            if (causa) {
-                let contenidoHTML = `
-                    <div class="form-group">
-                        <label><strong>Número y Carátula:</strong></label>
-                        <p>${causa.numeroCaratula || 'N/A'}</p>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><strong>Tipo de Proceso:</strong></label>
-                            <p>${causa.tipoProceso || 'N/A'}</p>
-                        </div>
-                        <div class="form-group">
-                            <label><strong>Juzgado:</strong></label>
-                            <p>${causa.juzgado || 'N/A'}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><strong>Empleado Asignado:</strong></label>
-                        <p>${causa.empleado || 'N/A'}</p>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><strong>Documentos Presentados:</strong></label>
-                        <p>${causa.documentosPresentados || 'N/A'}</p>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><strong>Estado Documental:</strong></label>
-                        <p>${causa.estadoDocumental || 'N/A'}</p>
-                    </div>
-                `;
-                
-                // Mostrar firmas digitales
-                if (causa.firmaDigital && causa.firmaDigital.length > 0) {
-                    contenidoHTML += `
-                        <div class="form-group">
-                            <label><strong>Firma Digital:</strong></label>
-                            <table class="seguimiento-table">
-                                <thead>
-                                    <tr>
-                                        <th>Pieza Procesal</th>
-                                        <th>Fecha Firma</th>
-                                        <th>Firma de</th>
-                                        <th>Tipo Defensor</th>
-                                        <th>Detalle Subrogante</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                    `;
-                    
-                    causa.firmaDigital.forEach(firma => {
-                        contenidoHTML += `
-                            <tr>
-                                <td>${firma.piezaProcesal || 'N/A'}</td>
-                                <td>${formatDate(firma.fechaFirma) || 'N/A'}</td>
-                                <td>${firma.firmaDe || 'N/A'}</td>
-                                <td>${firma.tipoDefensor || 'N/A'}</td>
-                                <td>${firma.detalleSubrogante || 'N/A'}</td>
-                            </tr>
-                        `;
-                    });
-                    
-                    contenidoHTML += `
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                }
-                
-                // Mostrar seguimiento
-                if (causa.seguimiento && causa.seguimiento.length > 0) {
-                    contenidoHTML += `
-                        <div class="form-group">
-                            <label><strong>Seguimiento:</strong></label>
-                            <table class="seguimiento-table">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Detalles</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                    `;
-                    
-                    causa.seguimiento.forEach(item => {
-                        contenidoHTML += `
-                            <tr>
-                                <td>${formatDate(item.fecha) || 'N/A'}</td>
-                                <td>${item.detalles || 'N/A'}</td>
-                            </tr>
-                        `;
-                    });
-                    
-                    contenidoHTML += `
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                }
-                
-                // Mostrar audiencias
-                if (causa.audiencias && causa.audiencias.length > 0) {
-                    contenidoHTML += `
-                        <div class="form-group">
-                            <label><strong>Audiencias:</strong></label>
-                            <table class="seguimiento-table">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha y Hora</th>
-                                        <th>Detalle</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                    `;
-                    
-                    causa.audiencias.forEach(item => {
-                        contenidoHTML += `
-                            <tr>
-                                <td>${formatDateTime(item.fechaHora) || 'N/A'}</td>
-                                <td>${item.detalle || 'N/A'}</td>
-                            </tr>
-                        `;
-                    });
-                    
-                    contenidoHTML += `
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                }
-                
-                // Mostrar vencimientos
-                if (causa.vencimientos && causa.vencimientos.length > 0) {
-                    contenidoHTML += `
-                        <div class="form-group">
-                            <label><strong>Vencimientos:</strong></label>
-                            <table class="seguimiento-table">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha y Hora</th>
-                                        <th>Detalle</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                    `;
-                    
-                    causa.vencimientos.forEach(item => {
-                        contenidoHTML += `
-                            <tr>
-                                <td>${formatDateTime(item.fechaHora) || 'N/A'}</td>
-                                <td>${item.detalle || 'N/A'}</td>
-                            </tr>
-                        `;
-                    });
-                    
-                    contenidoHTML += `
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                }
-                
-                // Mostrar actividades
-                if (causa.actividades && causa.actividades.length > 0) {
-                    contenidoHTML += `
-                        <div class="form-group">
-                            <label><strong>Otras Actividades:</strong></label>
-                            <table class="seguimiento-table">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha y Hora</th>
-                                        <th>Detalle</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                    `;
-                    
-                    causa.actividades.forEach(item => {
-                        contenidoHTML += `
-                            <tr>
-                                <td>${formatDateTime(item.fechaHora) || 'N/A'}</td>
-                                <td>${item.detalle || 'N/A'}</td>
-                            </tr>
-                        `;
-                    });
-                    
-                    contenidoHTML += `
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                }
-                
-                // Mostrar observaciones
-                contenidoHTML += `
-                    <div class="form-group">
-                        <label><strong>Observaciones Generales:</strong></label>
-                        <p>${causa.observaciones || 'N/A'}</p>
-                    </div>
-                `;
-                
-                detalleContenido.innerHTML = contenidoHTML;
-                modalVer.style.display = 'block';
-            }
+            contenidoHTML += createDetailTable('Firma Digital', ['Pieza Procesal', 'Fecha', 'Firma de', 'Tipo', 'Detalle'], causa.firmaDigital, [v => v, formatDate, v => v, v => v, v => v]);
+            contenidoHTML += createDetailTable('Seguimiento', ['Fecha', 'Detalles'], causa.seguimiento, [formatDate, v => v]);
+            contenidoHTML += createDetailTable('Audiencias', ['Fecha y Hora', 'Detalle'], causa.audiencias, [formatDateTime, v => v]);
+            contenidoHTML += createDetailTable('Vencimientos', ['Fecha y Hora', 'Detalle'], causa.vencimientos, [formatDateTime, v => v]);
+            contenidoHTML += createDetailTable('Otras Actividades', ['Fecha y Hora', 'Detalle'], causa.actividades, [formatDateTime, v => v]);
+            
+            // CORRECCIÓN: Mostrar observaciones generales
+            contenidoHTML += `<div class="form-group"><label><strong>Observaciones Generales:</strong></label><p>${causa.observacionesGenerales || 'N/A'}</p></div>`;
+            
+            detalleContenido.innerHTML = contenidoHTML;
+            modalVer.style.display = 'block';
         }
 
         // --- GESTIÓN DE DATOS ---
 
         async function guardarRegistro(event) {
             event.preventDefault();
-            
             const numeroCaratula = document.getElementById('numeroCaratula').value;
             
             if (!numeroCaratula.trim()) {
@@ -1694,8 +1239,12 @@
                 return;
             }
             
+            // MEJORA UX: Deshabilitar botón para evitar doble envío
+            btnGuardar.disabled = true;
+            btnGuardar.textContent = 'Guardando...';
+
             const causa = {
-                numeroCaratula: numeroCaratula,
+                numeroCaratula,
                 tipoProceso: document.getElementById('tipoProceso').value,
                 juzgado: document.getElementById('juzgado').value,
                 empleado: document.getElementById('empleado').value,
@@ -1705,76 +1254,72 @@
                 prioridadTarea: document.getElementById('prioridadTarea').value,
                 estadoProcesal: document.getElementById('estadoProcesal').value,
                 fechaEstado: document.getElementById('fechaEstado').value,
-                observaciones: document.getElementById('observaciones').value,
-                seguimiento: obtenerDatosSeguimiento(),
-                audiencias: obtenerDatosFechaHora(tablaAudiencias),
-                vencimientos: obtenerDatosFechaHora(tablaVencimientos),
-                actividades: obtenerDatosFechaHora(tablaActividades),
-                firmaDigital: obtenerDatosFirmaDigital()
+                // CORRECCIÓN: Usar el id correcto del textarea y el nombre de propiedad consistente
+                observacionesGenerales: document.getElementById('observacionesGenerales').value,
+                seguimiento: obtenerDatosTabla('#tablaSeguimiento tbody', ['fecha', 'detalles']),
+                audiencias: obtenerDatosTabla('#tablaAudiencias tbody', ['fechaHora', 'detalle']),
+                vencimientos: obtenerDatosTabla('#tablaVencimientos tbody', ['fechaHora', 'detalle']),
+                actividades: obtenerDatosTabla('#tablaActividades tbody', ['fechaHora', 'detalle']),
+                firmaDigital: obtenerDatosTabla('#tablaFirmaDigital tbody', ['piezaProcesal', 'fechaFirma', 'firmaDe', 'tipoDefensor', 'detalleSubrogante'])
             };
             
-            // Guardar en Firebase
-            const exitoFirebase = await guardarCausaEnFirebase(causa);
+            const causaGuardada = await guardarCausaEnFirebase(causa);
             
-            if (exitoFirebase) {
+            if (causaGuardada) {
                 if (editingId) {
-                    // Editar registro existente
                     const index = causas.findIndex(c => c.id === editingId);
-                    if (index !== -1) {
-                        causa.id = editingId;
-                        causas[index] = causa;
-                    }
+                    if (index !== -1) causas[index] = { ...causaGuardada, id: editingId };
                 } else {
-                    // Nuevo registro
-                    // El ID se asigna en la función guardarCausaEnFirebase
-                    causas.push(causa);
+                    causas.push(causaGuardada);
                 }
                 
-                // Guardar también en localStorage como respaldo
                 localStorage.setItem('causas', JSON.stringify(causas));
-                
-                // Cerrar modal y actualizar tabla
                 modalRegistro.style.display = 'none';
-                renderTable(causas);
+                // MEJORA: Vuelve a renderizar la tabla con el filtro actual aplicado
+                filtrarYRenderizar();
             }
+            
+            btnGuardar.disabled = false;
+            btnGuardar.textContent = 'Guardar';
         }
 
         async function confirmAndDelete(id, numeroCaratula) {
-            const confirmacion = confirm(`¿Está seguro de que desea eliminar la causa:\n"${numeroCaratula}"?`);
-            
-            if (confirmacion) {
-                // Eliminar de Firebase
-                const exitoFirebase = await eliminarCausaDeFirebase(id);
-                
-                if (exitoFirebase) {
+            if (confirm(`¿Está seguro de que desea eliminar la causa:\n"${numeroCaratula}"?`)) {
+                if (await eliminarCausaDeFirebase(id)) {
                     causas = causas.filter(c => c.id !== id);
                     localStorage.setItem('causas', JSON.stringify(causas));
-                    renderTable(causas);
+                    filtrarYRenderizar();
                 }
             }
+        }
+        
+        function filtrarYRenderizar() {
+            const filtro = filtroBusqueda.value.toLowerCase();
+            const filtered = causas.filter(causa => 
+                Object.values(causa).some(val => 
+                    String(val).toLowerCase().includes(filtro)
+                )
+            );
+            renderTable(filtered);
         }
 
         // --- INICIALIZACIÓN ---
 
         function init() {
-            // Cargar datos desde Firebase
             cargarCausasDesdeFirebase();
-            
-            // Inicializar elementos
+            cargarDatosCausas(); // Cargar datos para autocompletar
             initTabs();
             
-            // Agregar fila inicial a las tablas dinámicas
-            agregarFilaSeguimiento();
-            agregarFilaFechaHora(tablaAudiencias);
-            agregarFilaFechaHora(tablaVencimientos);
-            agregarFilaFechaHora(tablaActividades);
-            agregarFilaFirmaDigital();
-            
-            // Event Listeners
+            // Configurar tablas dinámicas
+            setupDynamicTable('tablaSeguimiento', 'btnAgregarSeguimiento', () => agregarFilaSeguimiento());
+            setupDynamicTable('tablaAudiencias', 'btnAgregarAudiencia', () => agregarFilaFechaHora(tablaAudiencias));
+            setupDynamicTable('tablaVencimientos', 'btnAgregarVencimiento', () => agregarFilaFechaHora(tablaVencimientos));
+            setupDynamicTable('tablaActividades', 'btnAgregarActividad', () => agregarFilaFechaHora(tablaActividades));
+            setupDynamicTable('tablaFirmaDigital', 'btnAgregarFirma', () => agregarFilaFirmaDigital());
+
             btnNuevoRegistro.addEventListener('click', () => abrirModalRegistro());
             btnImprimirListado.addEventListener('click', () => window.print());
             
-            // Cerrar modales al hacer clic en la X
             document.querySelectorAll('.close-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1783,39 +1328,20 @@
                 });
             });
             
-            // Cerrar modales al hacer clic fuera del contenido
             window.addEventListener('click', (e) => {
                 if (e.target === modalRegistro) modalRegistro.style.display = 'none';
                 if (e.target === modalVer) modalVer.style.display = 'none';
             });
             
-            // Filtro de búsqueda
+            // CORRECCIÓN/MEJORA: La búsqueda ahora incluye todos los campos, incluyendo observaciones.
             filtroBusqueda.addEventListener('input', () => {
-                const filtro = filtroBusqueda.value.toLowerCase();
-                const filtered = causas.filter(causa => 
-                    (causa.numeroCaratula && causa.numeroCaratula.toLowerCase().includes(filtro)) ||
-                    (causa.tipoProceso && causa.tipoProceso.toLowerCase().includes(filtro)) ||
-                    (causa.juzgado && causa.juzgado.toLowerCase().includes(filtro)) ||
-                    (causa.empleado && causa.empleado.toLowerCase().includes(filtro)) ||
-                    (causa.observaciones && causa.observaciones.toLowerCase().includes(filtro))
-                );
-                
                 currentPage = 1;
-                renderTable(filtered);
+                filtrarYRenderizar();
             });
             
-            // Formulario de registro
             formRegistro.addEventListener('submit', guardarRegistro);
-            
-            // Botones para agregar filas
-            btnAgregarSeguimiento.addEventListener('click', () => agregarFilaSeguimiento());
-            btnAgregarAudiencia.addEventListener('click', () => agregarFilaFechaHora(tablaAudiencias));
-            btnAgregarVencimiento.addEventListener('click', () => agregarFilaFechaHora(tablaVencimientos));
-            btnAgregarActividad.addEventListener('click', () => agregarFilaFechaHora(tablaActividades));
-            btnAgregarFirma.addEventListener('click', () => agregarFilaFirmaDigital());
         }
 
-        // Inicializar la aplicación cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
