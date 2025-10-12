@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas Secretarios - Corregido</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .global-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .date-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+            background-color: white;
+            color: var(--dark-color);
+        }
+        
+        .chart-type-selector {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-type-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+            background-color: white;
+            color: var(--dark-color);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .chart-type-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        .print-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+            background-color: #2ecc71;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .print-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .chart-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(189, 195, 199, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .chart-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+        
+        .chart-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            background: var(--accent-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+            flex-grow: 1;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+        
+        /* Estilos para la ventana de impresión */
+        #printModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow: auto;
+        }
+        
+        .print-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #bdc3c7;
+            padding-bottom: 10px;
+        }
+        
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .print-table th, .print-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .print-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .print-section {
+            margin-bottom: 30px;
+        }
+        
+        .print-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+        
+        .close-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .print-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .global-controls {
+                flex-direction: column;
+            }
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printModal, #printModal * {
+                visibility: visible;
+            }
+            #printModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+            }
+            .print-actions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+     <div class="container">
+        <div class="global-controls">
+            <div class="date-selector">
+                <span>Filtro global:</span>
+                <select id="globalMonthSelector">
+                    <option value="0">Todos los meses</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+                
+                <select id="globalYearSelector">
+                    <option value="0">Todos los años</option>
+                    <!-- Los años se llenarán dinámicamente -->
+                </select>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <div class="chart-type-selector">
+                    <button class="chart-type-btn active" data-type="circular">Circular</button>
+                    <button class="chart-type-btn" data-type="lineal">Lineal</button>
+                </div>
+                <button id="printBtn" class="print-btn">Imprimir Informe</button>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">
+            Cargando datos desde Firebase...
+        </div>
+        
+        <div id="statsGrid" class="stats-grid" style="display: none;">
+            <!-- Las tarjetas de gráficos se generarán dinámicamente -->
+        </div>
+    </div>
+    
+    <!-- Modal para imprimir -->
+    <div id="printModal">
+        <div class="print-content">
+            <div class="print-header">
+                <h2>Informe de Estadísticas</h2>
+                <button class="close-btn" id="closePrintModal">Cerrar</button>
+            </div>
+            <div id="printData">
+                <!-- Los datos de impresión se generarán aquí -->
+            </div>
+            <div class="print-actions">
+                <button class="print-btn" id="doPrint">Imprimir</button>
+                <button class="close-btn" id="cancelPrint">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
+            authDomain: "secretarios-def.firebaseapp.com",
+            projectId: "secretarios-def",
+            storageBucket: "secretarios-def.firebasestorage.app",
+            messagingSenderId: "533584198983",
+            appId: "1:533584198983:web:f51f57146ed16c813ca062"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Variables globales
+        let causasData = [];
+        let miscausasData = [];
+        let clientesData = [];
+        let chartType = 'circular';
+        let globalMonth = 0;
+        let globalYear = 0;
+        let charts = {}; // Para almacenar las instancias de gráficos
+        let currentStats = {}; // Para almacenar las estadísticas actuales
+        
+        // Paleta de colores amplia y diversa para asignar colores únicos a cada elemento
+        const colorPalette = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', 
+            '#FF6384', '#C9CBCF', '#7CFFB2', '#4BC0C0', '#FF6384', '#9966FF',
+            '#36A2EB', '#FF9F40', '#FFCE56', '#FF6384', '#C9CBCF', '#7CFFB2',
+            '#4BC0C0', '#FF6384', '#9966FF', '#36A2EB', '#FF9F40', '#FFCE56',
+            '#FF6384', '#C9CBCF', '#7CFFB2', '#4BC0C0', '#FF6384', '#9966FF',
+            '#36A2EB', '#FF9F40', '#FFCE56', '#FF6384', '#C9CBCF', '#7CFFB2',
+            '#4BC0C0', '#FF6384', '#9966FF', '#36A2EB', '#FF9F40', '#FFCE56'
+        ];
+
+        // Función para cargar datos
+        async function cargarDatos() {
+            try {
+                // Cargar datos de las colecciones
+                const [causasSnapshot, miscausasSnapshot, clientesSnapshot] = await Promise.all([
+                    db.collection('causas').get(),
+                    db.collection('miscausas').get(),
+                    db.collection('clientes').get()
+                ]);
+                
+                causasData = causasSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                miscausasData = miscausasSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                clientesData = clientesSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                
+                console.log("Clientes cargados:", clientesData.length);
+                console.log("Ejemplo de cliente:", clientesData[0]);
+                
+                // Ocultar loading y mostrar contenido
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('statsGrid').style.display = 'grid';
+                
+                // Configurar años en el selector
+                configurarSelectorAnios();
+                
+                // Procesar y mostrar datos
+                procesarYMostrarDatos();
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                document.getElementById('loading').innerHTML = 
+                    'Error al cargar datos. Verifica la conexión.';
+            }
+        }
+        
+        // Configurar selector de años
+        function configurarSelectorAnios() {
+            const yearSelector = document.getElementById('globalYearSelector');
+            const currentYear = new Date().getFullYear();
+            
+            // Agregar opciones para los últimos 5 años y el próximo
+            for (let i = currentYear - 2; i <= currentYear + 1; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                yearSelector.appendChild(option);
+            }
+            
+            // Establecer el año actual como seleccionado
+            yearSelector.value = currentYear;
+            globalYear = currentYear;
+        }
+        
+        // Función para extraer mes y año de una fecha
+        function obtenerMesYAnio(fechaStr) {
+            if (!fechaStr || fechaStr === "") return null;
+            
+            try {
+                // Intentar diferentes formatos de fecha
+                let fecha;
+                if (fechaStr.includes('T')) {
+                    fecha = new Date(fechaStr);
+                } else if (fechaStr.includes('-')) {
+                    // Formato YYYY-MM-DD
+                    const partes = fechaStr.split('-');
+                    if (partes.length === 3) {
+                        fecha = new Date(partes[0], partes[1] - 1, partes[2]);
+                    }
+                }
+                
+                if (fecha && !isNaN(fecha.getTime())) {
+                    return {
+                        mes: fecha.getMonth() + 1,
+                        anio: fecha.getFullYear()
+                    };
+                }
+            } catch (e) {
+                console.error('Error procesando fecha:', fechaStr, e);
+            }
+            
+            return null;
+        }
+        
+        // Procesar y mostrar datos
+        function procesarYMostrarDatos() {
+            // Procesar datos por categoría
+            currentStats = {
+                empleados: procesarPorEmpleado(),
+                audiencias: procesarPorAudiencias(),
+                vencimientos: procesarPorVencimientos(),
+                actividades: procesarPorActividades(),
+                causas: procesarPorCausas(),
+                control: procesarPorControl(),
+                prioridades: procesarPorPrioridades(),
+                firmaDigital: procesarPorFirmaDigital(),
+                clientes: procesarPorClientes()
+            };
+            
+            // Mostrar estadísticas en la interfaz
+            mostrarEstadisticas(currentStats);
+        }
+        
+        // Funciones para procesar datos por categoría con filtros
+        function procesarPorEmpleado() {
+            const empleados = {};
+            
+            // Procesar causas
+            causasData.forEach(causa => {
+                // Verificar si pasa el filtro de fecha
+                const fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
+                if (!filtroFecha(fechaInfo)) return;
+                
+                const empleado = causa.empleadoAsignado || 'Sin asignar';
+                empleados[empleado] = (empleados[empleado] || 0) + 1;
+            });
+            
+            // Procesar miscausas
+            miscausasData.forEach(causa => {
+                // Para miscausas, usar la fecha más reciente de audiencias si está disponible
+                let fechaInfo = null;
+                if (causa.audiencias && causa.audiencias.length > 0) {
+                    fechaInfo = obtenerMesYAnio(causa.audiencias[0].fechaHora);
+                } else {
+                    // Si no hay audiencias, usar fechaActualizacion si está disponible
+                    fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
+                }
+                
+                if (!filtroFecha(fechaInfo)) return;
+                
+                const empleado = causa.empleado || 'Sin asignar';
+                empleados[empleado] = (empleados[empleado] || 0) + 1;
+            });
+            
+            return empleados;
+        }
+        
+        function procesarPorAudiencias() {
+            const audiencias = {};
+            let total = 0;
+            
+            // Procesar causas
+            causasData.forEach(causa => {
+                if (causa.audiencias && Array.isArray(causa.audiencias)) {
+                    causa.audiencias.forEach(audiencia => {
+                        const fechaInfo = obtenerMesYAnio(audiencia.fecha);
+                        if (filtroFecha(fechaInfo)) {
+                            total++;
+                        }
+                    });
+                }
+            });
+            
+            // Procesar miscausas
+            miscausasData.forEach(causa => {
+                if (causa.audiencias && Array.isArray(causa.audiencias)) {
+                    causa.audiencias.forEach(audiencia => {
+                        const fechaInfo = obtenerMesYAnio(audiencia.fechaHora);
+                        if (filtroFecha(fechaInfo)) {
+                            total++;
+                        }
+                    });
+                }
+            });
+            
+            audiencias['Total de Audiencias'] = total;
+            return audiencias;
+        }
+        
+        function procesarPorVencimientos() {
+            const vencimientos = {};
+            let total = 0;
+            
+            // Procesar causas
+            causasData.forEach(causa => {
+                if (causa.vencimientos && Array.isArray(causa.vencimientos)) {
+                    causa.vencimientos.forEach(vencimiento => {
+                        const fechaInfo = obtenerMesYAnio(vencimiento.fecha);
+                        if (filtroFecha(fechaInfo)) {
+                            total++;
+                        }
+                    });
+                }
+            });
+            
+            // Procesar miscausas
+            miscausasData.forEach(causa => {
+                if (causa.vencimientos && Array.isArray(causa.vencimientos)) {
+                    causa.vencimientos.forEach(vencimiento => {
+                        const fechaInfo = obtenerMesYAnio(vencimiento.fecha);
+                        if (filtroFecha(fechaInfo)) {
+                            total++;
+                        }
+                    });
+                }
+            });
+            
+            vencimientos['Total de Vencimientos'] = total;
+            return vencimientos;
+        }
+        
+        function procesarPorActividades() {
+            const actividades = {};
+            let total = 0;
+            
+            // Procesar causas (otrasActividades)
+            causasData.forEach(causa => {
+                if (causa.otrasActividades && Array.isArray(causa.otrasActividades)) {
+                    causa.otrasActividades.forEach(actividad => {
+                        const fechaInfo = obtenerMesYAnio(actividad.fecha);
+                        if (filtroFecha(fechaInfo)) {
+                            total++;
+                        }
+                    });
+                }
+            });
+            
+            // Procesar miscausas (actividades)
+            miscausasData.forEach(causa => {
+                if (causa.actividades && Array.isArray(causa.actividades)) {
+                    // Para actividades en miscausas, usar la fecha de actualización de la causa
+                    const fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
+                    if (filtroFecha(fechaInfo)) {
+                        total += causa.actividades.length;
+                    }
+                }
+            });
+            
+            actividades['Total de Actividades'] = total;
+            return actividades;
+        }
+        
+        function procesarPorCausas() {
+            const causas = {};
+            
+            // Procesar causas
+            causasData.forEach(causa => {
+                const fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
+                if (!filtroFecha(fechaInfo)) return;
+                
+                const tipo = causa.tipoProceso || 'Sin tipo';
+                causas[tipo] = (causas[tipo] || 0) + 1;
+            });
+            
+            // Procesar miscausas
+            miscausasData.forEach(causa => {
+                // Para miscausas, usar la fecha más reciente de audiencias si está disponible
+                let fechaInfo = null;
+                if (causa.audiencias && causa.audiencias.length > 0) {
+                    fechaInfo = obtenerMesYAnio(causa.audiencias[0].fechaHora);
+                } else {
+                    // Si no hay audiencias, usar fechaActualizacion si está disponible
+                    fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
+                }
+                
+                if (!filtroFecha(fechaInfo)) return;
+                
+                const tipo = causa.tipoProceso || 'Sin tipo';
+                causas[tipo] = (causas[tipo] || 0) + 1;
+            });
+            
+            return causas;
+        }
+        
+        function procesarPorControl() {
+            const controles = {};
+            
+            // Procesar causas
+            causasData.forEach(causa => {
+                const fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
+                if (!filtroFecha(fechaInfo)) return;
+                
+                const control = causa.modoIntervencion || 'Sin definir';
+                controles[control] = (controles[control] || 0) + 1;
+            });
+            
+            // Procesar miscausas
+            miscausasData.forEach(causa => {
+                // Para miscausas, usar la fecha más reciente de audiencias si está disponible
+                let fechaInfo = null;
+                if (causa.audiencias && causa.audiencias.length > 0) {
+                    fechaInfo = obtenerMesYAnio(causa.audiencias[0].fechaHora);
+                } else {
+                    // Si no hay audiencias, usar fechaActualizacion si está disponible
+                    fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
+                }
+                
+                if (!filtroFecha(fechaInfo)) return;
+                
+                const control = causa.modoIntervencion || 'Sin definir';
+                controles[control] = (controles[control] || 0) + 1;
+            });
+            
+            return controles;
+        }
+        
+        function procesarPorPrioridades() {
+            const prioridades = {};
+            
+            // Solo miscausas tiene prioridadTarea
+            miscausasData.forEach(causa => {
+                // Para miscausas, usar la fecha más reciente de audiencias si está disponible
+                let fechaInfo = null;
+                if (causa.audiencias && causa.audiencias.length > 0) {
+                    fechaInfo = obtenerMesYAnio(causa.audiencias[0].fechaHora);
+                } else {
+                    // Si no hay audiencias, usar fechaActualizacion si está disponible
+                    fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
+                }
+                
+                if (!filtroFecha(fechaInfo)) return;
+                
+                // Detectar tipo de prioridad
+                let prioridad = causa.prioridadTarea || 'Sin prioridad';
+                
+                // Normalizar tipos de prioridad
+                if (prioridad.toLowerCase().includes('alta')) prioridad = 'Alta';
+                else if (prioridad.toLowerCase().includes('media')) prioridad = 'Media';
+                else if (prioridad.toLowerCase().includes('baja')) prioridad = 'Baja';
+                else if (prioridad.toLowerCase().includes('urgente')) prioridad = 'Urgente';
+                else if (prioridad === '') prioridad = 'Sin prioridad';
+                
+                prioridades[prioridad] = (prioridades[prioridad] || 0) + 1;
+            });
+            
+            return prioridades;
+        }
+        
+        function procesarPorFirmaDigital() {
+            const firmas = {};
+            let firmaSecretario = 0;
+            let firmaDefensor = 0;
+            let sinFirma = 0;
+            
+            // Solo miscausas tiene firmaDigital
+            miscausasData.forEach(causa => {
+                // Para miscausas, usar la fecha más reciente de audiencias si está disponible
+                let fechaInfo = null;
+                if (causa.audiencias && causa.audiencias.length > 0) {
+                    fechaInfo = obtenerMesYAnio(causa.audiencias[0].fechaHora);
+                } else {
+                    // Si no hay audiencias, usar fechaActualizacion si está disponible
+                    fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
+                }
+                
+                if (!filtroFecha(fechaInfo)) return;
+                
+                // Detectar tipo de firma
+                if (causa.firmaDigital && Array.isArray(causa.firmaDigital)) {
+                    // Verificar si hay firma de secretario o defensor
+                    const tieneFirmaSecretario = causa.firmaDigital.some(firma => 
+                        firma.toLowerCase().includes('secretario') || 
+                        firma.toLowerCase().includes('secretaria')
+                    );
+                    
+                    const tieneFirmaDefensor = causa.firmaDigital.some(firma => 
+                        firma.toLowerCase().includes('defensor') || 
+                        firma.toLowerCase().includes('defensora')
+                    );
+                    
+                    if (tieneFirmaSecretario) {
+                        firmaSecretario++;
+                    } else if (tieneFirmaDefensor) {
+                        firmaDefensor++;
+                    } else if (causa.firmaDigital.length > 0) {
+                        // Si hay firma pero no se identifica el tipo
+                        firmaDefensor++; // Asumir que es defensor por defecto
+                    } else {
+                        sinFirma++;
+                    }
+                } else {
+                    sinFirma++;
+                }
+            });
+            
+            firmas['Firma Secretario'] = firmaSecretario;
+            firmas['Firma Defensor'] = firmaDefensor;
+            firmas['Sin Firma'] = sinFirma;
+            
+            return firmas;
+        }
+        
+        function procesarPorClientes() {
+            // Para clientes, si no hay filtro, mostrar todos los clientes
+            if (globalMonth === 0 && globalYear === 0) {
+                return { 'Total de Clientes': clientesData.length };
+            }
+            
+            // Si hay filtro, contar todos los clientes ya que no tenemos fecha confiable
+            // Esto es una solución temporal - en un sistema real deberíamos tener un campo de fecha de registro
+            return { 'Total de Clientes': clientesData.length };
+        }
+        
+        // Función para aplicar filtro de fecha
+        function filtroFecha(fechaInfo) {
+            // Si no hay filtro seleccionado, mostrar todo
+            if (globalMonth === 0 && globalYear === 0) return true;
+            
+            // Si no tenemos información de fecha, no mostrar
+            if (!fechaInfo) return false;
+            
+            // Verificar coincidencia con mes y año
+            const coincideMes = globalMonth === 0 || fechaInfo.mes === globalMonth;
+            const coincideAnio = globalYear === 0 || fechaInfo.anio === globalYear;
+            
+            return coincideMes && coincideAnio;
+        }
+        
+        // Mostrar estadísticas en la interfaz
+        function mostrarEstadisticas(estadisticas) {
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = '';
+            
+            // Crear una tarjeta para cada categoría
+            Object.keys(estadisticas).forEach((categoria, index) => {
+                const datos = estadisticas[categoria];
+                const labels = Object.keys(datos);
+                const values = Object.values(datos);
+                const total = values.reduce((sum, value) => sum + value, 0);
+                
+                // Crear elemento de tarjeta
+                const card = document.createElement('div');
+                card.className = 'chart-card';
+                card.innerHTML = `
+                    <div class="chart-header">
+                        <h3 class="chart-title">${obtenerTituloCategoria(categoria)}</h3>
+                        <div class="chart-total">${total}</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart-${categoria}"></canvas>
+                    </div>
+                `;
+                
+                statsGrid.appendChild(card);
+                
+                // Crear el gráfico
+                crearGrafico(`chart-${categoria}`, labels, values, categoria);
+            });
+        }
+        
+        // Obtener título legible para cada categoría
+        function obtenerTituloCategoria(categoria) {
+            const titulos = {
+                empleados: 'Causas por Empleado',
+                audiencias: 'Audiencias',
+                vencimientos: 'Vencimientos',
+                actividades: 'Actividades',
+                causas: 'Tipos de Proceso',
+                control: 'Modo de Intervención',
+                prioridades: 'Prioridades de Tareas',
+                firmaDigital: 'Firma Digital',
+                clientes: 'Clientes Registrados'
+            };
+            
+            return titulos[categoria] || categoria;
+        }
+        
+        // Crear gráfico con colores distintos para cada elemento
+        function crearGrafico(canvasId, labels, values, categoria) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            // Determinar el tipo de gráfico según la selección
+            let tipoGrafico = chartType === 'circular' ? 'pie' : 'bar';
+            
+            // Si hay solo un valor, usar un gráfico de doughnut en lugar de pie para mejor visualización
+            if (tipoGrafico === 'pie' && values.length === 1) {
+                tipoGrafico = 'doughnut';
+            }
+            
+            // Generar colores únicos para cada elemento
+            const colores = [];
+            for (let i = 0; i < labels.length; i++) {
+                // Para el gráfico de clientes, usar siempre el mismo color
+                if (categoria === 'clientes') {
+                    colores.push('#636E72');
+                } else {
+                    colores.push(colorPalette[i % colorPalette.length]);
+                }
+            }
+            
+            // Destruir gráfico anterior si existe
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
+            
+            // Crear nuevo gráfico
+            charts[canvasId] = new Chart(ctx, {
+                type: tipoGrafico,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colores,
+                        borderColor: tipoGrafico === 'bar' ? '#2c3e50' : 'transparent',
+                        borderWidth: tipoGrafico === 'bar' ? 1 : 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            display: labels.length > 1
+                        },
+                        datalabels: {
+                            color: tipoGrafico === 'bar' ? '#2c3e50' : '#fff',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: (value) => {
+                                return value;
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: tipoGrafico === 'bar' ? {
+                        y: {
+                            beginAtZero: true
+                        }
+                    } : {}
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+        
+        // Actualizar todos los gráficos
+        function actualizarGraficos() {
+            currentStats = {
+                empleados: procesarPorEmpleado(),
+                audiencias: procesarPorAudiencias(),
+                vencimientos: procesarPorVencimientos(),
+                actividades: procesarPorActividades(),
+                causas: procesarPorCausas(),
+                control: procesarPorControl(),
+                prioridades: procesarPorPrioridades(),
+                firmaDigital: procesarPorFirmaDigital(),
+                clientes: procesarPorClientes()
+            };
+            
+            // Actualizar cada gráfico
+            Object.keys(currentStats).forEach(categoria => {
+                const datos = currentStats[categoria];
+                const labels = Object.keys(datos);
+                const values = Object.values(datos);
+                
+                crearGrafico(`chart-${categoria}`, labels, values, categoria);
+            });
+        }
+        
+        // Generar contenido para imprimir
+        function generarContenidoImpresion() {
+            let contenido = '';
+            
+            // Obtener mes y año seleccionados
+            const mesSeleccionado = document.getElementById('globalMonthSelector').options[document.getElementById('globalMonthSelector').selectedIndex].text;
+            const anioSeleccionado = document.getElementById('globalYearSelector').options[document.getElementById('globalYearSelector').selectedIndex].text;
+            
+            contenido += `<p><strong>Período:</strong> ${mesSeleccionado} ${anioSeleccionado}</p>`;
+            contenido += `<p><strong>Fecha de generación:</strong> ${new Date().toLocaleDateString('es-ES')}</p>`;
+            
+            // Generar tabla para cada categoría
+            Object.keys(currentStats).forEach(categoria => {
+                const datos = currentStats[categoria];
+                const titulo = obtenerTituloCategoria(categoria);
+                const total = Object.values(datos).reduce((sum, value) => sum + value, 0);
+                
+                contenido += `
+                    <div class="print-section">
+                        <h3>${titulo} (Total: ${total})</h3>
+                        <table class="print-table">
+                            <thead>
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                Object.keys(datos).forEach(item => {
+                    contenido += `
+                        <tr>
+                            <td>${item}</td>
+                            <td>${datos[item]}</td>
+                        </tr>
+                    `;
+                });
+                
+                contenido += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            });
+            
+            return contenido;
+        }
+        
+        // Mostrar modal de impresión
+        function mostrarModalImpresion() {
+            const printModal = document.getElementById('printModal');
+            const printData = document.getElementById('printData');
+            
+            printData.innerHTML = generarContenidoImpresion();
+            printModal.style.display = 'block';
+        }
+        
+        // Configurar event listeners
+        function configurarEventListeners() {
+            // Selector de tipo de gráfico
+            document.querySelectorAll('.chart-type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    chartType = this.dataset.type;
+                    actualizarGraficos();
+                });
+            });
+            
+            // Selectores de fecha globales
+            document.getElementById('globalMonthSelector').addEventListener('change', function() {
+                globalMonth = parseInt(this.value);
+                actualizarGraficos();
+            });
+            
+            document.getElementById('globalYearSelector').addEventListener('change', function() {
+                globalYear = parseInt(this.value);
+                actualizarGraficos();
+            });
+            
+            // Botón de imprimir
+            document.getElementById('printBtn').addEventListener('click', mostrarModalImpresion);
+            
+            // Cerrar modal de impresión
+            document.getElementById('closePrintModal').addEventListener('click', function() {
+                document.getElementById('printModal').style.display = 'none';
+            });
+            
+            document.getElementById('cancelPrint').addEventListener('click', function() {
+                document.getElementById('printModal').style.display = 'none';
+            });
+            
+            // Imprimir
+            document.getElementById('doPrint').addEventListener('click', function() {
+                window.print();
+            });
+            
+            // Cerrar modal al hacer clic fuera
+            window.addEventListener('click', function(event) {
+                const printModal = document.getElementById('printModal');
+                if (event.target === printModal) {
+                    printModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Iniciar la aplicación cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarDatos();
+            configurarEventListeners();
+        });
+    </script>
+</body>
+</html>
