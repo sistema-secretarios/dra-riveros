@@ -153,6 +153,9 @@
             max-height: 80vh;
             overflow-y: auto;
         }
+        .modal-content button.btn-primary {
+            margin-bottom: 15px; /* Estilo agregado para el botón de imprimir */
+        }
         .close-btn {
             color: #aaa;
             float: right;
@@ -240,41 +243,41 @@
         </div>
     </div>
 
-    <!-- Modal para eventos del día -->
     <div id="view-day-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('view-day-modal')">&times;</span>
             <h2 id="view-day-title" style="color: #28a745;"></h2>
+            <button class="btn-primary" onclick="printModalContent('day-events-list', 'view-day-title')">Imprimir</button>
             <div id="day-events-list"></div>
             <p id="no-events-message" style="display: none; color: gray;">No hay eventos registrados para esta fecha.</p>
         </div>
     </div>
 
-    <!-- Modal para actividades -->
     <div id="activities-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('activities-modal')">&times;</span>
             <h2 style="color: #28a745;">Todas las Actividades</h2>
+            <button class="btn-primary" onclick="printModalContent('activities-list', 'Todas las Actividades')">Imprimir</button>
             <div id="activities-list"></div>
             <p id="no-activities-message" style="display: none; color: gray;">No hay actividades registradas.</p>
         </div>
     </div>
 
-    <!-- Modal para audiencias -->
     <div id="audiencias-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('audiencias-modal')">&times;</span>
             <h2 style="color: #ff9800;">Todas las Audiencias</h2>
+            <button class="btn-primary" onclick="printModalContent('audiencias-list', 'Todas las Audiencias')">Imprimir</button>
             <div id="audiencias-list"></div>
             <p id="no-audiencias-message" style="display: none; color: gray;">No hay audiencias registradas.</p>
         </div>
     </div>
 
-    <!-- Modal para vencimientos -->
     <div id="vencimientos-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('vencimientos-modal')">&times;</span>
             <h2 style="color: #e91e63;">Todos los Vencimientos</h2>
+            <button class="btn-primary" onclick="printModalContent('vencimientos-list', 'Todos los Vencimientos')">Imprimir</button>
             <div id="vencimientos-list"></div>
             <p id="no-vencimientos-message" style="display: none; color: gray;">No hay vencimientos registrados.</p>
         </div>
@@ -1011,6 +1014,56 @@
         function parseDate(dateStr) {
             const parts = dateStr.split('/');
             return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+        
+        // ===== NUEVA FUNCIÓN PARA IMPRIMIR =====
+        function printModalContent(contentId, titleSource) {
+            const contentToPrint = document.getElementById(contentId).innerHTML;
+            let title = '';
+
+            // Verifica si la fuente del título es un ID de elemento o un texto
+            const titleElement = document.getElementById(titleSource);
+            if (titleElement) {
+                title = titleElement.textContent;
+            } else {
+                title = titleSource;
+            }
+
+            const printWindow = window.open('', '_blank', 'height=600,width=800');
+            
+            printWindow.document.write('<html><head><title>Imprimir</title>');
+            printWindow.document.write('<style>');
+            printWindow.document.write(`
+                body { font-family: 'Arial', sans-serif; color: #333; margin: 20px; }
+                h2 { color: #333; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
+                .audiencia, .vencimiento, .actividad {
+                    border-left-width: 5px;
+                    border-left-style: solid;
+                    padding: 15px;
+                    margin-bottom: 15px;
+                    border-radius: 5px;
+                    page-break-inside: avoid; /* Evita que el evento se corte entre páginas */
+                }
+                .audiencia { border-left-color: #ff9800; background-color: #ffe0b2; }
+                .vencimiento { border-left-color: #e91e63; background-color: #ffcdd2; }
+                .actividad { border-left-color: #28a745; background-color: #d4edda; }
+                .event-details div { margin-bottom: 5px; }
+                .event-source { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+                strong { font-weight: bold; }
+            `);
+            printWindow.document.write('</style></head><body>');
+            printWindow.document.write(`<h2>${title}</h2>`);
+            printWindow.document.write(contentToPrint);
+            printWindow.document.write('</body></html>');
+            
+            printWindow.document.close();
+            printWindow.focus(); // Necesario para algunos navegadores
+            
+            // Un pequeño retraso para asegurar que el contenido se cargue antes de imprimir
+            setTimeout(function () {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
         }
 
         // Cerrar modal
