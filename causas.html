@@ -456,6 +456,28 @@
                 font-size: 12px;
             }
         }
+
+        /* NUEVOS ESTILOS PARA LOS SELECTS DE PRIORIDAD */
+        .prioridad-ninguna {
+            color: #757575 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-baja {
+            color: #2e7d32 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-media {
+            color: #ef6c00 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-alta {
+            color: #c62828 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-urgente {
+            color: #7b1fa2 !important;
+            font-weight: bold !important;
+        }
     </style>
 </head>
 <body>
@@ -579,14 +601,29 @@
                         </div>
                         <div class="form-group">
                             <label for="prioridadTarea">Prioridad de Tarea:</label>
-                            <input type="text" id="prioridadTarea" placeholder="Ej: Alta, Media, Baja, Urgente">
+                            <select id="prioridadTarea">
+                                <option value="" class="prioridad-ninguna">Ninguna</option>
+                                <option value="Baja" class="prioridad-baja">Baja</option>
+                                <option value="Media" class="prioridad-media">Media</option>
+                                <option value="Alta" class="prioridad-alta">Alta</option>
+                                <option value="Urgente" class="prioridad-urgente">Urgente</option>
+                            </select>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="estadoProcesal">Estado Procesal:</label>
-                            <input type="text" id="estadoProcesal" placeholder="Ej: Iniciado, En Trámite, Sentencia...">
+                            <select id="estadoProcesal">
+                                <option value="">Seleccionar estado</option>
+                                <option value="Iniciado">Iniciado</option>
+                                <option value="En tramite">En trámite</option>
+                                <option value="Con resolucion">Con resolución</option>
+                                <option value="Con sentencia">Con sentencia</option>
+                                <option value="En Alzada">En Alzada</option>
+                                <option value="Finalizado">Finalizado</option>
+                                <option value="Archivado">Archivado</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="fechaEstado">Fecha del Estado:</label>
