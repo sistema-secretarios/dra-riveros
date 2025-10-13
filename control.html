@@ -1,3 +1,4 @@
+<!-- CÓDIGO COMPLETO SIN CAMBIOS, SOLO CON LA MODIFICACIÓN SOLICITADA -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -463,6 +464,22 @@
         .badge-cumplido {
             background-color: #4caf50;
             color: white;
+        }
+
+        /* NUEVOS ESTILOS PARA EL CONTROL DE FIRMA DIGITAL */
+        .control-pendiente {
+            font-weight: bold;
+            color: #c62828;
+        }
+        
+        .control-cumplido {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .firma-disabled {
+            opacity: 0.5;
+            pointer-events: none;
         }
 
         /* Responsividad */
@@ -1177,6 +1194,43 @@
                     }
                 });
             });
+            
+            // NUEVO: Evento para controlar habilitación/deshabilitación de firma digital según control
+            const selectControl = row.querySelector('.control');
+            selectControl.addEventListener('change', function() {
+                const firmaDigitalContainer = row.querySelector('.firma-digital-mini');
+                const inputsFirma = firmaDigitalContainer.querySelectorAll('input, select, textarea');
+                
+                // Aplicar estilos al texto del select
+                if (this.value === 'Pendiente') {
+                    this.classList.add('control-pendiente');
+                    this.classList.remove('control-cumplido');
+                    
+                    // Deshabilitar firma digital
+                    firmaDigitalContainer.classList.add('firma-disabled');
+                    inputsFirma.forEach(input => {
+                        input.disabled = true;
+                    });
+                } else if (this.value === 'Cumplido') {
+                    this.classList.add('control-cumplido');
+                    this.classList.remove('control-pendiente');
+                    
+                    // Habilitar firma digital
+                    firmaDigitalContainer.classList.remove('firma-disabled');
+                    inputsFirma.forEach(input => {
+                        input.disabled = false;
+                    });
+                } else {
+                    this.classList.remove('control-pendiente', 'control-cumplido');
+                    firmaDigitalContainer.classList.remove('firma-disabled');
+                    inputsFirma.forEach(input => {
+                        input.disabled = false;
+                    });
+                }
+            });
+            
+            // Ejecutar el evento change para aplicar el estado inicial
+            selectControl.dispatchEvent(new Event('change'));
             
             // Evento para eliminar fila
             row.querySelector('.btn-eliminar-fila').addEventListener('click', function() {
