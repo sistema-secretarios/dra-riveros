@@ -298,8 +298,7 @@
                 
                 <select id="globalYearSelector">
                     <option value="0">Todos los años</option>
-                    <!-- Los años se llenarán dinámicamente -->
-                </select>
+                    </select>
             </div>
             
             <div style="display: flex; gap: 10px;">
@@ -316,11 +315,9 @@
         </div>
         
         <div id="statsGrid" class="stats-grid" style="display: none;">
-            <!-- Las tarjetas de gráficos se generarán dinámicamente -->
-        </div>
+            </div>
     </div>
     
-    <!-- Modal para imprimir -->
     <div id="printModal">
         <div class="print-content">
             <div class="print-header">
@@ -328,8 +325,7 @@
                 <button class="close-btn" id="closePrintModal">Cerrar</button>
             </div>
             <div id="printData">
-                <!-- Los datos de impresión se generarán aquí -->
-            </div>
+                </div>
             <div class="print-actions">
                 <button class="print-btn" id="doPrint">Imprimir</button>
                 <button class="close-btn" id="cancelPrint">Cancelar</button>
@@ -698,28 +694,56 @@
             return prioridades;
         }
         
+        // --- COMIENZO DE MODIFICACIÓN: PROCESAR FIRMA DIGITAL ---
         function procesarPorFirmaDigital() {
-            const firmas = {};
-            let firmaSecretario = 0;
-            let firmaDefensor = 0;
-            let sinFirma = 0;
-            
-            // Solo miscausas tiene firmaDigital
+            const firmas = {
+                'Firma Secretario': 0,
+                'Firma Defensor (Titular/Subrogante)': 0,
+                'Sin Firma (Cumplido sin firma)': 0
+            };
+            let totalPiezasProcesadas = 0;
+
+            // 1. Procesar causasData (Causas de Control)
+            causasData.forEach(causa => {
+                const fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
+                if (!filtroFecha(fechaInfo)) return;
+
+                if (causa.historial && Array.isArray(causa.historial)) {
+                    causa.historial.forEach(item => {
+                        totalPiezasProcesadas++;
+                        const controlCumplido = item.control === 'Cumplido';
+                        
+                        // Solo se consideran para las estadísticas las piezas que están CUMPLIDAS
+                        if (controlCumplido) {
+                            if (item.firmaSecretario === 'si') {
+                                firmas['Firma Secretario']++;
+                            } else if (item.firmaDefensor === 'si') {
+                                // Se asume que si hay firma de defensor, es Titular o Subrogante
+                                firmas['Firma Defensor (Titular/Subrogante)']++;
+                            } else {
+                                // Si está cumplido, pero sin las marcas de firma
+                                firmas['Sin Firma (Cumplido sin firma)']++;
+                            }
+                        }
+                    });
+                }
+            });
+
+            // 2. Procesar miscausasData (manteniendo la lógica original para compatibilidad)
             miscausasData.forEach(causa => {
-                // Para miscausas, usar la fecha más reciente de audiencias si está disponible
+                // Obtener fecha de miscausas para filtro
                 let fechaInfo = null;
                 if (causa.audiencias && causa.audiencias.length > 0) {
                     fechaInfo = obtenerMesYAnio(causa.audiencias[0].fechaHora);
                 } else {
-                    // Si no hay audiencias, usar fechaActualizacion si está disponible
                     fechaInfo = obtenerMesYAnio(causa.fechaActualizacion);
                 }
-                
                 if (!filtroFecha(fechaInfo)) return;
-                
-                // Detectar tipo de firma
+
+                // Lógica original de miscausas que espera el campo 'firmaDigital' como array de strings
                 if (causa.firmaDigital && Array.isArray(causa.firmaDigital)) {
-                    // Verificar si hay firma de secretario o defensor
+                    totalPiezasProcesadas++;
+                    
                     const tieneFirmaSecretario = causa.firmaDigital.some(firma => 
                         firma.toLowerCase().includes('secretario') || 
                         firma.toLowerCase().includes('secretaria')
@@ -731,26 +755,26 @@
                     );
                     
                     if (tieneFirmaSecretario) {
-                        firmaSecretario++;
+                        firmas['Firma Secretario']++;
                     } else if (tieneFirmaDefensor) {
-                        firmaDefensor++;
-                    } else if (causa.firmaDigital.length > 0) {
-                        // Si hay firma pero no se identifica el tipo
-                        firmaDefensor++; // Asumir que es defensor por defecto
+                        firmas['Firma Defensor (Titular/Subrogante)']++;
                     } else {
-                        sinFirma++;
+                        // Si hay elementos en firmaDigital, pero no son Secretario/Defensor
+                        firmas['Sin Firma (Cumplido sin firma)']++;
                     }
-                } else {
-                    sinFirma++;
                 }
+                // Si firmaDigital es nulo o vacío, no se cuenta como pieza procesada sin firma en esta lógica
             });
-            
-            firmas['Firma Secretario'] = firmaSecretario;
-            firmas['Firma Defensor'] = firmaDefensor;
-            firmas['Sin Firma'] = sinFirma;
-            
+
+            // Si no hay ninguna pieza de control procesada, devolvemos un objeto vacío para que el gráfico muestre 0
+            const totalFirmas = firmas['Firma Secretario'] + firmas['Firma Defensor (Titular/Subrogante)'] + firmas['Sin Firma (Cumplido sin firma)'];
+            if (totalFirmas === 0) {
+                return {}; 
+            }
+
             return firmas;
         }
+        // --- FIN DE MODIFICACIÓN: PROCESAR FIRMA DIGITAL ---
         
         function procesarPorClientes() {
             // Para clientes, si no hay filtro, mostrar todos los clientes
