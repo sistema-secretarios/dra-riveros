@@ -1,4 +1,4 @@
-<!-- CÓDIGO COMPLETO SIN CAMBIOS, SOLO CON LA MODIFICACIÓN SOLICITADA -->
+<!-- CÓDIGO COMPLETO CON LA MODIFICACIÓN SOLICITADA EN LA SOLAPA SITUACIÓN PROCESAL -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -482,6 +482,55 @@
             pointer-events: none;
         }
 
+        /* NUEVOS ESTILOS PARA LA BARRA DE FORMATO DE TEXTO */
+        .format-toolbar {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            flex-wrap: wrap;
+        }
+
+        .format-btn {
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            background: white;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .format-btn:hover {
+            background: #e9e9e9;
+        }
+
+        .format-btn.active {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .bold-btn { font-weight: bold; }
+        .blue-btn { color: #2196f3; }
+        .green-btn { color: #4caf50; }
+        .red-btn { color: #f44336; }
+
+        .situacion-procesal-editor {
+            min-height: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        .situacion-procesal-editor:focus {
+            outline: none;
+            border-color: #2e7d32;
+        }
+
         /* Responsividad */
         @media (max-width: 850px) {
             .header-container {
@@ -544,6 +593,13 @@
             #tablaCausas th:nth-child(5),
             #tablaCausas td:nth-child(5) {
                 display: none;
+            }
+            .format-toolbar {
+                gap: 3px;
+            }
+            .format-btn {
+                padding: 4px 6px;
+                font-size: 12px;
             }
         }
 
@@ -686,11 +742,19 @@
                         </div>
                     </div>
                     
-                    <!-- Solapa 4: Situación Procesal -->
+                    <!-- Solapa 4: Situación Procesal - MODIFICADA CON BARRA DE FORMATO -->
                     <div id="situacion-procesal" class="tab-content">
                         <div class="form-group">
                             <label for="situacionProcesal">Situación Procesal:</label>
-                            <textarea id="situacionProcesal" rows="6" placeholder="Describa la situación procesal actual"></textarea>
+                            <div class="format-toolbar">
+                                <button type="button" class="format-btn bold-btn" data-command="bold" title="Negrita"><strong>B</strong></button>
+                                <button type="button" class="format-btn blue-btn" data-command="foreColor" data-value="#2196F3" title="Texto azul">A</button>
+                                <button type="button" class="format-btn green-btn" data-command="foreColor" data-value="#4CAF50" title="Texto verde">A</button>
+                                <button type="button" class="format-btn red-btn" data-command="foreColor" data-value="#F44336" title="Texto rojo">A</button>
+                                <button type="button" class="format-btn" data-command="removeFormat" title="Quitar formato">Normal</button>
+                            </div>
+                            <div id="situacionProcesalEditor" class="situacion-procesal-editor" contenteditable="true" placeholder="Describa la situación procesal actual..."></div>
+                            <input type="hidden" id="situacionProcesal" name="situacionProcesal">
                         </div>
                     </div>
                     
@@ -831,6 +895,11 @@
         const btnAgregarAudiencia = document.getElementById('btnAgregarAudiencia');
         const btnAgregarVencimiento = document.getElementById('btnAgregarVencimiento');
         const btnAgregarActividad = document.getElementById('btnAgregarActividad');
+
+        // NUEVOS ELEMENTOS PARA LA BARRA DE FORMATO
+        const situacionProcesalEditor = document.getElementById('situacionProcesalEditor');
+        const situacionProcesalHidden = document.getElementById('situacionProcesal');
+        const formatButtons = document.querySelectorAll('.format-btn');
 
         // --- UTILIDADES ---
 
@@ -1098,6 +1167,30 @@
                 button.classList.add('active');
                 const tabId = button.getAttribute('data-tab');
                 document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // NUEVA FUNCIONALIDAD: BARRA DE FORMATO PARA SITUACIÓN PROCESAL
+        formatButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const command = this.getAttribute('data-command');
+                const value = this.getAttribute('data-value');
+                
+                // Aplicar el formato al editor
+                document.execCommand(command, false, value);
+                
+                // Mantener el foco en el editor
+                situacionProcesalEditor.focus();
+                
+                // Actualizar el estado de los botones
+                if (command === 'bold') {
+                    this.classList.toggle('active');
+                } else {
+                    // Remover estado activo de todos los botones
+                    formatButtons.forEach(btn => btn.classList.remove('active'));
+                    // Activar el botón actual
+                    this.classList.add('active');
+                }
             });
         });
 
@@ -1426,6 +1519,10 @@
             tablaVencimientos.innerHTML = '';
             tablaOtrasActividades.innerHTML = '';
             
+            // Limpiar el editor de situación procesal
+            situacionProcesalEditor.innerHTML = '';
+            situacionProcesalHidden.value = '';
+            
             // Cargar datos de causas cada vez que se abre el modal
             cargarDatosCausas();
             
@@ -1439,7 +1536,10 @@
                     document.getElementById('empleadoAsignado').value = causa.empleadoAsignado || '';
                     document.getElementById('modoIntervencion').value = causa.modoIntervencion || '';
                     document.getElementById('documentacion').value = causa.documentacion || '';
-                    document.getElementById('situacionProcesal').value = causa.situacionProcesal || '';
+                    
+                    // Cargar situación procesal en el editor
+                    situacionProcesalEditor.innerHTML = causa.situacionProcesal || '';
+                    situacionProcesalHidden.value = causa.situacionProcesal || '';
                     
                     // Cargar historial si existe
                     if (causa.historial && Array.isArray(causa.historial)) {
@@ -1517,7 +1617,7 @@
             }
             
             if (causa.situacionProcesal) {
-                html += `<p><strong>Situación Procesal:</strong> ${causa.situacionProcesal}</p>`;
+                html += `<p><strong>Situación Procesal:</strong></p><div style="border: 1px solid #eee; padding: 10px; border-radius: 4px; background: #f9f9f9;">${causa.situacionProcesal}</div>`;
             }
             
             if (causa.historial && causa.historial.length > 0) {
@@ -1677,6 +1777,9 @@
         formRegistro.addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Actualizar el campo oculto de situación procesal con el contenido del editor
+            situacionProcesalHidden.value = situacionProcesalEditor.innerHTML;
+            
             // Recopilar datos del formulario
             const formData = {
                 expediente: document.getElementById('numCausa').value.trim(),
@@ -1686,7 +1789,7 @@
                 empleadoAsignado: document.getElementById('empleadoAsignado').value.trim(),
                 modoIntervencion: document.getElementById('modoIntervencion').value.trim(),
                 documentacion: document.getElementById('documentacion').value.trim(),
-                situacionProcesal: document.getElementById('situacionProcesal').value.trim(),
+                situacionProcesal: situacionProcesalHidden.value,
                 fechaActualizacion: new Date().toISOString()
             };
             
@@ -1859,6 +1962,11 @@
             agregarFilaAudiencia();
             agregarFilaVencimiento();
             agregarFilaActividad();
+            
+            // NUEVO: Evento para actualizar el campo oculto cuando se edita la situación procesal
+            situacionProcesalEditor.addEventListener('input', function() {
+                situacionProcesalHidden.value = this.innerHTML;
+            });
         });
     </script>
 </body>
