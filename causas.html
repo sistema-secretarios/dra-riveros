@@ -7,6 +7,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
     
     <style>
         /* --- ESTILOS GENERALES (Sin cambios) --- */
@@ -478,6 +479,86 @@
             color: #7b1fa2 !important;
             font-weight: bold !important;
         }
+
+        /* NUEVO: Estilos para el editor de texto enriquecido */
+        .editor-toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .editor-toolbar button {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .editor-toolbar button:hover {
+            background: #e9ecef;
+        }
+
+        .editor-toolbar button.active {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .color-button {
+            font-weight: bold;
+            min-width: 50px;
+        }
+
+        .color-button.azul {
+            color: #007bff;
+            border-color: #007bff;
+        }
+
+        .color-button.rojo {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .color-button.verde {
+            color: #28a745;
+            border-color: #28a745;
+        }
+
+        .color-button.normal {
+            color: #212529;
+            border-color: #6c757d;
+        }
+
+        #observaciones-editor {
+            min-height: 120px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            background: #fff;
+            line-height: 1.5;
+        }
+
+        #observaciones-editor:focus {
+            outline: none;
+            border-color: #2e7d32;
+        }
+
+        .counter {
+            font-size: .8rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -703,7 +784,16 @@
                 <div class="tab-content" id="observaciones">
                     <div class="form-group">
                         <label for="observacionesGenerales">Observaciones Generales:</label>
-                        <textarea id="observacionesGenerales" rows="6" placeholder="Observaciones adicionales sobre la causa"></textarea>
+                        <div class="editor-toolbar">
+                            <button type="button" id="btnBold" title="Negrita"><i class="fas fa-bold"></i></button>
+                            <button type="button" id="btnColorAzul" class="color-button azul" title="Color Azul">A</button>
+                            <button type="button" id="btnColorRojo" class="color-button rojo" title="Color Rojo">A</button>
+                            <button type="button" id="btnColorVerde" class="color-button verde" title="Color Verde">A</button>
+                            <button type="button" id="btnColorNormal" class="color-button normal" title="Color Normal">Normal</button>
+                        </div>
+                        <div id="observaciones-editor" contenteditable="true"></div>
+                        <input type="hidden" id="observacionesGenerales" name="observacionesGenerales">
+                        <div class="counter" id="counter">0/1000</div>
                     </div>
                 </div>
                 
@@ -790,6 +880,15 @@
         const btnAgregarFirma = document.getElementById('btnAgregarFirma');
         const btnNuevoExpediente = document.getElementById('btnNuevoExpediente');
 
+        // NUEVOS SELECTORES PARA EL EDITOR DE TEXTO
+        const btnBold = document.getElementById('btnBold');
+        const btnColorAzul = document.getElementById('btnColorAzul');
+        const btnColorRojo = document.getElementById('btnColorRojo');
+        const btnColorVerde = document.getElementById('btnColorVerde');
+        const btnColorNormal = document.getElementById('btnColorNormal');
+        const observacionesEditor = document.getElementById('observaciones-editor');
+        const observacionesHidden = document.getElementById('observacionesGenerales');
+
         // --- UTILIDADES ---
 
         function formatDate(dateString) {
@@ -843,6 +942,59 @@
                     </td>
                 </tr>
             `;
+        }
+
+        // NUEVA FUNCIÓN: Inicializar editor de texto enriquecido
+        function initEditor() {
+            // Botón negrita
+            btnBold.addEventListener('click', function() {
+                document.execCommand('bold', false, null);
+                observacionesEditor.focus();
+            });
+            
+            // Botones de color
+            btnColorAzul.addEventListener('click', function() {
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand('foreColor', false, '#007bff');
+                observacionesEditor.focus();
+            });
+            
+            btnColorRojo.addEventListener('click', function() {
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand('foreColor', false, '#dc3545');
+                observacionesEditor.focus();
+            });
+            
+            btnColorVerde.addEventListener('click', function() {
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand('foreColor', false, '#28a745');
+                observacionesEditor.focus();
+            });
+            
+            // Botón para volver al color normal (negro)
+            btnColorNormal.addEventListener('click', function() {
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand('foreColor', false, '#212529');
+                observacionesEditor.focus();
+            });
+            
+            // Actualizar contador de palabras y hidden input
+            observacionesEditor.addEventListener('input', function() {
+                // Obtener texto sin etiquetas HTML para contar palabras
+                const text = this.innerText || this.textContent;
+                const words = text.trim().split(/\s+/).filter(Boolean);
+                document.getElementById("counter").textContent = `${words.length}/1000`;
+                
+                // Actualizar el hidden input con el HTML
+                observacionesHidden.value = this.innerHTML;
+            });
+            
+            // Manejar pegado para eliminar formato no deseado
+            observacionesEditor.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+                document.execCommand('insertText', false, text);
+            });
         }
 
         // --- FUNCIONES DE AUTORRELLENADO ---
@@ -1192,8 +1344,20 @@
                     document.getElementById('prioridadTarea').value = causa.prioridadTarea || '';
                     document.getElementById('estadoProcesal').value = causa.estadoProcesal || '';
                     document.getElementById('fechaEstado').value = causa.fechaEstado || '';
-                    // CORRECCIÓN: Cargar observaciones en el textarea correcto
-                    document.getElementById('observacionesGenerales').value = causa.observacionesGenerales || '';
+                    
+                    // CORRECCIÓN: Cargar observaciones en el editor
+                    if (causa.observacionesGenerales) {
+                        observacionesEditor.innerHTML = causa.observacionesGenerales;
+                        observacionesHidden.value = causa.observacionesGenerales;
+                        // Actualizar contador de palabras
+                        const text = observacionesEditor.innerText || observacionesEditor.textContent;
+                        const words = text.trim().split(/\s+/).filter(Boolean);
+                        document.getElementById("counter").textContent = `${words.length}/1000`;
+                    } else {
+                        observacionesEditor.innerHTML = "";
+                        observacionesHidden.value = "";
+                        document.getElementById("counter").textContent = "0/1000";
+                    }
                     
                     (causa.seguimiento || []).forEach(item => agregarFilaSeguimiento(item.fecha, item.detalles));
                     (causa.audiencias || []).forEach(item => agregarFilaFechaHora(tablaAudiencias, item.fechaHora, item.detalle));
@@ -1209,6 +1373,10 @@
                 agregarFilaFechaHora(tablaVencimientos);
                 agregarFilaFechaHora(tablaActividades);
                 agregarFilaFirmaDigital();
+                // Resetear editor de observaciones
+                observacionesEditor.innerHTML = "";
+                observacionesHidden.value = "";
+                document.getElementById("counter").textContent = "0/1000";
             }
             
             // Resetear pestañas
@@ -1258,8 +1426,8 @@
             contenidoHTML += createDetailTable('Vencimientos', ['Fecha y Hora', 'Detalle'], causa.vencimientos, [formatDateTime, v => v]);
             contenidoHTML += createDetailTable('Otras Actividades', ['Fecha y Hora', 'Detalle'], causa.actividades, [formatDateTime, v => v]);
             
-            // CORRECCIÓN: Mostrar observaciones generales
-            contenidoHTML += `<div class="form-group"><label><strong>Observaciones Generales:</strong></label><p>${causa.observacionesGenerales || 'N/A'}</p></div>`;
+            // CORRECCIÓN: Mostrar observaciones generales como HTML
+            contenidoHTML += `<div class="form-group"><label><strong>Observaciones Generales:</strong></label><div>${causa.observacionesGenerales || 'N/A'}</div></div>`;
             
             detalleContenido.innerHTML = contenidoHTML;
             modalVer.style.display = 'block';
@@ -1291,8 +1459,8 @@
                 prioridadTarea: document.getElementById('prioridadTarea').value,
                 estadoProcesal: document.getElementById('estadoProcesal').value,
                 fechaEstado: document.getElementById('fechaEstado').value,
-                // CORRECCIÓN: Usar el id correcto del textarea y el nombre de propiedad consistente
-                observacionesGenerales: document.getElementById('observacionesGenerales').value,
+                // CORRECCIÓN: Usar el valor del editor de texto enriquecido
+                observacionesGenerales: observacionesHidden.value,
                 seguimiento: obtenerDatosTabla('#tablaSeguimiento tbody', ['fecha', 'detalles']),
                 audiencias: obtenerDatosTabla('#tablaAudiencias tbody', ['fechaHora', 'detalle']),
                 vencimientos: obtenerDatosTabla('#tablaVencimientos tbody', ['fechaHora', 'detalle']),
@@ -1353,6 +1521,9 @@
             setupDynamicTable('tablaVencimientos', 'btnAgregarVencimiento', () => agregarFilaFechaHora(tablaVencimientos));
             setupDynamicTable('tablaActividades', 'btnAgregarActividad', () => agregarFilaFechaHora(tablaActividades));
             setupDynamicTable('tablaFirmaDigital', 'btnAgregarFirma', () => agregarFilaFirmaDigital());
+
+            // Inicializar editor de texto enriquecido
+            initEditor();
 
             btnNuevoRegistro.addEventListener('click', () => abrirModalRegistro());
             btnImprimirListado.addEventListener('click', () => window.print());
