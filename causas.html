@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Causas</title>
     
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
     
     <style>
-        /* --- ESTILOS GENERALES (Sin cambios) --- */
+        /* --- ESTILOS GENERALES --- */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -27,6 +27,38 @@
             border-radius: 8px;
         }
 
+        /* Logo y título (nuevo) */
+        .header-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background-color: #2e7d32;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .title-container h1 {
+            margin: 0;
+            color: #2e7d32;
+        }
+        
+        .title-container p {
+            margin: 5px 0 0 0;
+            color: #666;
+        }
+
+        /* Contenedor principal del encabezado */
         .header-container {
             display: flex;
             justify-content: space-between;
@@ -34,11 +66,20 @@
             margin-bottom: 20px;
         }
 
+        /* Barra de Herramientas */
         .toolbar {
             display: flex;
             align-items: center;
             flex-grow: 1;
             gap: 15px;
+        }
+        
+        /* Título al margen derecho */
+        h1 {
+            text-align: right;
+            color: #2e7d32;
+            margin: 0;
+            white-space: nowrap;
         }
 
         #filtroBusqueda {
@@ -63,6 +104,97 @@
             background-color: #1b5e20;
         }
 
+        /* NUEVO: Estilos para resumen de causas */
+        .resumen-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .resumen-card {
+            flex: 1;
+            min-width: 180px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 4px solid #2e7d32;
+        }
+
+        .resumen-card.total {
+            border-top-color: #2e7d32;
+        }
+
+        .resumen-card.prioridad-baja {
+            border-top-color: #2e7d32;
+        }
+
+        .resumen-card.prioridad-media {
+            border-top-color: #f39c12;
+        }
+
+        .resumen-card.prioridad-alta {
+            border-top-color: #c62828;
+        }
+
+        .resumen-card.prioridad-urgente {
+            border-top-color: #7b1fa2;
+        }
+
+        .resumen-numero {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .resumen-titulo {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* NUEVO: Estilos para filtros adicionales */
+        .filtros-avanzados {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .filtro-grupo {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filtro-grupo label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .filtro-grupo input,
+        .filtro-grupo select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .filtro-grupo select {
+            background: white;
+            cursor: pointer;
+        }
+
+        /* Estilos de la Tabla */
         .table-responsive {
             overflow-x: auto;
             margin-top: 20px;
@@ -89,25 +221,31 @@
             background-color: #f5f5f5;
         }
 
+        /* Botones de Acción en la Tabla - MEJORADOS */
         .action-buttons {
             display: flex;
             gap: 5px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
         }
 
         .action-buttons button {
-            padding: 6px 10px;
+            padding: 6px 8px;
             border: none;
             border-radius: 3px;
             cursor: pointer;
             color: white;
-            font-size: 12px;
+            font-size: 11px;
+            white-space: nowrap;
+            min-width: 60px;
         }
 
         .btn-ver { background-color: #388e3c; }
         .btn-editar { background-color: #43a047; }
         .btn-eliminar { background-color: #c62828; }
 
+        /* Estilos de Paginación */
         .pagination-controls {
             display: flex;
             align-items: center;
@@ -147,6 +285,7 @@
             white-space: nowrap;
         }
         
+        /* ALERTAS VISUALES MODERNAS (TOAST NOTIFICATIONS) */
         #alert-container {
             position: fixed;
             top: 20px;
@@ -180,6 +319,7 @@
             background-color: #c62828;
         }
         
+        /* Estilos de Modal */
         .modal { 
             display: none; 
             position: fixed; 
@@ -225,34 +365,35 @@
             color: #000;
         }
         
-        .tabs {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
+        /* Estilos para las solapas del modal */
+        .tab-container {
+            margin-top: 20px;
         }
         
-        .tab {
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        
+        .tab-button {
             padding: 10px 20px;
+            background: #f1f1f1;
+            border: none;
             cursor: pointer;
-            background-color: #f1f1f1;
-            border: 1px solid #ddd;
-            border-bottom: none;
             border-radius: 5px 5px 0 0;
             margin-right: 5px;
             font-weight: bold;
         }
         
-        .tab.active {
-            background-color: #2e7d32;
+        .tab-button.active {
+            background: #2e7d32;
             color: white;
         }
         
         .tab-content {
             display: none;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-top: none;
+            padding: 15px 0;
         }
         
         .tab-content.active {
@@ -263,16 +404,51 @@
             margin-bottom: 15px;
         }
         
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+        .form-group label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
             color: #333;
         }
         
-        .form-group input, 
-        .form-group textarea,
-        .form-group select { /* MEJORA: Estilo unificado para selects */
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        /* Estilos específicos para las tablas de seguimiento */
+        .seguimiento-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .seguimiento-table th, .seguimiento-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        .seguimiento-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .seguimiento-table input,
+        .seguimiento-table select,
+        .seguimiento-table textarea {
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
@@ -280,48 +456,11 @@
             box-sizing: border-box;
         }
         
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-        }
-        
-        .seguimiento-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        
-        .seguimiento-table th, 
-        .seguimiento-table td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #ddd;
-            vertical-align: middle; /* MEJORA: Alineación vertical */
-        }
-        
-        .seguimiento-table th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        
-        .seguimiento-table input,
-        .seguimiento-table select { /* MEJORA: Estilo unificado para selects */
-            width: 100%;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-        }
-        
         .btn-agregar-fila {
             background-color: #2e7d32;
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 8px 15px;
             border-radius: 4px;
             cursor: pointer;
             margin-top: 10px;
@@ -331,156 +470,12 @@
             background-color: #c62828;
             color: white;
             border: none;
-            padding: 5px 8px;
+            padding: 5px 10px;
             border-radius: 3px;
             cursor: pointer;
         }
         
-        .date-input-container {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-        
-        .date-input-container input[type="date"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        
-        #btnGuardar { 
-            background-color: #2e7d32; 
-            color: white; 
-            padding: 10px 15px; 
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-size: 16px; 
-            width: 100%; 
-            margin-top: 15px; 
-        }
-
-        #btnGuardar:hover {
-            background-color: #1b5e20;
-        }
-        
-        /* MEJORA: Estilo para botón deshabilitado */
-        #btnGuardar:disabled {
-            background-color: #9e9e9e;
-            cursor: not-allowed;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-        
-        /* MEJORA: Estilos de Impresión */
-        @media print {
-            body {
-                background-color: #fff;
-                padding: 0;
-            }
-            .container {
-                box-shadow: none;
-                border: none;
-                width: 100%;
-                max-width: 100%;
-                padding: 0;
-            }
-            .header-container, .modal, .action-buttons, .pagination-controls, #alert-container {
-                display: none !important;
-            }
-            #tablaCausas th, #tablaCausas td {
-                border: 1px solid #000;
-                padding: 8px;
-                font-size: 10pt;
-            }
-            #tablaCausas th {
-                background-color: #eee !important;
-                color: #000 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            #tablaCausas {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            @page {
-                size: A4 landscape;
-                margin: 2cm;
-            }
-        }
-
-        @media (max-width: 850px) {
-            .header-container {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-                width: 100%;
-                gap: 10px;
-            }
-            #filtroBusqueda {
-                width: 100%;
-            }
-            .pagination-controls {
-                justify-content: space-between;
-                width: 100%;
-            }
-            .pagination-controls.centered {
-                justify-content: center;
-            }
-            .modal-content {
-                margin: 5% auto;
-                width: 95% !important;
-            }
-            .action-buttons {
-                flex-direction: column;
-            }
-            .tabs {
-                flex-direction: column;
-            }
-            .tab {
-                margin-bottom: 5px;
-                border-radius: 5px;
-            }
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-            .seguimiento-table {
-                font-size: 12px;
-            }
-        }
-
-        /* NUEVOS ESTILOS PARA LOS SELECTS DE PRIORIDAD */
-        .prioridad-ninguna {
-            color: #757575 !important;
-            font-weight: bold !important;
-        }
-        .prioridad-baja {
-            color: #2e7d32 !important;
-            font-weight: bold !important;
-        }
-        .prioridad-media {
-            color: #ef6c00 !important;
-            font-weight: bold !important;
-        }
-        .prioridad-alta {
-            color: #c62828 !important;
-            font-weight: bold !important;
-        }
-        .prioridad-urgente {
-            color: #7b1fa2 !important;
-            font-weight: bold !important;
-        }
-
-        /* NUEVO: Estilos para el editor de texto enriquecido */
+        /* NUEVO: Estilos para la barra de formato de texto */
         .editor-toolbar {
             display: flex;
             gap: 8px;
@@ -559,16 +554,233 @@
             color: #6b7280;
             margin-top: 4px;
         }
+        
+        /* NUEVO: Estilos para selects de prioridad */
+        .prioridad-ninguna {
+            color: #757575 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-baja {
+            color: #2e7d32 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-media {
+            color: #ef6c00 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-alta {
+            color: #c62828 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-urgente {
+            color: #7b1fa2 !important;
+            font-weight: bold !important;
+        }
+        
+        /* NUEVO: Estilos para botones en modal ver */
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+        
+        .modal-buttons button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .modal-buttons .btn-imprimir {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .modal-buttons .btn-imprimir:hover {
+            background-color: #388e3c;
+        }
+        
+        .modal-buttons .btn-cerrar {
+            background-color: #757575;
+            color: white;
+        }
+        
+        .modal-buttons .btn-cerrar:hover {
+            background-color: #616161;
+        }
+
+        /* Estado de carga */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        /* Responsividad */
+        @media (max-width: 850px) {
+            .header-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            h1 {
+                text-align: left;
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+                gap: 10px;
+            }
+            #filtroBusqueda {
+                width: 100%;
+            }
+            .resumen-container {
+                flex-direction: column;
+            }
+            .resumen-card {
+                min-width: 100%;
+            }
+            .filtros-avanzados {
+                flex-direction: column;
+            }
+            .filtro-grupo {
+                min-width: 100%;
+            }
+            .pagination-controls {
+                justify-content: space-between;
+                width: 100%;
+            }
+            .pagination-controls.centered {
+                justify-content: center;
+            }
+            .modal-content {
+                margin: 5% auto;
+                width: 95% !important;
+            }
+            .action-buttons {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .action-buttons button {
+                padding: 4px 6px;
+                font-size: 10px;
+                min-width: 50px;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .tab-buttons {
+                flex-wrap: wrap;
+            }
+            .tab-button {
+                flex: 1;
+                min-width: 120px;
+            }
+            .seguimiento-table {
+                font-size: 14px;
+            }
+            .seguimiento-table th, .seguimiento-table td {
+                padding: 5px;
+            }
+            .editor-toolbar {
+                gap: 3px;
+            }
+            .editor-toolbar button {
+                padding: 4px 6px;
+                font-size: 12px;
+            }
+            .modal-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .action-buttons {
+                flex-direction: column;
+                gap: 3px;
+            }
+            .action-buttons button {
+                width: 100%;
+                margin: 2px 0;
+            }
+            #tablaCausas th:nth-child(4),
+            #tablaCausas td:nth-child(4) {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header-container">
+    <div class="header-container">
             <div class="toolbar">
-                <input type="text" id="filtroBusqueda" placeholder="Buscar por número, carátula, observaciones..." title="Filtro de búsqueda">
+                <input type="text" id="filtroBusqueda" placeholder="Buscar por expediente, carátula..." title="Filtro de búsqueda">
                 <div id="topPagination" class="pagination-controls"></div>
                 <button id="btnNuevoRegistro" title="Abrir modal de Nuevo Registro">➕ Nuevo Registro</button>
                 <button id="btnImprimirListado" title="Imprimir listado completo">🖨️ Imprimir Listado</button>
+            </div>
+        </div>
+        
+        <!-- NUEVO: Resumen de causas -->
+        <div class="resumen-container">
+            <div class="resumen-card total">
+                <div class="resumen-numero" id="totalCausas">0</div>
+                <div class="resumen-titulo">Total de Causas</div>
+            </div>
+            <div class="resumen-card prioridad-baja">
+                <div class="resumen-numero" id="bajasCausas">0</div>
+                <div class="resumen-titulo">Prioridad Baja</div>
+            </div>
+            <div class="resumen-card prioridad-media">
+                <div class="resumen-numero" id="mediasCausas">0</div>
+                <div class="resumen-titulo">Prioridad Media</div>
+            </div>
+            <div class="resumen-card prioridad-alta">
+                <div class="resumen-numero" id="altasCausas">0</div>
+                <div class="resumen-titulo">Prioridad Alta</div>
+            </div>
+        </div>
+        
+        <!-- NUEVO: Filtros adicionales -->
+        <div class="filtros-avanzados">
+            <div class="filtro-grupo">
+                <label for="filtroJuzgado">Juzgado</label>
+                <select id="filtroJuzgado">
+                    <option value="">Todos los juzgados</option>
+                </select>
+            </div>
+            <div class="filtro-grupo">
+                <label for="filtroTipoProceso">Tipo de Proceso</label>
+                <select id="filtroTipoProceso">
+                    <option value="">Todos los tipos</option>
+                </select>
+            </div>
+            <div class="filtro-grupo">
+                <label for="filtroEmpleado">Empleado Asignado</label>
+                <select id="filtroEmpleado">
+                    <option value="">Todos los empleados</option>
+                </select>
+            </div>
+            <div class="filtro-grupo">
+                <label for="filtroEstadoProcesal">Estado Procesal</label>
+                <select id="filtroEstadoProcesal">
+                    <option value="">Todos los estados</option>
+                    <option value="Iniciado">Iniciado</option>
+                    <option value="En tramite">En trámite</option>
+                    <option value="Con resolucion">Con resolución</option>
+                    <option value="Con sentencia">Con sentencia</option>
+                    <option value="En Alzada">En Alzada</option>
+                    <option value="Finalizado">Finalizado</option>
+                    <option value="Archivado">Archivado</option>
+                </select>
             </div>
         </div>
         
@@ -580,13 +792,15 @@
                         <th>Tipo de Proceso</th>
                         <th>Juzgado</th>
                         <th>Empleado</th>
-                        <th>Audiencias y Vencimientos</th>
-                        <th>Observaciones</th>
+                        <th>Prioridad</th>
+                        <th>Estado Procesal</th>
+                        <th>Audiencias / Vencimientos</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    </tbody>
+                    <!-- Los datos se cargarán dinámicamente -->
+                </tbody>
             </table>
         </div>
         
@@ -595,228 +809,247 @@
     
     <div id="alert-container"></div>
 
+    <!-- Modal para nuevo/editar registro -->
     <div id="modalRegistro" class="modal">
         <div class="modal-content medium-modal">
             <a href="#" class="close-btn">&times;</a>
             <h2><span id="modalTitle">Nuevo</span> Registro de Causa</h2>
             
-            <div class="tabs">
-                <div class="tab active" data-tab="datos-expediente">Datos del Expediente</div>
-                <div class="tab" data-tab="documental">Documental</div>
-                <div class="tab" data-tab="firma-digital">Firma Digital</div>
-                <div class="tab" data-tab="situacion-procesal">Situación Procesal</div>
-                <div class="tab" data-tab="audiencias-vencimientos">Audiencias y Vencimientos</div>
-                <div class="tab" data-tab="observaciones">Observaciones</div>
-            </div>
-            
-            <form id="formRegistro">
-                <div class="tab-content active" id="datos-expediente">
-                    <div class="form-group">
-                        <label for="numeroCaratula">Número y Carátula:</label>
-                        <div class="form-row">
-                            <div class="form-group" style="flex: 2;">
-                                <input type="text" id="numeroCaratula" list="causasList" placeholder="Buscar o escribir nuevo expediente..." required>
-                                <datalist id="causasList">
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="datos-expediente">Datos del Expediente</button>
+                    <button class="tab-button" data-tab="documental">Documental</button>
+                    <button class="tab-button" data-tab="firma-digital">Firma Digital</button>
+                    <button class="tab-button" data-tab="situacion-procesal">Situación Procesal</button>
+                    <button class="tab-button" data-tab="audiencias-vencimientos">Audiencias y Vencimientos</button>
+                    <button class="tab-button" data-tab="observaciones">Observaciones</button>
+                </div>
+                
+                <form id="formRegistro">
+                    <!-- Solapa 1: Datos del Expediente -->
+                    <div id="datos-expediente" class="tab-content active">
+                        <div class="form-group">
+                            <label for="numeroCaratula">Número y Carátula:</label>
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 2;">
+                                    <input type="text" id="numeroCaratula" list="causasList" placeholder="Buscar o escribir nuevo expediente..." required>
+                                    <datalist id="causasList">
+                                        <!-- Se llenará dinámicamente con datos de Firestore -->
                                     </datalist>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <button type="button" id="btnNuevoExpediente" class="btn-agregar-fila">➕ Nuevo Expediente</button>
+                                </div>
                             </div>
-                            <div class="form-group" style="flex: 1;">
-                                <button type="button" id="btnNuevoExpediente" class="btn-agregar-fila">➕ Nuevo Expediente</button>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="tipoProceso">Tipo de Proceso:</label>
+                                <input type="text" id="tipoProceso" placeholder="Ej: Civil, Penal, Laboral...">
+                            </div>
+                            <div class="form-group">
+                                <label for="juzgado">Juzgado:</label>
+                                <input type="text" id="juzgado" placeholder="Ej: Juzgado Civil y Comercial N°1">
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
+                        
                         <div class="form-group">
-                            <label for="tipoProceso">Tipo de Proceso:</label>
-                            <input type="text" id="tipoProceso" placeholder="Ej: Civil, Penal, Laboral...">
-                        </div>
-                        <div class="form-group">
-                            <label for="juzgado">Juzgado:</label>
-                            <input type="text" id="juzgado" placeholder="Ej: Juzgado Civil y Comercial N°1">
+                            <label for="empleado">Empleado Asignado:</label>
+                            <input type="text" id="empleado" placeholder="Ej: Juan Pérez">
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="empleado">Empleado Asignado:</label>
-                        <input type="text" id="empleado" placeholder="Ej: Juan Pérez">
-                    </div>
-                </div>
-                
-                <div class="tab-content" id="documental">
-                    <div class="form-group">
-                        <label for="documentosPresentados">Documentos Presentados:</label>
-                        <textarea id="documentosPresentados" rows="4" placeholder="Lista de documentos presentados"></textarea>
+                    <!-- Solapa 2: Documental -->
+                    <div id="documental" class="tab-content">
+                        <div class="form-group">
+                            <label for="documentosPresentados">Documentos Presentados:</label>
+                            <textarea id="documentosPresentados" rows="4" placeholder="Lista de documentos presentados"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="estadoDocumental">Estado Documental:</label>
+                            <input type="text" id="estadoDocumental" placeholder="Ej: Completo, Incompleto, Pendiente...">
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="estadoDocumental">Estado Documental:</label>
-                        <input type="text" id="estadoDocumental" placeholder="Ej: Completo, Incompleto, Pendiente...">
-                    </div>
-                </div>
-                
-                <div class="tab-content" id="firma-digital">
-                    <div class="form-group">
-                        <table class="seguimiento-table" id="tablaFirmaDigital">
-                            <thead>
-                                <tr>
-                                    <th>Pieza Procesal</th>
-                                    <th>Fecha Firma</th>
-                                    <th>Firma de</th>
-                                    <th>Tipo Defensor</th>
-                                    <th>Detalle Subrogante</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                    <!-- Solapa 3: Firma Digital -->
+                    <div id="firma-digital" class="tab-content">
+                        <div class="form-group">
+                            <table class="seguimiento-table" id="tablaFirmaDigital">
+                                <thead>
+                                    <tr>
+                                        <th>Pieza Procesal</th>
+                                        <th>Fecha Firma</th>
+                                        <th>Firma de</th>
+                                        <th>Tipo Defensor</th>
+                                        <th>Detalle Subrogante</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filas se agregarán dinámicamente -->
                                 </tbody>
-                        </table>
-                        <button type="button" class="btn-agregar-fila" id="btnAgregarFirma">+ Agregar Firma</button>
-                    </div>
-                </div>
-                
-                <div class="tab-content" id="situacion-procesal">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="modoIntervencion">Modo de Intervención:</label>
-                            <input type="text" id="modoIntervencion" placeholder="Ej: Demanda, Contestación, Apelación...">
-                        </div>
-                        <div class="form-group">
-                            <label for="prioridadTarea">Prioridad de Tarea:</label>
-                            <select id="prioridadTarea">
-                                <option value="" class="prioridad-ninguna">Ninguna</option>
-                                <option value="Baja" class="prioridad-baja">Baja</option>
-                                <option value="Media" class="prioridad-media">Media</option>
-                                <option value="Alta" class="prioridad-alta">Alta</option>
-                                <option value="Urgente" class="prioridad-urgente">Urgente</option>
-                            </select>
+                            </table>
+                            <button type="button" class="btn-agregar-fila" id="btnAgregarFirma">➕ Agregar Firma</button>
                         </div>
                     </div>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="estadoProcesal">Estado Procesal:</label>
-                            <select id="estadoProcesal">
-                                <option value="">Seleccionar estado</option>
-                                <option value="Iniciado">Iniciado</option>
-                                <option value="En tramite">En trámite</option>
-                                <option value="Con resolucion">Con resolución</option>
-                                <option value="Con sentencia">Con sentencia</option>
-                                <option value="En Alzada">En Alzada</option>
-                                <option value="Finalizado">Finalizado</option>
-                                <option value="Archivado">Archivado</option>
-                            </select>
+                    <!-- Solapa 4: Situación Procesal -->
+                    <div id="situacion-procesal" class="tab-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="modoIntervencion">Modo de Intervención:</label>
+                                <input type="text" id="modoIntervencion" placeholder="Ej: Demanda, Contestación, Apelación...">
+                            </div>
+                            <div class="form-group">
+                                <label for="prioridadTarea">Prioridad de Tarea:</label>
+                                <select id="prioridadTarea">
+                                    <option value="" class="prioridad-ninguna">Ninguna</option>
+                                    <option value="Baja" class="prioridad-baja">Baja</option>
+                                    <option value="Media" class="prioridad-media">Media</option>
+                                    <option value="Alta" class="prioridad-alta">Alta</option>
+                                    <option value="Urgente" class="prioridad-urgente">Urgente</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="fechaEstado">Fecha del Estado:</label>
-                            <div class="date-input-container">
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="estadoProcesal">Estado Procesal:</label>
+                                <select id="estadoProcesal">
+                                    <option value="">Seleccionar estado</option>
+                                    <option value="Iniciado">Iniciado</option>
+                                    <option value="En tramite">En trámite</option>
+                                    <option value="Con resolucion">Con resolución</option>
+                                    <option value="Con sentencia">Con sentencia</option>
+                                    <option value="En Alzada">En Alzada</option>
+                                    <option value="Finalizado">Finalizado</option>
+                                    <option value="Archivado">Archivado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="fechaEstado">Fecha del Estado:</label>
                                 <input type="date" id="fechaEstado">
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Seguimiento:</label>
-                        <table class="seguimiento-table" id="tablaSeguimiento">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Detalles</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        
+                        <div class="form-group">
+                            <label>Seguimiento:</label>
+                            <table class="seguimiento-table" id="tablaSeguimiento">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Detalles</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filas se agregarán dinámicamente -->
                                 </tbody>
-                        </table>
-                        <button type="button" class="btn-agregar-fila" id="btnAgregarSeguimiento">+ Agregar Seguimiento</button>
-                    </div>
-                </div>
-                
-                <div class="tab-content" id="audiencias-vencimientos">
-                    <div class="form-group">
-                        <h3>Audiencias</h3>
-                        <table class="seguimiento-table" id="tablaAudiencias">
-                            <thead>
-                                <tr>
-                                    <th>Fecha y Hora</th>
-                                    <th>Detalle</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                </tbody>
-                        </table>
-                        <button type="button" class="btn-agregar-fila" id="btnAgregarAudiencia">+ Agregar Audiencia</button>
-                    </div>
-                    
-                    <div class="form-group">
-                        <h3>Vencimientos</h3>
-                        <table class="seguimiento-table" id="tablaVencimientos">
-                            <thead>
-                                <tr>
-                                    <th>Fecha y Hora</th>
-                                    <th>Detalle</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                </tbody>
-                        </table>
-                        <button type="button" class="btn-agregar-fila" id="btnAgregarVencimiento">+ Agregar Vencimiento</button>
-                    </div>
-                    
-                    <div class="form-group">
-                        <h3>Otras Actividades</h3>
-                        <table class="seguimiento-table" id="tablaActividades">
-                            <thead>
-                                <tr>
-                                    <th>Fecha y Hora</th>
-                                    <th>Detalle</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                </tbody>
-                        </table>
-                        <button type="button" class="btn-agregar-fila" id="btnAgregarActividad">+ Agregar Actividad</button>
-                    </div>
-                </div>
-                
-                <div class="tab-content" id="observaciones">
-                    <div class="form-group">
-                        <label for="observacionesGenerales">Observaciones Generales:</label>
-                        <div class="editor-toolbar">
-                            <button type="button" id="btnBold" title="Negrita"><i class="fas fa-bold"></i></button>
-                            <button type="button" id="btnColorAzul" class="color-button azul" title="Color Azul">A</button>
-                            <button type="button" id="btnColorRojo" class="color-button rojo" title="Color Rojo">A</button>
-                            <button type="button" id="btnColorVerde" class="color-button verde" title="Color Verde">A</button>
-                            <button type="button" id="btnColorNormal" class="color-button normal" title="Color Normal">Normal</button>
+                            </table>
+                            <button type="button" class="btn-agregar-fila" id="btnAgregarSeguimiento">➕ Agregar Seguimiento</button>
                         </div>
-                        <div id="observaciones-editor" contenteditable="true"></div>
-                        <input type="hidden" id="observacionesGenerales" name="observacionesGenerales">
-                        <div class="counter" id="counter">0/1000</div>
                     </div>
-                </div>
-                
-                <button type="submit" id="btnGuardar">Guardar</button>
-            </form>
+                    
+                    <!-- Solapa 5: Audiencias y Vencimientos -->
+                    <div id="audiencias-vencimientos" class="tab-content">
+                        <div class="form-group">
+                            <h3>Audiencias</h3>
+                            <table class="seguimiento-table" id="tablaAudiencias">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha y Hora</th>
+                                        <th>Detalle</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filas se agregarán dinámicamente -->
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn-agregar-fila" id="btnAgregarAudiencia">➕ Agregar Audiencia</button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <h3>Vencimientos</h3>
+                            <table class="seguimiento-table" id="tablaVencimientos">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha y Hora</th>
+                                        <th>Detalle</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filas se agregarán dinámicamente -->
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn-agregar-fila" id="btnAgregarVencimiento">➕ Agregar Vencimiento</button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <h3>Otras Actividades</h3>
+                            <table class="seguimiento-table" id="tablaActividades">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha y Hora</th>
+                                        <th>Detalle</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filas se agregarán dinámicamente -->
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn-agregar-fila" id="btnAgregarActividad">➕ Agregar Actividad</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Solapa 6: Observaciones -->
+                    <div id="observaciones" class="tab-content">
+                        <div class="form-group">
+                            <label for="observacionesGenerales">Observaciones Generales:</label>
+                            <div class="editor-toolbar">
+                                <button type="button" id="btnBold" title="Negrita"><strong>B</strong></button>
+                                <button type="button" id="btnColorAzul" class="color-button azul" title="Color Azul">A</button>
+                                <button type="button" id="btnColorRojo" class="color-button rojo" title="Color Rojo">A</button>
+                                <button type="button" id="btnColorVerde" class="color-button verde" title="Color Verde">A</button>
+                                <button type="button" id="btnColorNormal" class="color-button normal" title="Color Normal">Normal</button>
+                            </div>
+                            <div id="observaciones-editor" contenteditable="true" placeholder="Escriba las observaciones generales..."></div>
+                            <input type="hidden" id="observacionesGenerales" name="observacionesGenerales">
+                            <div class="counter" id="counter">0/1000</div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="btnGuardar">Guardar</button>
+                </form>
+            </div>
         </div>
     </div>
 
+    <!-- Modal para ver detalles - MODIFICADO CON BOTÓN IMPRIMIR -->
     <div id="modalVer" class="modal">
         <div class="modal-content small-modal">
             <a href="#" class="close-btn">&times;</a>
             <h2>Detalle de la Causa</h2>
             <div id="detalleContenido">
-                </div>
+                <!-- Los detalles se cargarán dinámicamente -->
+            </div>
+            <!-- NUEVO: Botones en modal ver -->
+            <div class="modal-buttons">
+                <button id="btnImprimirDetalle" class="btn-imprimir">
+                    🖨️ Imprimir Detalle
+                </button>
+                <button id="btnCerrarDetalle" class="btn-cerrar">
+                    ✕ Cerrar
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- ADVERTENCIA DE SEGURIDAD ---
-        // Las claves de API y la configuración de Firebase no deben estar expuestas en el código del lado del cliente.
-        // Un atacante podría usarlas para abusar de tu proyecto de Firebase.
-        // Considera usar variables de entorno y un backend, o las Reglas de Seguridad de Firebase y App Check para proteger tu aplicación.
-
         // --- CONFIGURACIÓN FIREBASE ---
         const firebaseConfigOriginal = {
             apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
@@ -837,16 +1070,14 @@
             appId: "1:533584198983:web:f51f57146ed16c813ca062"
         };
 
-        // Inicializar Firebase para la base original (solo lectura para autocompletar)
+        // Inicializar ambas apps de Firebase
         const appOriginal = firebase.initializeApp(firebaseConfigOriginal, "original");
-        const dbOriginal = firebase.firestore(appOriginal);
-
-        // Inicializar Firebase para la nueva base (lectura/escritura)
         const appNueva = firebase.initializeApp(firebaseConfigNueva, "nueva");
+        
+        const dbOriginal = firebase.firestore(appOriginal);
         const dbNueva = firebase.firestore(appNueva);
 
         // --- CONFIGURACIÓN Y DATOS PARA PRODUCCIÓN ---
-        
         const RECORDS_PER_PAGE = 10;
         let currentPage = 1;
         let causas = [];
@@ -879,8 +1110,8 @@
         const tablaFirmaDigital = document.getElementById('tablaFirmaDigital');
         const btnAgregarFirma = document.getElementById('btnAgregarFirma');
         const btnNuevoExpediente = document.getElementById('btnNuevoExpediente');
-
-        // NUEVOS SELECTORES PARA EL EDITOR DE TEXTO
+        
+        // NUEVOS ELEMENTOS PARA LA BARRA DE FORMATO
         const btnBold = document.getElementById('btnBold');
         const btnColorAzul = document.getElementById('btnColorAzul');
         const btnColorRojo = document.getElementById('btnColorRojo');
@@ -888,9 +1119,22 @@
         const btnColorNormal = document.getElementById('btnColorNormal');
         const observacionesEditor = document.getElementById('observaciones-editor');
         const observacionesHidden = document.getElementById('observacionesGenerales');
+        
+        // NUEVOS ELEMENTOS PARA RESUMEN Y FILTROS
+        const totalCausas = document.getElementById('totalCausas');
+        const bajasCausas = document.getElementById('bajasCausas');
+        const mediasCausas = document.getElementById('mediasCausas');
+        const altasCausas = document.getElementById('altasCausas');
+        const filtroJuzgado = document.getElementById('filtroJuzgado');
+        const filtroTipoProceso = document.getElementById('filtroTipoProceso');
+        const filtroEmpleado = document.getElementById('filtroEmpleado');
+        const filtroEstadoProcesal = document.getElementById('filtroEstadoProcesal');
+        
+        // NUEVO: Elementos para botones del modal ver
+        const btnImprimirDetalle = document.getElementById('btnImprimirDetalle');
+        const btnCerrarDetalle = document.getElementById('btnCerrarDetalle');
 
         // --- UTILIDADES ---
-
         function formatDate(dateString) {
             if (!dateString) return 'N/A';
             const parts = dateString.split('-');
@@ -905,7 +1149,7 @@
             if (!dateTimeString) return 'N/A';
             try {
                 const date = new Date(dateTimeString);
-                if (isNaN(date)) return dateTimeString; // MEJORA: Validar fecha inválida
+                if (isNaN(date)) return dateTimeString;
                 const day = String(date.getDate()).padStart(2, '0');
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 const year = date.getFullYear();
@@ -937,7 +1181,7 @@
         function showLoading() {
             tablaBody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="loading">
+                    <td colspan="8" class="loading">
                         Cargando datos...
                     </td>
                 </tr>
@@ -980,12 +1224,9 @@
             
             // Actualizar contador de palabras y hidden input
             observacionesEditor.addEventListener('input', function() {
-                // Obtener texto sin etiquetas HTML para contar palabras
                 const text = this.innerText || this.textContent;
                 const words = text.trim().split(/\s+/).filter(Boolean);
                 document.getElementById("counter").textContent = `${words.length}/1000`;
-                
-                // Actualizar el hidden input con el HTML
                 observacionesHidden.value = this.innerHTML;
             });
             
@@ -997,53 +1238,218 @@
             });
         }
 
-        // --- FUNCIONES DE AUTORRELLENADO ---
-
-        async function cargarDatosCausas() {
-            try {
-                const causasSnapshot = await dbOriginal.collection('causas').get();
-                const causasList = document.getElementById('causasList');
-                causasList.innerHTML = '';
-                
-                causasData = causasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                causasData.forEach(causa => {
-                    const option = document.createElement('option');
-                    option.value = `${causa.numCausa} - ${causa.caratula || ''}`;
-                    causasList.appendChild(option);
-                });
-
-            } catch (error) {
-                console.error('Error cargando datos de causas para autocompletar:', error);
-                showToast('Error al cargar la lista de expedientes', 'error');
-            }
+        // NUEVA FUNCIÓN: Actualizar resumen de causas
+        function actualizarResumen() {
+            const total = causas.length;
+            let bajas = 0;
+            let medias = 0;
+            let altas = 0;
+            
+            causas.forEach(causa => {
+                const prioridad = causa.prioridadTarea || '';
+                if (prioridad === 'Baja') bajas++;
+                else if (prioridad === 'Media') medias++;
+                else if (prioridad === 'Alta' || prioridad === 'Urgente') altas++;
+            });
+            
+            totalCausas.textContent = total;
+            bajasCausas.textContent = bajas;
+            mediasCausas.textContent = medias;
+            altasCausas.textContent = altas;
         }
 
-        document.getElementById('numeroCaratula').addEventListener('change', function() {
-            const valorSeleccionado = this.value;
-            const causaEncontrada = causasData.find(c => 
-                valorSeleccionado === `${c.numCausa} - ${c.caratula || ''}` || 
-                valorSeleccionado === c.numCausa
-            );
+        // NUEVA FUNCIÓN: Aplicar todos los filtros
+        function aplicarFiltros() {
+            const searchTerm = filtroBusqueda.value.toLowerCase();
+            const juzgadoFiltro = filtroJuzgado.value;
+            const tipoProcesoFiltro = filtroTipoProceso.value;
+            const empleadoFiltro = filtroEmpleado.value;
+            const estadoProcesalFiltro = filtroEstadoProcesal.value;
             
-            if (causaEncontrada) {
-                this.value = `${causaEncontrada.numCausa} - ${causaEncontrada.caratula || ''}`;
-                document.getElementById('tipoProceso').value = causaEncontrada.tipoProceso || '';
-                document.getElementById('juzgado').value = causaEncontrada.juzgado || '';
-                document.getElementById('empleado').value = causaEncontrada.usuarioAsignado || '';
-                document.getElementById('modoIntervencion').value = causaEncontrada.intervencion || '';
-            }
-        });
+            filteredCausas = causas.filter(causa => {
+                // Filtro de búsqueda general
+                const cumpleBusqueda = searchTerm === '' || 
+                    Object.values(causa).some(val => 
+                        String(val).toLowerCase().includes(searchTerm)
+                    );
+                
+                // Filtros específicos
+                const cumpleJuzgado = !juzgadoFiltro || causa.juzgado === juzgadoFiltro;
+                const cumpleTipoProceso = !tipoProcesoFiltro || causa.tipoProceso === tipoProcesoFiltro;
+                const cumpleEmpleado = !empleadoFiltro || causa.empleado === empleadoFiltro;
+                const cumpleEstadoProcesal = !estadoProcesalFiltro || causa.estadoProcesal === estadoProcesalFiltro;
+                
+                return cumpleBusqueda && cumpleJuzgado && cumpleTipoProceso && cumpleEmpleado && cumpleEstadoProcesal;
+            });
+            
+            currentPage = 1;
+            renderTable(filteredCausas);
+        }
 
-        btnNuevoExpediente.addEventListener('click', () => {
-            document.getElementById('numeroCaratula').value = '';
-            document.getElementById('numeroCaratula').focus();
-        });
+        // NUEVA FUNCIÓN: Poblar filtros con valores únicos
+        function poblarFiltros() {
+            // Obtener valores únicos para cada filtro
+            const juzgados = [...new Set(causas.map(c => c.juzgado).filter(Boolean))].sort();
+            const tiposProceso = [...new Set(causas.map(c => c.tipoProceso).filter(Boolean))].sort();
+            const empleados = [...new Set(causas.map(c => c.empleado).filter(Boolean))].sort();
+            const estadosProcesales = [...new Set(causas.map(c => c.estadoProcesal).filter(Boolean))].sort();
+            
+            // Poblar filtro de juzgados
+            filtroJuzgado.innerHTML = '<option value="">Todos los juzgados</option>';
+            juzgados.forEach(juzgado => {
+                const option = document.createElement('option');
+                option.value = juzgado;
+                option.textContent = juzgado;
+                filtroJuzgado.appendChild(option);
+            });
+            
+            // Poblar filtro de tipos de proceso
+            filtroTipoProceso.innerHTML = '<option value="">Todos los tipos</option>';
+            tiposProceso.forEach(tipo => {
+                const option = document.createElement('option');
+                option.value = tipo;
+                option.textContent = tipo;
+                filtroTipoProceso.appendChild(option);
+            });
+            
+            // Poblar filtro de empleados
+            filtroEmpleado.innerHTML = '<option value="">Todos los empleados</option>';
+            empleados.forEach(empleado => {
+                const option = document.createElement('option');
+                option.value = empleado;
+                option.textContent = empleado;
+                filtroEmpleado.appendChild(option);
+            });
+            
+            // Poblar filtro de estados procesales
+            const opcionesExistentesEstado = Array.from(filtroEstadoProcesal.options).map(opt => opt.value);
+            estadosProcesales.forEach(estado => {
+                if (!opcionesExistentesEstado.includes(estado)) {
+                    const option = document.createElement('option');
+                    option.value = estado;
+                    option.textContent = estado;
+                    filtroEstadoProcesal.appendChild(option);
+                }
+            });
+        }
+
+        // NUEVA FUNCIÓN: Imprimir detalle de causa
+        function imprimirDetalleCausa() {
+            const printWindow = window.open('', '_blank');
+            const fechaHora = new Date().toLocaleString();
+            
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Detalle de Causa</title>
+                        <style>
+                            body { 
+                                font-family: Arial, sans-serif; 
+                                margin: 20px; 
+                                color: #333;
+                            }
+                            h1 { 
+                                color: #2e7d32; 
+                                text-align: center; 
+                                border-bottom: 2px solid #2e7d32;
+                                padding-bottom: 10px;
+                            }
+                            .detalle-seccion {
+                                margin-bottom: 20px;
+                                padding: 15px;
+                                border: 1px solid #ddd;
+                                border-radius: 5px;
+                            }
+                            .detalle-seccion h3 {
+                                color: #2e7d32;
+                                margin-top: 0;
+                                border-bottom: 1px solid #eee;
+                                padding-bottom: 5px;
+                            }
+                            .info-item {
+                                margin-bottom: 8px;
+                            }
+                            .info-item strong {
+                                color: #555;
+                                min-width: 200px;
+                                display: inline-block;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-top: 10px;
+                            }
+                            table th, table td {
+                                border: 1px solid #ddd;
+                                padding: 8px;
+                                text-align: left;
+                            }
+                            table th {
+                                background-color: #f5f5f5;
+                                font-weight: bold;
+                            }
+                            .badge {
+                                padding: 3px 8px;
+                                border-radius: 12px;
+                                font-size: 11px;
+                                font-weight: bold;
+                                text-align: center;
+                                display: inline-block;
+                            }
+                            .badge-baja {
+                                background-color: #2e7d32;
+                                color: white;
+                            }
+                            .badge-media {
+                                background-color: #ef6c00;
+                                color: white;
+                            }
+                            .badge-alta {
+                                background-color: #c62828;
+                                color: white;
+                            }
+                            .badge-urgente {
+                                background-color: #7b1fa2;
+                                color: white;
+                            }
+                            .fecha-impresion {
+                                text-align: center;
+                                margin-top: 30px;
+                                color: #666;
+                                font-size: 12px;
+                            }
+                            @media print {
+                                body {
+                                    margin: 0;
+                                    padding: 10px;
+                                }
+                                .no-print {
+                                    display: none !important;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Detalle de Causa</h1>
+                        <div id="contenido-impresion">
+                            ${detalleContenido.innerHTML}
+                        </div>
+                        <div class="fecha-impresion">
+                            Documento generado el ${fechaHora}
+                        </div>
+                    </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        }
 
         // --- FUNCIONES DE RENDERING Y LÓGICA DE DATOS ---
-
         function renderTable(data) {
             filteredCausas = data;
+            
             const totalPages = Math.ceil(filteredCausas.length / RECORDS_PER_PAGE);
             
             if (currentPage < 1) currentPage = 1;
@@ -1055,166 +1461,195 @@
             
             tablaBody.innerHTML = '';
             
-            if (paginatedData.length === 0) {
+            if (paginatedData.length === 0 && data.length === 0) {
                 const row = tablaBody.insertRow();
-                row.innerHTML = `<td colspan="7" style="text-align: center; padding: 30px; color: #666;">No hay causas para mostrar.</td>`;
-                renderPaginationSelectors(0); // MEJORA: Limpiar paginación si no hay datos
-                return;
+                const cell = row.insertCell();
+                cell.colSpan = 8;
+                cell.textContent = "No hay causas registradas para mostrar.";
+                cell.style.textAlign = 'center';
+                cell.style.padding = '30px';
+                cell.style.color = '#666';
             }
 
             paginatedData.forEach(causa => {
                 const row = tablaBody.insertRow();
-                let audienciasVencimientosText = '';
                 
-                if (causa.audiencias && causa.audiencias.length > 0) audienciasVencimientosText += `Audiencias: ${causa.audiencias.length}<br>`;
-                if (causa.vencimientos && causa.vencimientos.length > 0) audienciasVencimientosText += `Vencimientos: ${causa.vencimientos.length}<br>`;
-                if (causa.actividades && causa.actividades.length > 0) audienciasVencimientosText += `Actividades: ${causa.actividades.length}`;
+                // Columna 1: Número y Carátula
+                row.insertCell().textContent = causa.numeroCaratula || 'N/A';
                 
-                // CORRECCIÓN/MEJORA: Uso de `observacionesGenerales` y truncado para mejor visualización
-                const obsText = causa.observacionesGenerales || '';
-                const shortObs = obsText.length > 50 ? obsText.substring(0, 50) + '...' : obsText;
+                // Columna 2: Tipo de Proceso
+                row.insertCell().textContent = causa.tipoProceso || 'N/A';
                 
-                row.innerHTML = `
-                    <td><strong>${causa.numeroCaratula || 'N/A'}</strong></td>
-                    <td>${causa.tipoProceso || 'N/A'}</td>
-                    <td>${causa.juzgado || 'N/A'}</td>
-                    <td>${causa.empleado || 'N/A'}</td>
-                    <td>${audienciasVencimientosText || 'N/A'}</td>
-                    <td title="${obsText}">${shortObs || 'N/A'}</td>
-                    <td class="action-buttons">
-                        <button class="btn-ver" data-id="${causa.id}" title="Ver detalles completos">👁️ Ver</button>
-                        <button class="btn-editar" data-id="${causa.id}" title="Editar registro">✏️ Editar</button>
-                        <button class="btn-eliminar" data-id="${causa.id}" data-caratula="${causa.numeroCaratula}" title="Eliminar registro">🗑️ Eliminar</button>
-                    </td>
-                `;
+                // Columna 3: Juzgado
+                row.insertCell().textContent = causa.juzgado || 'N/A';
+                
+                // Columna 4: Empleado
+                row.insertCell().textContent = causa.empleado || 'N/A';
+                
+                // Columna 5: Prioridad (con badge visual)
+                const prioridadCell = row.insertCell();
+                const prioridad = causa.prioridadTarea || '';
+                prioridadCell.innerHTML = obtenerBadgePrioridad(prioridad);
+                
+                // Columna 6: Estado Procesal
+                row.insertCell().textContent = causa.estadoProcesal || 'N/A';
+                
+                // Columna 7: Audiencias y Vencimientos
+                const actividadesCell = row.insertCell();
+                actividadesCell.innerHTML = obtenerResumenActividades(causa);
+                
+                // Columna 8: Acciones
+                const actionsCell = row.insertCell();
+                actionsCell.classList.add('action-buttons');
+                
+                const btnVer = document.createElement('button');
+                btnVer.textContent = '👁️ Ver';
+                btnVer.title = 'Ver detalles completos';
+                btnVer.classList.add('btn-ver');
+                btnVer.addEventListener('click', () => verRegistro(causa.id));
+                actionsCell.appendChild(btnVer);
+
+                const btnEditar = document.createElement('button');
+                btnEditar.textContent = '✏️ Editar';
+                btnEditar.title = 'Editar registro';
+                btnEditar.classList.add('btn-editar');
+                btnEditar.addEventListener('click', () => abrirModalRegistro(causa.id));
+                actionsCell.appendChild(btnEditar);
+                
+                const btnEliminar = document.createElement('button');
+                btnEliminar.textContent = '🗑️ Eliminar';
+                btnEliminar.title = 'Eliminar registro';
+                btnEliminar.classList.add('btn-eliminar');
+                btnEliminar.addEventListener('click', () => confirmAndDelete(causa.id, causa.numeroCaratula));
+                actionsCell.appendChild(btnEliminar);
             });
             
             renderPaginationSelectors(totalPages);
+            actualizarResumen();
         }
-        
-        // MEJORA: Delegación de eventos para los botones de acción en la tabla
-        tablaBody.addEventListener('click', (event) => {
-            const target = event.target.closest('button');
-            if (!target) return;
 
-            const id = target.dataset.id;
-            if (target.classList.contains('btn-ver')) {
-                verRegistro(id);
-            } else if (target.classList.contains('btn-editar')) {
-                abrirModalRegistro(id);
-            } else if (target.classList.contains('btn-eliminar')) {
-                const caratula = target.dataset.caratula;
-                confirmAndDelete(id, caratula);
+        // Función para obtener badge de prioridad
+        function obtenerBadgePrioridad(prioridad) {
+            switch(prioridad) {
+                case 'Baja':
+                    return '<span class="badge badge-baja">Baja</span>';
+                case 'Media':
+                    return '<span class="badge badge-media">Media</span>';
+                case 'Alta':
+                    return '<span class="badge badge-alta">Alta</span>';
+                case 'Urgente':
+                    return '<span class="badge badge-urgente">Urgente</span>';
+                default:
+                    return '<span style="color: #666;">Sin prioridad</span>';
             }
-        });
+        }
+
+        // Función para obtener resumen de actividades
+        function obtenerResumenActividades(causa) {
+            let texto = '';
+            if (causa.audiencias && causa.audiencias.length > 0) {
+                texto += `<div>📅 Audiencias: ${causa.audiencias.length}</div>`;
+            }
+            if (causa.vencimientos && causa.vencimientos.length > 0) {
+                texto += `<div>⏰ Vencimientos: ${causa.vencimientos.length}</div>`;
+            }
+            if (causa.actividades && causa.actividades.length > 0) {
+                texto += `<div>📋 Actividades: ${causa.actividades.length}</div>`;
+            }
+            return texto || '<span style="color: #666;">Sin actividades</span>';
+        }
 
         // --- PAGINACIÓN ---
         function changePage(page) {
+            if (page < 1) page = 1;
             const totalPages = Math.ceil(filteredCausas.length / RECORDS_PER_PAGE);
-            if (page < 1 || page > totalPages) return;
+            if (page > totalPages) page = totalPages;
+            
             currentPage = page;
             renderTable(filteredCausas);
         }
 
         function renderPaginationSelectors(totalPages) {
-            if (totalPages <= 1) {
-                topPagination.innerHTML = '';
-                bottomPagination.innerHTML = '';
-                return;
-            }
+            const paginationHTML = () => {
+                if (totalPages <= 1) return '';
 
-            const disabledPrev = currentPage === 1 ? 'disabled' : '';
-            const disabledNext = currentPage === totalPages ? 'disabled' : '';
+                const disabledPrev = currentPage === 1 ? 'disabled' : '';
+                const disabledNext = currentPage === totalPages ? 'disabled' : '';
 
-            let pagesHtml = '';
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, currentPage + 2);
+                let html = `
+                    <button onclick="changePage(${currentPage - 1})" ${disabledPrev}>« Anterior</button>
+                    <span>Página ${currentPage} de ${totalPages}</span>
+                `;
+                
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
 
-            if (currentPage <= 3) endPage = Math.min(totalPages, 5);
-            if (currentPage > totalPages - 2) startPage = Math.max(1, totalPages - 4);
-            
-            for (let i = startPage; i <= endPage; i++) {
-                pagesHtml += `<button data-page="${i}" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
-            }
+                if (currentPage <= 3) endPage = Math.min(totalPages, 5);
+                if (currentPage > totalPages - 2) startPage = Math.max(1, totalPages - 4);
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    const activeClass = i === currentPage ? 'active' : '';
+                    html += `<button onclick="changePage(${i})" class="${activeClass}">${i}</button>`;
+                }
 
-            const paginationHTML = `
-                <button data-page="${currentPage - 1}" ${disabledPrev}>« Anterior</button>
-                <span>Página ${currentPage} de ${totalPages}</span>
-                ${pagesHtml}
-                <button data-page="${currentPage + 1}" ${disabledNext}>Siguiente »</button>
-            `;
-            
-            topPagination.innerHTML = paginationHTML;
-            bottomPagination.innerHTML = paginationHTML;
+                html += `<button onclick="changePage(${currentPage + 1})" ${disabledNext}>Siguiente »</button>`;
+                return html;
+            };
+
+            const htmlContent = paginationHTML();
+            topPagination.innerHTML = htmlContent;
+            bottomPagination.innerHTML = htmlContent;
         }
 
-        function handlePaginationClick(event) {
-            const target = event.target.closest('button');
-            if (target && target.dataset.page) {
-                changePage(parseInt(target.dataset.page, 10));
-            }
-        }
-        topPagination.addEventListener('click', handlePaginationClick);
-        bottomPagination.addEventListener('click', handlePaginationClick);
-
-        // --- GESTIÓN DE PESTAÑAS ---
-        function initTabs() {
-            const tabsContainer = document.querySelector('.tabs');
-            tabsContainer.addEventListener('click', (event) => {
-                const tab = event.target.closest('.tab');
-                if (!tab) return;
+        // --- GESTIÓN DE MODALES Y ACCIONES ---
+        // Funcionalidad de solapas
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remover clase activa de todos los botones y contenidos
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
                 
-                tabsContainer.querySelector('.active').classList.remove('active');
-                tab.classList.add('active');
-                
-                const tabId = tab.dataset.tab;
-                document.querySelector('.tab-content.active').classList.remove('active');
+                // Activar la solapa seleccionada
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab');
                 document.getElementById(tabId).classList.add('active');
             });
-        }
-        
-        // --- GESTIÓN DE TABLAS DINÁMICAS (Seguimiento, Firma, etc.) ---
+        });
 
-        function setupDynamicTable(tableId, addButtonId, addRowFunction) {
-            const table = document.getElementById(tableId);
-            const addButton = document.getElementById(addButtonId);
-            
-            table.querySelector('tbody').addEventListener('click', (event) => {
-                const btn = event.target.closest('.btn-eliminar-fila');
-                if (btn) {
-                    btn.closest('tr').remove();
-                }
-            });
-            
-            addButton.addEventListener('click', () => addRowFunction());
-        }
-
-        function agregarFilaGenerica(tbody, rowHTML) {
-            const row = tbody.insertRow();
-            row.innerHTML = rowHTML;
-        }
-
+        // Funciones para agregar filas a las tablas dinámicas
         function agregarFilaSeguimiento(fecha = '', detalles = '') {
             const tbody = tablaSeguimiento.querySelector('tbody');
-            agregarFilaGenerica(tbody, `
+            const row = document.createElement('tr');
+            row.innerHTML = `
                 <td><input type="date" value="${fecha}"></td>
                 <td><input type="text" placeholder="Detalles del seguimiento" value="${detalles}"></td>
-                <td><button type="button" class="btn-eliminar-fila">Eliminar</button></td>
-            `);
+                <td><button type="button" class="btn-eliminar-fila">🗑️</button></td>
+            `;
+            tbody.appendChild(row);
+            
+            row.querySelector('.btn-eliminar-fila').addEventListener('click', function() {
+                row.remove();
+            });
         }
 
         function agregarFilaFechaHora(tabla, fechaHora = '', detalle = '') {
             const tbody = tabla.querySelector('tbody');
-            agregarFilaGenerica(tbody, `
+            const row = document.createElement('tr');
+            row.innerHTML = `
                 <td><input type="datetime-local" value="${fechaHora}"></td>
                 <td><input type="text" placeholder="Detalle" value="${detalle}"></td>
-                <td><button type="button" class="btn-eliminar-fila">Eliminar</button></td>
-            `);
+                <td><button type="button" class="btn-eliminar-fila">🗑️</button></td>
+            `;
+            tbody.appendChild(row);
+            
+            row.querySelector('.btn-eliminar-fila').addEventListener('click', function() {
+                row.remove();
+            });
         }
 
         function agregarFilaFirmaDigital(item = {}) {
             const tbody = tablaFirmaDigital.querySelector('tbody');
-            const row = tbody.insertRow();
+            const row = document.createElement('tr');
             
             row.innerHTML = `
                 <td><input type="text" placeholder="Pieza procesal" value="${item.piezaProcesal || ''}"></td>
@@ -1234,8 +1669,10 @@
                     </select>
                 </td>
                 <td><input type="text" class="detalle-subrogante-input" placeholder="Detalle subrogante" value="${item.detalleSubrogante || ''}" ${item.tipoDefensor !== 'Subrogante' ? 'disabled' : ''}></td>
-                <td><button type="button" class="btn-eliminar-fila">Eliminar</button></td>
+                <td><button type="button" class="btn-eliminar-fila">🗑️</button></td>
             `;
+
+            tbody.appendChild(row);
 
             row.querySelector('.firma-de-select').addEventListener('change', function() {
                 const tipoDefensorSelect = row.querySelector('.tipo-defensor-select');
@@ -1255,83 +1692,122 @@
                     detalleSubroganteInput.value = '';
                 }
             });
-        }
-        
-        function obtenerDatosTabla(tbodySelector, fields) {
-            const tbody = document.querySelector(tbodySelector);
-            return Array.from(tbody.querySelectorAll('tr')).map(row => {
-                const item = {};
-                row.querySelectorAll('input, select').forEach((input, index) => {
-                    if(fields[index]) item[fields[index]] = input.value;
-                });
-                return item;
-            }).filter(item => Object.values(item).some(val => val));
+            
+            row.querySelector('.btn-eliminar-fila').addEventListener('click', function() {
+                row.remove();
+            });
         }
 
-        // --- FUNCIONES DE FIREBASE ---
+        // Inicializar con filas vacías
+        btnAgregarSeguimiento.addEventListener('click', () => agregarFilaSeguimiento());
+        btnAgregarAudiencia.addEventListener('click', () => agregarFilaFechaHora(tablaAudiencias));
+        btnAgregarVencimiento.addEventListener('click', () => agregarFilaFechaHora(tablaVencimientos));
+        btnAgregarActividad.addEventListener('click', () => agregarFilaFechaHora(tablaActividades));
+        btnAgregarFirma.addEventListener('click', () => agregarFilaFirmaDigital());
 
-        async function cargarCausasDesdeFirebase() {
+        // Botón para nuevo expediente
+        btnNuevoExpediente.addEventListener('click', function() {
+            document.getElementById('numeroCaratula').value = '';
+            document.getElementById('numeroCaratula').focus();
+        });
+
+        // Abrir modal para nuevo registro
+        btnNuevoRegistro.addEventListener('click', () => abrirModalRegistro());
+
+        // Cerrar modales
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                modalRegistro.style.display = 'none';
+                modalVer.style.display = 'none';
+            });
+        });
+
+        // Cerrar modal al hacer clic fuera del contenido
+        window.addEventListener('click', function(e) {
+            if (e.target === modalRegistro) modalRegistro.style.display = 'none';
+            if (e.target === modalVer) modalVer.style.display = 'none';
+        });
+
+        // NUEVO: Eventos para botones del modal ver
+        btnCerrarDetalle.addEventListener('click', function() {
+            modalVer.style.display = 'none';
+        });
+
+        btnImprimirDetalle.addEventListener('click', imprimirDetalleCausa);
+
+        // --- FUNCIONES DE GESTIÓN DE DATOS ---
+        // Cargar datos de expedientes desde la base original
+        async function cargarDatosCausas() {
             try {
-                showLoading();
-                const querySnapshot = await dbNueva.collection('miscausas').get();
-                causas = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const causasSnapshot = await dbOriginal.collection('causas').get();
+                causasData = [];
+                const causasList = document.getElementById('causasList');
+                causasList.innerHTML = '';
                 
-                localStorage.setItem('causas', JSON.stringify(causas));
-                renderTable(causas);
-                showToast(`Se cargaron ${causas.length} registros desde Firebase.`, 'success');
+                causasSnapshot.forEach(doc => {
+                    const causa = doc.data();
+                    causa.id = doc.id;
+                    causasData.push(causa);
+                    
+                    // Agregar opción al datalist
+                    const option = document.createElement('option');
+                    option.value = `${causa.numCausa} - ${causa.caratula || ''}`;
+                    option.textContent = `${causa.numCausa} - ${causa.caratula || ''}`;
+                    causasList.appendChild(option);
+                });
             } catch (error) {
-                console.error('Error cargando datos desde Firebase:', error);
-                showToast('Error al cargar datos. Intentando cargar desde respaldo local.', 'error');
-                const storedCausas = localStorage.getItem('causas');
-                if (storedCausas) {
-                    causas = JSON.parse(storedCausas);
-                    renderTable(causas);
-                    showToast('Datos cargados desde respaldo local.', 'success');
-                }
+                console.error('Error cargando datos de causas:', error);
+                showToast('Error al cargar datos de causas', 'error');
             }
         }
 
-        async function guardarCausaEnFirebase(causa) {
-            try {
-                if (editingId) {
-                    await dbNueva.collection('miscausas').doc(editingId).update(causa);
-                    showToast('Registro actualizado correctamente.', 'success');
-                } else {
-                    const docRef = await dbNueva.collection('miscausas').add(causa);
-                    causa.id = docRef.id; // Asignar el nuevo ID para la actualización local
-                    showToast('Registro guardado correctamente.', 'success');
-                }
-                return causa;
-            } catch (error) {
-                console.error('Error guardando en Firebase:', error);
-                showToast('Error al guardar en Firebase. Verifique la conexión.', 'error');
-                return null;
+        // Cuando se selecciona una causa, rellenar automáticamente los campos
+        document.getElementById('numeroCaratula').addEventListener('change', function() {
+            const valorSeleccionado = this.value;
+            
+            // Buscar tanto por número de causa como por el texto completo
+            const causaEncontrada = causasData.find(c => 
+                valorSeleccionado === `${c.numCausa} - ${c.caratula || ''}` || 
+                valorSeleccionado === c.numCausa
+            );
+            
+            if (causaEncontrada) {
+                // Actualizar el campo con número y carátula
+                this.value = `${causaEncontrada.numCausa} - ${causaEncontrada.caratula || ''}`;
+                
+                // Rellenar los demás campos
+                document.getElementById('tipoProceso').value = causaEncontrada.tipoProceso || '';
+                document.getElementById('juzgado').value = causaEncontrada.juzgado || '';
+                document.getElementById('empleado').value = causaEncontrada.usuarioAsignado || '';
+                document.getElementById('modoIntervencion').value = causaEncontrada.intervencion || '';
             }
-        }
-
-        async function eliminarCausaDeFirebase(id) {
-            try {
-                await dbNueva.collection('miscausas').doc(id).delete();
-                showToast('Registro eliminado correctamente.', 'success');
-                return true;
-            } catch (error) {
-                console.error('Error eliminando de Firebase:', error);
-                showToast('Error al eliminar. Verifique la conexión.', 'error');
-                return false;
-            }
-        }
-
-        // --- GESTIÓN DE MODALES ---
+        });
 
         function abrirModalRegistro(id = null) {
-            formRegistro.reset();
             editingId = id;
-
-            // Limpiar y preparar tablas dinámicas
-            ['#tablaSeguimiento tbody', '#tablaAudiencias tbody', '#tablaVencimientos tbody', '#tablaActividades tbody', '#tablaFirmaDigital tbody'].forEach(sel => document.querySelector(sel).innerHTML = '');
-
+            modalTitle.textContent = id ? 'Editar' : 'Nuevo';
+            
+            // Limpiar formulario
+            formRegistro.reset();
+            
+            // Limpiar tablas dinámicas
+            ['#tablaSeguimiento tbody', '#tablaAudiencias tbody', '#tablaVencimientos tbody', '#tablaActividades tbody', '#tablaFirmaDigital tbody']
+                .forEach(sel => {
+                    const tbody = document.querySelector(sel);
+                    if (tbody) tbody.innerHTML = '';
+                });
+            
+            // Limpiar el editor de observaciones
+            observacionesEditor.innerHTML = '';
+            observacionesHidden.value = '';
+            document.getElementById("counter").textContent = "0/1000";
+            
+            // Cargar datos de causas cada vez que se abre el modal
+            cargarDatosCausas();
+            
             if (id) {
-                modalTitle.textContent = 'Editar';
+                // Cargar datos existentes para edición
                 const causa = causas.find(c => c.id === id);
                 if (causa) {
                     document.getElementById('numeroCaratula').value = causa.numeroCaratula || '';
@@ -1345,20 +1821,16 @@
                     document.getElementById('estadoProcesal').value = causa.estadoProcesal || '';
                     document.getElementById('fechaEstado').value = causa.fechaEstado || '';
                     
-                    // CORRECCIÓN: Cargar observaciones en el editor
+                    // Cargar observaciones en el editor
                     if (causa.observacionesGenerales) {
                         observacionesEditor.innerHTML = causa.observacionesGenerales;
                         observacionesHidden.value = causa.observacionesGenerales;
-                        // Actualizar contador de palabras
                         const text = observacionesEditor.innerText || observacionesEditor.textContent;
                         const words = text.trim().split(/\s+/).filter(Boolean);
                         document.getElementById("counter").textContent = `${words.length}/1000`;
-                    } else {
-                        observacionesEditor.innerHTML = "";
-                        observacionesHidden.value = "";
-                        document.getElementById("counter").textContent = "0/1000";
                     }
                     
+                    // Cargar datos de tablas dinámicas
                     (causa.seguimiento || []).forEach(item => agregarFilaSeguimiento(item.fecha, item.detalles));
                     (causa.audiencias || []).forEach(item => agregarFilaFechaHora(tablaAudiencias, item.fechaHora, item.detalle));
                     (causa.vencimientos || []).forEach(item => agregarFilaFechaHora(tablaVencimientos, item.fechaHora, item.detalle));
@@ -1366,24 +1838,13 @@
                     (causa.firmaDigital || []).forEach(item => agregarFilaFirmaDigital(item));
                 }
             } else {
-                modalTitle.textContent = 'Nuevo';
-                // Añadir una fila vacía por defecto para una mejor UX
+                // Agregar filas vacías para nuevo registro
                 agregarFilaSeguimiento();
                 agregarFilaFechaHora(tablaAudiencias);
                 agregarFilaFechaHora(tablaVencimientos);
                 agregarFilaFechaHora(tablaActividades);
                 agregarFilaFirmaDigital();
-                // Resetear editor de observaciones
-                observacionesEditor.innerHTML = "";
-                observacionesHidden.value = "";
-                document.getElementById("counter").textContent = "0/1000";
             }
-            
-            // Resetear pestañas
-            document.querySelector('.tab.active').classList.remove('active');
-            document.querySelector('.tab-content.active').classList.remove('active');
-            document.querySelector('.tab[data-tab="datos-expediente"]').classList.add('active');
-            document.getElementById('datos-expediente').classList.add('active');
             
             modalRegistro.style.display = 'block';
         }
@@ -1391,166 +1852,498 @@
         function verRegistro(id) {
             const causa = causas.find(c => c.id === id);
             if (!causa) return;
-
-            // MEJORA: Función para generar tablas de detalles de forma limpia
-            const createDetailTable = (title, headers, data, formatters) => {
-                if (!data || data.length === 0) return '';
-                let tableHTML = `
-                    <div class="form-group">
-                        <label><strong>${title}:</strong></label>
-                        <table class="seguimiento-table">
-                            <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
-                            <tbody>
-                `;
-                data.forEach(item => {
-                    tableHTML += `<tr>${Object.keys(item).map((key, i) => `<td>${formatters[i](item[key]) || 'N/A'}</td>`).join('')}</tr>`;
-                });
-                tableHTML += `</tbody></table></div>`;
-                return tableHTML;
-            };
-
-            let contenidoHTML = `
-                <div class="form-group"><label><strong>Número y Carátula:</strong></label><p>${causa.numeroCaratula || 'N/A'}</p></div>
-                <div class="form-row">
-                    <div class="form-group"><label><strong>Tipo de Proceso:</strong></label><p>${causa.tipoProceso || 'N/A'}</p></div>
-                    <div class="form-group"><label><strong>Juzgado:</strong></label><p>${causa.juzgado || 'N/A'}</p></div>
+            
+            let html = `
+                <div class="detalle-seccion">
+                    <h3>Información Básica</h3>
+                    <div class="info-item"><strong>Expediente:</strong> ${causa.numeroCaratula || 'N/A'}</div>
+                    <div class="info-item"><strong>Tipo de Proceso:</strong> ${causa.tipoProceso || 'N/A'}</div>
+                    <div class="info-item"><strong>Juzgado:</strong> ${causa.juzgado || 'N/A'}</div>
+                    <div class="info-item"><strong>Empleado Asignado:</strong> ${causa.empleado || 'N/A'}</div>
+                    <div class="info-item"><strong>Prioridad:</strong> ${obtenerBadgePrioridad(causa.prioridadTarea || '')}</div>
+                    <div class="info-item"><strong>Estado Procesal:</strong> ${causa.estadoProcesal || 'N/A'}</div>
+                    <div class="info-item"><strong>Fecha Estado:</strong> ${formatDate(causa.fechaEstado) || 'N/A'}</div>
                 </div>
-                <div class="form-group"><label><strong>Empleado Asignado:</strong></label><p>${causa.empleado || 'N/A'}</p></div>
-                <div class="form-group"><label><strong>Documentos Presentados:</strong></label><p>${causa.documentosPresentados || 'N/A'}</p></div>
-                <div class="form-group"><label><strong>Estado Documental:</strong></label><p>${causa.estadoDocumental || 'N/A'}</p></div>
             `;
             
-            contenidoHTML += createDetailTable('Firma Digital', ['Pieza Procesal', 'Fecha', 'Firma de', 'Tipo', 'Detalle'], causa.firmaDigital, [v => v, formatDate, v => v, v => v, v => v]);
-            contenidoHTML += createDetailTable('Seguimiento', ['Fecha', 'Detalles'], causa.seguimiento, [formatDate, v => v]);
-            contenidoHTML += createDetailTable('Audiencias', ['Fecha y Hora', 'Detalle'], causa.audiencias, [formatDateTime, v => v]);
-            contenidoHTML += createDetailTable('Vencimientos', ['Fecha y Hora', 'Detalle'], causa.vencimientos, [formatDateTime, v => v]);
-            contenidoHTML += createDetailTable('Otras Actividades', ['Fecha y Hora', 'Detalle'], causa.actividades, [formatDateTime, v => v]);
+            if (causa.documentosPresentados || causa.estadoDocumental) {
+                html += `
+                    <div class="detalle-seccion">
+                        <h3>Documentación</h3>
+                        <div class="info-item"><strong>Documentos Presentados:</strong> ${causa.documentosPresentados || 'N/A'}</div>
+                        <div class="info-item"><strong>Estado Documental:</strong> ${causa.estadoDocumental || 'N/A'}</div>
+                    </div>
+                `;
+            }
             
-            // CORRECCIÓN: Mostrar observaciones generales como HTML
-            contenidoHTML += `<div class="form-group"><label><strong>Observaciones Generales:</strong></label><div>${causa.observacionesGenerales || 'N/A'}</div></div>`;
+            if (causa.modoIntervencion) {
+                html += `
+                    <div class="detalle-seccion">
+                        <h3>Intervención</h3>
+                        <div class="info-item"><strong>Modo de Intervención:</strong> ${causa.modoIntervencion || 'N/A'}</div>
+                    </div>
+                `;
+            }
             
-            detalleContenido.innerHTML = contenidoHTML;
+            if (causa.firmaDigital && causa.firmaDigital.length > 0) {
+                let firmaHTML = `
+                    <div class="detalle-seccion">
+                        <h3>Firma Digital</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pieza Procesal</th>
+                                    <th>Fecha Firma</th>
+                                    <th>Firma de</th>
+                                    <th>Tipo Defensor</th>
+                                    <th>Detalle Subrogante</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                causa.firmaDigital.forEach(item => {
+                    firmaHTML += `
+                        <tr>
+                            <td>${item.piezaProcesal || 'N/A'}</td>
+                            <td>${formatDate(item.fechaFirma) || 'N/A'}</td>
+                            <td>${item.firmaDe || 'N/A'}</td>
+                            <td>${item.tipoDefensor || 'N/A'}</td>
+                            <td>${item.detalleSubrogante || 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+                
+                firmaHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                html += firmaHTML;
+            }
+            
+            if (causa.seguimiento && causa.seguimiento.length > 0) {
+                let seguimientoHTML = `
+                    <div class="detalle-seccion">
+                        <h3>Seguimiento</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Detalles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                causa.seguimiento.forEach(item => {
+                    seguimientoHTML += `
+                        <tr>
+                            <td>${formatDate(item.fecha) || 'N/A'}</td>
+                            <td>${item.detalles || 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+                
+                seguimientoHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                html += seguimientoHTML;
+            }
+            
+            // Mostrar audiencias, vencimientos y actividades
+            const tiposActividades = [
+                { nombre: 'Audiencias', datos: causa.audiencias },
+                { nombre: 'Vencimientos', datos: causa.vencimientos },
+                { nombre: 'Otras Actividades', datos: causa.actividades }
+            ];
+            
+            tiposActividades.forEach(tipo => {
+                if (tipo.datos && tipo.datos.length > 0) {
+                    let actividadesHTML = `
+                        <div class="detalle-seccion">
+                            <h3>${tipo.nombre}</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Fecha y Hora</th>
+                                        <th>Detalle</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    tipo.datos.forEach(item => {
+                        actividadesHTML += `
+                            <tr>
+                                <td>${formatDateTime(item.fechaHora) || 'N/A'}</td>
+                                <td>${item.detalle || 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    actividadesHTML += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    html += actividadesHTML;
+                }
+            });
+            
+            if (causa.observacionesGenerales) {
+                html += `
+                    <div class="detalle-seccion">
+                        <h3>Observaciones Generales</h3>
+                        <div>${causa.observacionesGenerales}</div>
+                    </div>
+                `;
+            }
+            
+            detalleContenido.innerHTML = html;
             modalVer.style.display = 'block';
         }
 
-        // --- GESTIÓN DE DATOS ---
-
-        async function guardarRegistro(event) {
-            event.preventDefault();
-            const numeroCaratula = document.getElementById('numeroCaratula').value;
-            
-            if (!numeroCaratula.trim()) {
-                showToast('El campo "Número y Carátula" es obligatorio.', 'error');
-                return;
+        function confirmAndDelete(id, numeroCaratula) {
+            const confirmacion = confirm(`¿Está seguro de que desea eliminar la causa "${numeroCaratula}"?`);
+            if (confirmacion) {
+                deleteCausa(id);
             }
-            
-            // MEJORA UX: Deshabilitar botón para evitar doble envío
-            btnGuardar.disabled = true;
-            btnGuardar.textContent = 'Guardando...';
+        }
 
-            const causa = {
-                numeroCaratula,
-                tipoProceso: document.getElementById('tipoProceso').value,
-                juzgado: document.getElementById('juzgado').value,
-                empleado: document.getElementById('empleado').value,
-                documentosPresentados: document.getElementById('documentosPresentados').value,
-                estadoDocumental: document.getElementById('estadoDocumental').value,
-                modoIntervencion: document.getElementById('modoIntervencion').value,
+        // --- FUNCIONES FIREBASE ---
+        // CARGAR DESDE LA COLECCIÓN "miscausas"
+        async function loadCausasFromFirestore() {
+            showLoading();
+            try {
+                const snapshot = await dbNueva.collection('miscausas').get();
+                causas = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    causas.push({
+                        id: doc.id,
+                        ...data
+                    });
+                });
+                
+                filteredCausas = [...causas];
+                currentPage = 1;
+                renderTable(filteredCausas);
+                
+                // Poblar filtros después de cargar datos
+                poblarFiltros();
+                
+                showToast(`Se cargaron ${causas.length} registros desde Firestore`, 'success');
+            } catch (error) {
+                console.error('Error cargando datos de Firestore:', error);
+                showToast('Error al cargar datos desde Firestore', 'error');
+                
+                // En caso de error, mantener el array vacío
+                causas = [];
+                filteredCausas = [];
+                renderTable(filteredCausas);
+            }
+        }
+
+        // Guardar causa en la colección "miscausas"
+        async function saveCausaToFirestore(causaData) {
+            try {
+                let docRef;
+                if (editingId) {
+                    // Actualizar documento existente
+                    await dbNueva.collection('miscausas').doc(editingId).update(causaData);
+                    docRef = editingId;
+                } else {
+                    // Crear nuevo documento
+                    docRef = await dbNueva.collection('miscausas').add(causaData);
+                }
+                
+                showToast(`Causa ${editingId ? 'actualizada' : 'guardada'} correctamente`, 'success');
+                return docRef;
+            } catch (error) {
+                console.error('Error guardando en Firestore:', error);
+                showToast('Error al guardar en Firestore', 'error');
+                throw error;
+            }
+        }
+
+        // Eliminar causa de la colección "miscausas"
+        async function deleteCausa(id) {
+            try {
+                await dbNueva.collection('miscausas').doc(id).delete();
+                showToast('Causa eliminada correctamente', 'success');
+                
+                // Recargar los datos después de eliminar
+                loadCausasFromFirestore();
+            } catch (error) {
+                console.error('Error eliminando de Firestore:', error);
+                showToast('Error al eliminar de Firestore', 'error');
+            }
+        }
+
+        // --- MANEJO DEL FORMULARIO ---
+        formRegistro.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Actualizar el campo oculto de observaciones con el contenido del editor
+            observacionesHidden.value = observacionesEditor.innerHTML;
+            
+            // Recopilar datos del formulario
+            const formData = {
+                numeroCaratula: document.getElementById('numeroCaratula').value.trim(),
+                tipoProceso: document.getElementById('tipoProceso').value.trim(),
+                juzgado: document.getElementById('juzgado').value.trim(),
+                empleado: document.getElementById('empleado').value.trim(),
+                documentosPresentados: document.getElementById('documentosPresentados').value.trim(),
+                estadoDocumental: document.getElementById('estadoDocumental').value.trim(),
+                modoIntervencion: document.getElementById('modoIntervencion').value.trim(),
                 prioridadTarea: document.getElementById('prioridadTarea').value,
                 estadoProcesal: document.getElementById('estadoProcesal').value,
                 fechaEstado: document.getElementById('fechaEstado').value,
-                // CORRECCIÓN: Usar el valor del editor de texto enriquecido
                 observacionesGenerales: observacionesHidden.value,
-                seguimiento: obtenerDatosTabla('#tablaSeguimiento tbody', ['fecha', 'detalles']),
-                audiencias: obtenerDatosTabla('#tablaAudiencias tbody', ['fechaHora', 'detalle']),
-                vencimientos: obtenerDatosTabla('#tablaVencimientos tbody', ['fechaHora', 'detalle']),
-                actividades: obtenerDatosTabla('#tablaActividades tbody', ['fechaHora', 'detalle']),
-                firmaDigital: obtenerDatosTabla('#tablaFirmaDigital tbody', ['piezaProcesal', 'fechaFirma', 'firmaDe', 'tipoDefensor', 'detalleSubrogante'])
+                fechaActualizacion: new Date().toISOString()
             };
             
-            const causaGuardada = await guardarCausaEnFirebase(causa);
+            // Recopilar datos de firma digital
+            const firmaDigital = [];
+            const filasFirmaDigital = tablaFirmaDigital.querySelectorAll('tbody tr');
             
-            if (causaGuardada) {
-                if (editingId) {
-                    const index = causas.findIndex(c => c.id === editingId);
-                    if (index !== -1) causas[index] = { ...causaGuardada, id: editingId };
-                } else {
-                    causas.push(causaGuardada);
-                }
+            filasFirmaDigital.forEach(fila => {
+                const piezaProcesal = fila.querySelector('input[type="text"]').value.trim();
+                const fechaFirma = fila.querySelector('input[type="date"]').value;
+                const firmaDe = fila.querySelector('.firma-de-select').value;
+                const tipoDefensor = fila.querySelector('.tipo-defensor-select').value;
+                const detalleSubrogante = fila.querySelector('.detalle-subrogante-input')?.value.trim() || '';
                 
-                localStorage.setItem('causas', JSON.stringify(causas));
-                modalRegistro.style.display = 'none';
-                // MEJORA: Vuelve a renderizar la tabla con el filtro actual aplicado
-                filtrarYRenderizar();
+                if (piezaProcesal || fechaFirma || firmaDe) {
+                    firmaDigital.push({
+                        piezaProcesal,
+                        fechaFirma,
+                        firmaDe,
+                        tipoDefensor,
+                        detalleSubrogante
+                    });
+                }
+            });
+            
+            if (firmaDigital.length > 0) {
+                formData.firmaDigital = firmaDigital;
             }
             
-            btnGuardar.disabled = false;
-            btnGuardar.textContent = 'Guardar';
-        }
-
-        async function confirmAndDelete(id, numeroCaratula) {
-            if (confirm(`¿Está seguro de que desea eliminar la causa:\n"${numeroCaratula}"?`)) {
-                if (await eliminarCausaDeFirebase(id)) {
-                    causas = causas.filter(c => c.id !== id);
-                    localStorage.setItem('causas', JSON.stringify(causas));
-                    filtrarYRenderizar();
+            // Recopilar datos de seguimiento
+            const seguimiento = [];
+            const filasSeguimiento = tablaSeguimiento.querySelectorAll('tbody tr');
+            
+            filasSeguimiento.forEach(fila => {
+                const fecha = fila.querySelector('input[type="date"]').value;
+                const detalles = fila.querySelector('input[type="text"]').value.trim();
+                
+                if (fecha || detalles) {
+                    seguimiento.push({ fecha, detalles });
                 }
+            });
+            
+            if (seguimiento.length > 0) {
+                formData.seguimiento = seguimiento;
             }
-        }
-        
-        function filtrarYRenderizar() {
-            const filtro = filtroBusqueda.value.toLowerCase();
-            const filtered = causas.filter(causa => 
-                Object.values(causa).some(val => 
-                    String(val).toLowerCase().includes(filtro)
-                )
-            );
-            renderTable(filtered);
-        }
+            
+            // Recopilar datos de audiencias, vencimientos y actividades
+            const recopilarActividades = (tablaId) => {
+                const actividades = [];
+                const filas = document.querySelector(`#${tablaId} tbody`).querySelectorAll('tr');
+                
+                filas.forEach(fila => {
+                    const fechaHora = fila.querySelector('input[type="datetime-local"]').value;
+                    const detalle = fila.querySelector('input[type="text"]').value.trim();
+                    
+                    if (fechaHora || detalle) {
+                        actividades.push({ fechaHora, detalle });
+                    }
+                });
+                
+                return actividades;
+            };
+            
+            const audiencias = recopilarActividades('tablaAudiencias');
+            const vencimientos = recopilarActividades('tablaVencimientos');
+            const actividades = recopilarActividades('tablaActividades');
+            
+            if (audiencias.length > 0) formData.audiencias = audiencias;
+            if (vencimientos.length > 0) formData.vencimientos = vencimientos;
+            if (actividades.length > 0) formData.actividades = actividades;
+            
+            try {
+                await saveCausaToFirestore(formData);
+                modalRegistro.style.display = 'none';
+                loadCausasFromFirestore(); // Recargar los datos
+            } catch (error) {
+                // El error ya se maneja en saveCausaToFirestore
+            }
+        });
+
+        // --- IMPRESIÓN ---
+        btnImprimirListado.addEventListener('click', function() {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Listado de Causas</title>
+                        <style>
+                            body { 
+                                font-family: Arial, sans-serif; 
+                                margin: 20px; 
+                                color: #333;
+                            }
+                            h1 { 
+                                color: #2e7d32; 
+                                text-align: center; 
+                                border-bottom: 2px solid #2e7d32;
+                                padding-bottom: 10px;
+                            }
+                            table { 
+                                width: 100%; 
+                                border-collapse: collapse; 
+                                margin-top: 20px; 
+                            }
+                            th, td { 
+                                border: 1px solid #ddd; 
+                                padding: 8px; 
+                                text-align: left; 
+                            }
+                            th { 
+                                background-color: #2e7d32; 
+                                color: white; 
+                            }
+                            .badge { 
+                                padding: 2px 6px; 
+                                border-radius: 8px; 
+                                font-size: 10px; 
+                                font-weight: bold; 
+                            }
+                            .badge-baja { background-color: #2e7d32; color: white; }
+                            .badge-media { background-color: #ef6c00; color: white; }
+                            .badge-alta { background-color: #c62828; color: white; }
+                            .badge-urgente { background-color: #7b1fa2; color: white; }
+                            .resumen-impresion { 
+                                display: flex; 
+                                justify-content: space-between; 
+                                margin-bottom: 20px; 
+                            }
+                            .resumen-item { 
+                                text-align: center; 
+                            }
+                            .resumen-numero { 
+                                font-size: 24px; 
+                                font-weight: bold; 
+                            }
+                            .resumen-titulo { 
+                                font-size: 12px; 
+                                color: #666; 
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Listado de Causas</h1>
+                        <div class="resumen-impresion">
+                            <div class="resumen-item">
+                                <div class="resumen-numero">${causas.length}</div>
+                                <div class="resumen-titulo">Total</div>
+                            </div>
+                            <div class="resumen-item">
+                                <div class="resumen-numero">${document.getElementById('bajasCausas').textContent}</div>
+                                <div class="resumen-titulo">Prioridad Baja</div>
+                            </div>
+                            <div class="resumen-item">
+                                <div class="resumen-numero">${document.getElementById('mediasCausas').textContent}</div>
+                                <div class="resumen-titulo">Prioridad Media</div>
+                            </div>
+                            <div class="resumen-item">
+                                <div class="resumen-numero">${document.getElementById('altasCausas').textContent}</div>
+                                <div class="resumen-titulo">Prioridad Alta/Urgente</div>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Número y Carátula</th>
+                                    <th>Tipo de Proceso</th>
+                                    <th>Juzgado</th>
+                                    <th>Empleado</th>
+                                    <th>Prioridad</th>
+                                    <th>Estado Procesal</th>
+                                    <th>Audiencias / Vencimientos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${filteredCausas.map(causa => `
+                                    <tr>
+                                        <td>${causa.numeroCaratula || 'N/A'}</td>
+                                        <td>${causa.tipoProceso || 'N/A'}</td>
+                                        <td>${causa.juzgado || 'N/A'}</td>
+                                        <td>${causa.empleado || 'N/A'}</td>
+                                        <td>${obtenerBadgePrioridad(causa.prioridadTarea || '')}</td>
+                                        <td>${causa.estadoProcesal || 'N/A'}</td>
+                                        <td>${obtenerResumenActividades(causa)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        <p style="text-align: center; margin-top: 20px; color: #666;">
+                            Generado el ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}
+                        </p>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        });
 
         // --- INICIALIZACIÓN ---
-
-        function init() {
-            cargarCausasDesdeFirebase();
-            cargarDatosCausas(); // Cargar datos para autocompletar
-            initTabs();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar datos desde Firestore
+            loadCausasFromFirestore();
             
-            // Configurar tablas dinámicas
-            setupDynamicTable('tablaSeguimiento', 'btnAgregarSeguimiento', () => agregarFilaSeguimiento());
-            setupDynamicTable('tablaAudiencias', 'btnAgregarAudiencia', () => agregarFilaFechaHora(tablaAudiencias));
-            setupDynamicTable('tablaVencimientos', 'btnAgregarVencimiento', () => agregarFilaFechaHora(tablaVencimientos));
-            setupDynamicTable('tablaActividades', 'btnAgregarActividad', () => agregarFilaFechaHora(tablaActividades));
-            setupDynamicTable('tablaFirmaDigital', 'btnAgregarFirma', () => agregarFilaFirmaDigital());
-
             // Inicializar editor de texto enriquecido
             initEditor();
-
-            btnNuevoRegistro.addEventListener('click', () => abrirModalRegistro());
-            btnImprimirListado.addEventListener('click', () => window.print());
             
-            document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    modalRegistro.style.display = 'none';
-                    modalVer.style.display = 'none';
-                });
+            // Agregar filas iniciales
+            agregarFilaSeguimiento();
+            agregarFilaFechaHora(tablaAudiencias);
+            agregarFilaFechaHora(tablaVencimientos);
+            agregarFilaFechaHora(tablaActividades);
+            agregarFilaFirmaDigital();
+            
+            // NUEVO: Event listeners para los filtros
+            filtroBusqueda.addEventListener('input', aplicarFiltros);
+            filtroJuzgado.addEventListener('change', aplicarFiltros);
+            filtroTipoProceso.addEventListener('change', aplicarFiltros);
+            filtroEmpleado.addEventListener('change', aplicarFiltros);
+            filtroEstadoProcesal.addEventListener('change', aplicarFiltros);
+            
+            // NUEVO: Botón para limpiar filtros
+            const limpiarFiltros = document.createElement('button');
+            limpiarFiltros.textContent = 'Limpiar Filtros';
+            limpiarFiltros.style.cssText = 'padding: 8px 12px; background: #ccc; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;';
+            limpiarFiltros.addEventListener('click', function() {
+                filtroBusqueda.value = '';
+                filtroJuzgado.value = '';
+                filtroTipoProceso.value = '';
+                filtroEmpleado.value = '';
+                filtroEstadoProcesal.value = '';
+                aplicarFiltros();
             });
             
-            window.addEventListener('click', (e) => {
-                if (e.target === modalRegistro) modalRegistro.style.display = 'none';
-                if (e.target === modalVer) modalVer.style.display = 'none';
-            });
-            
-            // CORRECCIÓN/MEJORA: La búsqueda ahora incluye todos los campos, incluyendo observaciones.
-            filtroBusqueda.addEventListener('input', () => {
-                currentPage = 1;
-                filtrarYRenderizar();
-            });
-            
-            formRegistro.addEventListener('submit', guardarRegistro);
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
+            // Agregar botón de limpiar filtros después del último filtro
+            const filtrosAvanzados = document.querySelector('.filtros-avanzados');
+            const botonLimpiarContainer = document.createElement('div');
+            botonLimpiarContainer.className = 'filtro-grupo';
+            botonLimpiarContainer.style.display = 'flex';
+            botonLimpiarContainer.style.alignItems = 'flex-end';
+            botonLimpiarContainer.appendChild(limpiarFiltros);
+            filtrosAvanzados.appendChild(botonLimpiarContainer);
+        });
     </script>
 </body>
 </html>
