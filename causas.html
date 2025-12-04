@@ -1,18 +1,16 @@
-<!-- CÓDIGO COMPLETO CON BOTÓN IMPRIMIR EN MODAL VER -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control</title>
+    <title>Mis Causas</title>
     
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
     
     <style>
-        /* (Todos los estilos CSS se mantienen igual - sin cambios) */
-        /* Base y tipografía */
+        /* --- ESTILOS GENERALES (Sin cambios) --- */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -29,38 +27,6 @@
             border-radius: 8px;
         }
 
-        /* Logo y título */
-        .header-logo {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 15px;
-        }
-        
-        .logo {
-            width: 60px;
-            height: 60px;
-            background-color: #2e7d32;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .title-container h1 {
-            margin: 0;
-            color: #2e7d32;
-        }
-        
-        .title-container p {
-            margin: 5px 0 0 0;
-            color: #666;
-        }
-
-        /* Contenedor principal del encabezado */
         .header-container {
             display: flex;
             justify-content: space-between;
@@ -68,20 +34,11 @@
             margin-bottom: 20px;
         }
 
-        /* Barra de Herramientas (Filtro, Selector, Botón Nuevo) */
         .toolbar {
             display: flex;
             align-items: center;
             flex-grow: 1;
             gap: 15px;
-        }
-        
-        /* Título al margen derecho */
-        h1 {
-            text-align: right;
-            color: #2e7d32;
-            margin: 0;
-            white-space: nowrap;
         }
 
         #filtroBusqueda {
@@ -91,7 +48,7 @@
             width: 250px;
         }
 
-        #btnNuevoRegistro {
+        #btnNuevoRegistro, #btnImprimirListado {
             padding: 10px 15px;
             background-color: #2e7d32;
             color: white;
@@ -102,108 +59,10 @@
             white-space: nowrap;
         }
 
-        #btnNuevoRegistro:hover {
+        #btnNuevoRegistro:hover, #btnImprimirListado:hover {
             background-color: #1b5e20;
         }
 
-        #btnImprimirListado {
-            padding: 10px 15px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        #btnImprimirListado:hover {
-            background-color: #388e3c;
-        }
-
-        /* NUEVO: Estilos para resumen de causas */
-        .resumen-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .resumen-card {
-            flex: 1;
-            min-width: 180px;
-            background: #fff;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-            border-top: 4px solid #2e7d32;
-        }
-
-        .resumen-card.total {
-            border-top-color: #2e7d32;
-        }
-
-        .resumen-card.pendientes {
-            border-top-color: #f39c12;
-        }
-
-        .resumen-card.cumplidas {
-            border-top-color: #27ae60;
-        }
-
-        .resumen-numero {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .resumen-titulo {
-            font-size: 14px;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        /* NUEVO: Estilos para filtros adicionales */
-        .filtros-avanzados {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-
-        .filtro-grupo {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .filtro-grupo label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .filtro-grupo input,
-        .filtro-grupo select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .filtro-grupo select {
-            background: white;
-            cursor: pointer;
-        }
-
-        /* Estilos de la Tabla */
         .table-responsive {
             overflow-x: auto;
             margin-top: 20px;
@@ -230,31 +89,25 @@
             background-color: #f5f5f5;
         }
 
-        /* Botones de Acción en la Tabla - MEJORADOS */
         .action-buttons {
             display: flex;
             gap: 5px;
-            flex-wrap: nowrap;
-            justify-content: center;
-            align-items: center;
+            flex-wrap: wrap;
         }
 
         .action-buttons button {
-            padding: 6px 8px;
+            padding: 6px 10px;
             border: none;
             border-radius: 3px;
             cursor: pointer;
             color: white;
-            font-size: 11px;
-            white-space: nowrap;
-            min-width: 60px;
+            font-size: 12px;
         }
 
         .btn-ver { background-color: #388e3c; }
         .btn-editar { background-color: #43a047; }
         .btn-eliminar { background-color: #c62828; }
 
-        /* Estilos de Paginación */
         .pagination-controls {
             display: flex;
             align-items: center;
@@ -294,7 +147,6 @@
             white-space: nowrap;
         }
         
-        /* ALERTAS VISUALES MODERNAS (TOAST NOTIFICATIONS) */
         #alert-container {
             position: fixed;
             top: 20px;
@@ -328,7 +180,6 @@
             background-color: #c62828;
         }
         
-        /* Estilos de Modal */
         .modal { 
             display: none; 
             position: fixed; 
@@ -353,8 +204,8 @@
             animation-duration: 0.4s; 
         }
         
-        .medium-modal { width: 70%; max-width: 800px; }
-        .small-modal { width: 60%; max-width: 400px; }
+        .medium-modal { width: 80%; max-width: 800px; }
+        .small-modal { width: 60%; max-width: 600px; }
         
         @keyframes animatetop { 
             from {top: -300px; opacity: 0} 
@@ -374,35 +225,34 @@
             color: #000;
         }
         
-        /* Estilos para las solapas del modal */
-        .tab-container {
-            margin-top: 20px;
-        }
-        
-        .tab-buttons {
+        .tabs {
             display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
             border-bottom: 1px solid #ddd;
-            margin-bottom: 15px;
         }
         
-        .tab-button {
+        .tab {
             padding: 10px 20px;
-            background: #f1f1f1;
-            border: none;
             cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
             border-radius: 5px 5px 0 0;
             margin-right: 5px;
             font-weight: bold;
         }
         
-        .tab-button.active {
-            background: #2e7d32;
+        .tab.active {
+            background-color: #2e7d32;
             color: white;
         }
         
         .tab-content {
             display: none;
-            padding: 15px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-top: none;
         }
         
         .tab-content.active {
@@ -413,49 +263,16 @@
             margin-bottom: 15px;
         }
         
-        .form-group label { 
-            display: block; 
-            margin-bottom: 5px; 
-            font-weight: bold; 
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
             color: #333;
         }
         
-        .form-group input, .form-group select, .form-group textarea { 
-            width: 100%; 
-            padding: 10px; 
-            border: 1px solid #ccc; 
-            border-radius: 4px; 
-            box-sizing: border-box; 
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-        }
-        
-        /* Estilos específicos para la tabla de historial */
-        .historial-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        
-        .historial-table th, .historial-table td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-        
-        .historial-table th {
-            background-color: #f5f5f5;
-            font-weight: bold;
-        }
-        
-        .historial-table input, .historial-table select, .historial-table textarea {
+        .form-group input, 
+        .form-group textarea,
+        .form-group select { /* MEJORA: Estilo unificado para selects */
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
@@ -463,11 +280,48 @@
             box-sizing: border-box;
         }
         
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .seguimiento-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .seguimiento-table th, 
+        .seguimiento-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+            vertical-align: middle; /* MEJORA: Alineación vertical */
+        }
+        
+        .seguimiento-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .seguimiento-table input,
+        .seguimiento-table select { /* MEJORA: Estilo unificado para selects */
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
         .btn-agregar-fila {
             background-color: #2e7d32;
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 8px 12px;
             border-radius: 4px;
             cursor: pointer;
             margin-top: 10px;
@@ -477,31 +331,22 @@
             background-color: #c62828;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 5px 8px;
             border-radius: 3px;
             cursor: pointer;
         }
         
-        /* Estilos específicos para firma digital */
-        .radio-group {
-            margin-bottom: 10px;
-        }
-        
-        .radio-group label {
+        .date-input-container {
+            position: relative;
             display: inline-block;
-            margin-right: 15px;
-            font-weight: normal;
+            width: 100%;
         }
         
-        .radio-group input[type="radio"] {
-            width: auto;
-            margin-right: 5px;
-        }
-        
-        .conditional-field {
-            margin-top: 10px;
-            padding-left: 15px;
-            border-left: 2px solid #2e7d32;
+        .date-input-container input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         
         #btnGuardar { 
@@ -519,147 +364,60 @@
         #btnGuardar:hover {
             background-color: #1b5e20;
         }
+        
+        /* MEJORA: Estilo para botón deshabilitado */
+        #btnGuardar:disabled {
+            background-color: #9e9e9e;
+            cursor: not-allowed;
+        }
 
-        /* Estado de carga */
         .loading {
             text-align: center;
             padding: 20px;
             color: #666;
         }
-
-        /* Badge para estado de control */
-        .badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            text-align: center;
-            display: inline-block;
-            min-width: 80px;
-        }
         
-        .badge-pendiente {
-            background-color: #ffeb3b;
-            color: #333;
-        }
-        
-        .badge-cumplido {
-            background-color: #4caf50;
-            color: white;
-        }
-
-        /* NUEVOS ESTILOS PARA EL CONTROL DE FIRMA DIGITAL */
-        .control-pendiente {
-            font-weight: bold;
-            color: #c62828;
-        }
-        
-        .control-cumplido {
-            font-weight: bold;
-            color: #2e7d32;
-        }
-        
-        .firma-disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        /* NUEVOS ESTILOS PARA LA BARRA DE FORMATO DE TEXTO */
-        .format-toolbar {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 10px;
-            padding: 8px;
-            background: #f5f5f5;
-            border-radius: 4px;
-            flex-wrap: wrap;
-        }
-
-        .format-btn {
-            padding: 6px 10px;
-            border: 1px solid #ccc;
-            background: white;
-            border-radius: 3px;
-            cursor: pointer;
-            font-weight: bold;
+        /* MEJORA: Estilos de Impresión */
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border: none;
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+            }
+            .header-container, .modal, .action-buttons, .pagination-controls, #alert-container {
+                display: none !important;
+            }
+            #tablaCausas th, #tablaCausas td {
+                border: 1px solid #000;
+                padding: 8px;
+                font-size: 10pt;
+            }
+            #tablaCausas th {
+                background-color: #eee !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            #tablaCausas {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            @page {
+                size: A4 landscape;
+                margin: 2cm;
+            }
         }
 
-        .format-btn:hover {
-            background: #e9e9e9;
-        }
-
-        .format-btn.active {
-            background: #2e7d32;
-            color: white;
-            border-color: #2e7d32;
-        }
-
-        .bold-btn { font-weight: bold; }
-        .blue-btn { color: #2196f3; }
-        .green-btn { color: #4caf50; }
-        .red-btn { color: #f44336; }
-
-        .situacion-procesal-editor {
-            min-height: 200px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 10px;
-            font-family: Arial, sans-serif;
-            line-height: 1.5;
-        }
-
-        .situacion-procesal-editor:focus {
-            outline: none;
-            border-color: #2e7d32;
-        }
-
-        /* NUEVO: Estilos para botones en modal ver */
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: flex-end;
-        }
-        
-        .modal-buttons button {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .modal-buttons .btn-imprimir {
-            background-color: #4caf50;
-            color: white;
-        }
-        
-        .modal-buttons .btn-imprimir:hover {
-            background-color: #388e3c;
-        }
-        
-        .modal-buttons .btn-cerrar {
-            background-color: #757575;
-            color: white;
-        }
-        
-        .modal-buttons .btn-cerrar:hover {
-            background-color: #616161;
-        }
-
-        /* Responsividad */
         @media (max-width: 850px) {
             .header-container {
                 flex-direction: column;
                 align-items: flex-start;
-            }
-            h1 {
-                text-align: left;
-                width: 100%;
-                margin-bottom: 15px;
             }
             .toolbar {
                 flex-direction: column;
@@ -669,18 +427,6 @@
             }
             #filtroBusqueda {
                 width: 100%;
-            }
-            .resumen-container {
-                flex-direction: column;
-            }
-            .resumen-card {
-                min-width: 100%;
-            }
-            .filtros-avanzados {
-                flex-direction: column;
-            }
-            .filtro-grupo {
-                min-width: 100%;
             }
             .pagination-controls {
                 justify-content: space-between;
@@ -694,62 +440,124 @@
                 width: 95% !important;
             }
             .action-buttons {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
+                flex-direction: column;
             }
-            .action-buttons button {
-                padding: 4px 6px;
-                font-size: 10px;
-                min-width: 50px;
+            .tabs {
+                flex-direction: column;
+            }
+            .tab {
+                margin-bottom: 5px;
+                border-radius: 5px;
             }
             .form-row {
                 flex-direction: column;
                 gap: 0;
             }
-            .tab-buttons {
-                flex-wrap: wrap;
-            }
-            .tab-button {
-                flex: 1;
-                min-width: 120px;
-            }
-            .historial-table {
-                font-size: 14px;
-            }
-            .historial-table th, .historial-table td {
-                padding: 5px;
-            }
-            /* Ajustes específicos para tabla principal en móviles */
-            #tablaCausas th:nth-child(5),
-            #tablaCausas td:nth-child(5) {
-                display: none;
-            }
-            .format-toolbar {
-                gap: 3px;
-            }
-            .format-btn {
-                padding: 4px 6px;
+            .seguimiento-table {
                 font-size: 12px;
-            }
-            .modal-buttons {
-                flex-direction: column;
             }
         }
 
-        @media (max-width: 600px) {
-            .action-buttons {
-                flex-direction: column;
-                gap: 3px;
-            }
-            .action-buttons button {
-                width: 100%;
-                margin: 2px 0;
-            }
-            #tablaCausas th:nth-child(4),
-            #tablaCausas td:nth-child(4) {
-                display: none;
-            }
+        /* NUEVOS ESTILOS PARA LOS SELECTS DE PRIORIDAD */
+        .prioridad-ninguna {
+            color: #757575 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-baja {
+            color: #2e7d32 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-media {
+            color: #ef6c00 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-alta {
+            color: #c62828 !important;
+            font-weight: bold !important;
+        }
+        .prioridad-urgente {
+            color: #7b1fa2 !important;
+            font-weight: bold !important;
+        }
+
+        /* NUEVO: Estilos para el editor de texto enriquecido */
+        .editor-toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .editor-toolbar button {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .editor-toolbar button:hover {
+            background: #e9ecef;
+        }
+
+        .editor-toolbar button.active {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .color-button {
+            font-weight: bold;
+            min-width: 50px;
+        }
+
+        .color-button.azul {
+            color: #007bff;
+            border-color: #007bff;
+        }
+
+        .color-button.rojo {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .color-button.verde {
+            color: #28a745;
+            border-color: #28a745;
+        }
+
+        .color-button.normal {
+            color: #212529;
+            border-color: #6c757d;
+        }
+
+        #observaciones-editor {
+            min-height: 120px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            background: #fff;
+            line-height: 1.5;
+        }
+
+        #observaciones-editor:focus {
+            outline: none;
+            border-color: #2e7d32;
+        }
+
+        .counter {
+            font-size: .8rem;
+            color: #6b7280;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -757,57 +565,10 @@
     <div class="container">
         <div class="header-container">
             <div class="toolbar">
-                <input type="text" id="filtroBusqueda" placeholder="Buscar por expediente, carátula..." title="Filtro de búsqueda">
+                <input type="text" id="filtroBusqueda" placeholder="Buscar por número, carátula, observaciones..." title="Filtro de búsqueda">
                 <div id="topPagination" class="pagination-controls"></div>
                 <button id="btnNuevoRegistro" title="Abrir modal de Nuevo Registro">➕ Nuevo Registro</button>
                 <button id="btnImprimirListado" title="Imprimir listado completo">🖨️ Imprimir Listado</button>
-            </div>
-        </div>
-        
-        <!-- NUEVO: Resumen de causas -->
-        <div class="resumen-container">
-            <div class="resumen-card total">
-                <div class="resumen-numero" id="totalCausas">0</div>
-                <div class="resumen-titulo">Total de Causas</div>
-            </div>
-            <div class="resumen-card pendientes">
-                <div class="resumen-numero" id="pendientesCausas">0</div>
-                <div class="resumen-titulo">Pendientes</div>
-            </div>
-            <div class="resumen-card cumplidas">
-                <div class="resumen-numero" id="cumplidasCausas">0</div>
-                <div class="resumen-titulo">Cumplidas</div>
-            </div>
-        </div>
-        
-        <!-- NUEVO: Filtros adicionales -->
-        <div class="filtros-avanzados">
-            <div class="filtro-grupo">
-                <label for="filtroJuzgado">Juzgado</label>
-                <select id="filtroJuzgado">
-                    <option value="">Todos los juzgados</option>
-                </select>
-            </div>
-            <div class="filtro-grupo">
-                <label for="filtroTipoProceso">Tipo de Proceso</label>
-                <select id="filtroTipoProceso">
-                    <option value="">Todos los tipos</option>
-                </select>
-            </div>
-            <div class="filtro-grupo">
-                <label for="filtroEmpleado">Empleado Asignado</label>
-                <select id="filtroEmpleado">
-                    <option value="">Todos los empleados</option>
-                </select>
-            </div>
-            <div class="filtro-grupo">
-                <label for="filtroEstadoControl">Estado de Control</label>
-                <select id="filtroEstadoControl">
-                    <option value="">Todos los estados</option>
-                    <option value="pendiente">Pendiente</option>
-                    <option value="cumplido">Cumplido</option>
-                    <option value="parcial">Parcial</option>
-                </select>
             </div>
         </div>
         
@@ -816,18 +577,16 @@
                 <thead>
                     <tr>
                         <th>Número y Carátula</th>
-                        <th>Juzgado</th>
                         <th>Tipo de Proceso</th>
+                        <th>Juzgado</th>
                         <th>Empleado</th>
-                        <th>Control</th>
-                        <th>Próximas Audiencias</th>
-                        <th>Próximos Vencimientos</th>
+                        <th>Audiencias y Vencimientos</th>
+                        <th>Observaciones</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Los datos se cargarán dinámicamente -->
-                </tbody>
+                    </tbody>
             </table>
         </div>
         
@@ -836,195 +595,229 @@
     
     <div id="alert-container"></div>
 
-    <!-- Modal para nuevo/editar registro -->
     <div id="modalRegistro" class="modal">
         <div class="modal-content medium-modal">
             <a href="#" class="close-btn">&times;</a>
             <h2><span id="modalTitle">Nuevo</span> Registro de Causa</h2>
             
-            <div class="tab-container">
-                <div class="tab-buttons">
-                    <button class="tab-button active" data-tab="datos-expediente">Datos del Expediente</button>
-                    <button class="tab-button" data-tab="historial-control">Historial de Control</button>
-                    <button class="tab-button" data-tab="documental">Documental</button>
-                    <button class="tab-button" data-tab="situacion-procesal">Situación Procesal</button>
-                    <button class="tab-button" data-tab="audiencias-vencimientos">Audiencias y Vencimientos</button>
+            <div class="tabs">
+                <div class="tab active" data-tab="datos-expediente">Datos del Expediente</div>
+                <div class="tab" data-tab="documental">Documental</div>
+                <div class="tab" data-tab="firma-digital">Firma Digital</div>
+                <div class="tab" data-tab="situacion-procesal">Situación Procesal</div>
+                <div class="tab" data-tab="audiencias-vencimientos">Audiencias y Vencimientos</div>
+                <div class="tab" data-tab="observaciones">Observaciones</div>
+            </div>
+            
+            <form id="formRegistro">
+                <div class="tab-content active" id="datos-expediente">
+                    <div class="form-group">
+                        <label for="numeroCaratula">Número y Carátula:</label>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <input type="text" id="numeroCaratula" list="causasList" placeholder="Buscar o escribir nuevo expediente..." required>
+                                <datalist id="causasList">
+                                    </datalist>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <button type="button" id="btnNuevoExpediente" class="btn-agregar-fila">➕ Nuevo Expediente</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tipoProceso">Tipo de Proceso:</label>
+                            <input type="text" id="tipoProceso" placeholder="Ej: Civil, Penal, Laboral...">
+                        </div>
+                        <div class="form-group">
+                            <label for="juzgado">Juzgado:</label>
+                            <input type="text" id="juzgado" placeholder="Ej: Juzgado Civil y Comercial N°1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="empleado">Empleado Asignado:</label>
+                        <input type="text" id="empleado" placeholder="Ej: Juan Pérez">
+                    </div>
                 </div>
                 
-                <form id="formRegistro">
-                    <!-- Solapa 1: Datos del Expediente -->
-                    <div id="datos-expediente" class="tab-content active">
-                        <div class="form-group">
-                            <label for="numCausa">Número y Carátula:</label>
-                            <div class="form-row">
-                                <div class="form-group" style="flex: 2;">
-                                    <input type="text" id="numCausa" list="causasList" placeholder="Buscar o escribir nuevo expediente..." required>
-                                    <datalist id="causasList">
-                                        <!-- Se llenará dinámicamente con datos de Firestore -->
-                                    </datalist>
-                                </div>
-                                <div class="form-group" style="flex: 1;">
-                                    <button type="button" id="btnNuevoExpediente" class="btn-agregar-fila">➕ Nuevo Expediente</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="tipoProceso">Tipo de Proceso:</label>
-                                <input type="text" id="tipoProceso">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="juzgado">Juzgado:</label>
-                                <input type="text" id="juzgado">
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="empleadoAsignado">Empleado Asignado:</label>
-                                <input type="text" id="empleadoAsignado">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="modoIntervencion">Modo de Intervención:</label>
-                                <input type="text" id="modoIntervencion">
-                            </div>
-                        </div>
+                <div class="tab-content" id="documental">
+                    <div class="form-group">
+                        <label for="documentosPresentados">Documentos Presentados:</label>
+                        <textarea id="documentosPresentados" rows="4" placeholder="Lista de documentos presentados"></textarea>
                     </div>
                     
-                    <!-- Solapa 2: Historial de Control -->
-                    <div id="historial-control" class="tab-content">
-                        <div class="form-group">
-                            <label>Control de Piezas Procesales:</label>
-                            <table class="historial-table">
-                                <thead>
-                                    <tr>
-                                        <th>Pieza Procesal</th>
-                                        <th>Control</th>
-                                        <th>Firma Digital</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablaHistorial">
-                                    <!-- Filas se agregarán dinámicamente -->
+                    <div class="form-group">
+                        <label for="estadoDocumental">Estado Documental:</label>
+                        <input type="text" id="estadoDocumental" placeholder="Ej: Completo, Incompleto, Pendiente...">
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="firma-digital">
+                    <div class="form-group">
+                        <table class="seguimiento-table" id="tablaFirmaDigital">
+                            <thead>
+                                <tr>
+                                    <th>Pieza Procesal</th>
+                                    <th>Fecha Firma</th>
+                                    <th>Firma de</th>
+                                    <th>Tipo Defensor</th>
+                                    <th>Detalle Subrogante</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 </tbody>
-                            </table>
-                            <button type="button" id="btnAgregarFila" class="btn-agregar-fila">➕ Agregar Pieza</button>
+                        </table>
+                        <button type="button" class="btn-agregar-fila" id="btnAgregarFirma">+ Agregar Firma</button>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="situacion-procesal">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="modoIntervencion">Modo de Intervención:</label>
+                            <input type="text" id="modoIntervencion" placeholder="Ej: Demanda, Contestación, Apelación...">
+                        </div>
+                        <div class="form-group">
+                            <label for="prioridadTarea">Prioridad de Tarea:</label>
+                            <select id="prioridadTarea">
+                                <option value="" class="prioridad-ninguna">Ninguna</option>
+                                <option value="Baja" class="prioridad-baja">Baja</option>
+                                <option value="Media" class="prioridad-media">Media</option>
+                                <option value="Alta" class="prioridad-alta">Alta</option>
+                                <option value="Urgente" class="prioridad-urgente">Urgente</option>
+                            </select>
                         </div>
                     </div>
                     
-                    <!-- Solapa 3: Documental -->
-                    <div id="documental" class="tab-content">
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="documentacion">Documentación:</label>
-                            <textarea id="documentacion" rows="6" placeholder="Detalle la documentación relacionada"></textarea>
+                            <label for="estadoProcesal">Estado Procesal:</label>
+                            <select id="estadoProcesal">
+                                <option value="">Seleccionar estado</option>
+                                <option value="Iniciado">Iniciado</option>
+                                <option value="En tramite">En trámite</option>
+                                <option value="Con resolucion">Con resolución</option>
+                                <option value="Con sentencia">Con sentencia</option>
+                                <option value="En Alzada">En Alzada</option>
+                                <option value="Finalizado">Finalizado</option>
+                                <option value="Archivado">Archivado</option>
+                            </select>
                         </div>
-                    </div>
-                    
-                    <!-- Solapa 4: Situación Procesal - MODIFICADA CON BARRA DE FORMATO -->
-                    <div id="situacion-procesal" class="tab-content">
                         <div class="form-group">
-                            <label for="situacionProcesal">Situación Procesal:</label>
-                            <div class="format-toolbar">
-                                <button type="button" class="format-btn bold-btn" data-command="bold" title="Negrita"><strong>B</strong></button>
-                                <button type="button" class="format-btn blue-btn" data-command="foreColor" data-value="#2196F3" title="Texto azul">A</button>
-                                <button type="button" class="format-btn green-btn" data-command="foreColor" data-value="#4CAF50" title="Texto verde">A</button>
-                                <button type="button" class="format-btn red-btn" data-command="foreColor" data-value="#F44336" title="Texto rojo">A</button>
-                                <button type="button" class="format-btn" data-command="removeFormat" title="Quitar formato">Normal</button>
+                            <label for="fechaEstado">Fecha del Estado:</label>
+                            <div class="date-input-container">
+                                <input type="date" id="fechaEstado">
                             </div>
-                            <div id="situacionProcesalEditor" class="situacion-procesal-editor" contenteditable="true" placeholder="Describa la situación procesal actual..."></div>
-                            <input type="hidden" id="situacionProcesal" name="situacionProcesal">
                         </div>
                     </div>
                     
-                    <!-- NUEVA SOLAPA: Audiencias y Vencimientos -->
-                    <div id="audiencias-vencimientos" class="tab-content">
-                        <div class="form-group">
-                            <h3>Audiencias</h3>
-                            <table class="historial-table">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Horario</th>
-                                        <th>Detalle</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablaAudiencias">
-                                    <!-- Filas se agregarán dinámicamente -->
+                    <div class="form-group">
+                        <label>Seguimiento:</label>
+                        <table class="seguimiento-table" id="tablaSeguimiento">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Detalles</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 </tbody>
-                            </table>
-                            <button type="button" id="btnAgregarAudiencia" class="btn-agregar-fila">➕ Agregar Audiencia</button>
-                        </div>
-                        
-                        <div class="form-group">
-                            <h3>Vencimientos</h3>
-                            <table class="historial-table">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Horario</th>
-                                        <th>Detalle</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablaVencimientos">
-                                    <!-- Filas se agregarán dinámicamente -->
+                        </table>
+                        <button type="button" class="btn-agregar-fila" id="btnAgregarSeguimiento">+ Agregar Seguimiento</button>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="audiencias-vencimientos">
+                    <div class="form-group">
+                        <h3>Audiencias</h3>
+                        <table class="seguimiento-table" id="tablaAudiencias">
+                            <thead>
+                                <tr>
+                                    <th>Fecha y Hora</th>
+                                    <th>Detalle</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 </tbody>
-                            </table>
-                            <button type="button" id="btnAgregarVencimiento" class="btn-agregar-fila">➕ Agregar Vencimiento</button>
-                        </div>
-                        
-                        <div class="form-group">
-                            <h3>Otras Actividades</h3>
-                            <table class="historial-table">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Horario</th>
-                                        <th>Detalle</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablaOtrasActividades">
-                                    <!-- Filas se agregarán dinámicamente -->
-                                </tbody>
-                            </table>
-                            <button type="button" id="btnAgregarActividad" class="btn-agregar-fila">➕ Agregar Actividad</button>
-                        </div>
+                        </table>
+                        <button type="button" class="btn-agregar-fila" id="btnAgregarAudiencia">+ Agregar Audiencia</button>
                     </div>
                     
-                    <button type="submit" id="btnGuardar">Guardar</button>
-                </form>
-            </div>
+                    <div class="form-group">
+                        <h3>Vencimientos</h3>
+                        <table class="seguimiento-table" id="tablaVencimientos">
+                            <thead>
+                                <tr>
+                                    <th>Fecha y Hora</th>
+                                    <th>Detalle</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                        <button type="button" class="btn-agregar-fila" id="btnAgregarVencimiento">+ Agregar Vencimiento</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>Otras Actividades</h3>
+                        <table class="seguimiento-table" id="tablaActividades">
+                            <thead>
+                                <tr>
+                                    <th>Fecha y Hora</th>
+                                    <th>Detalle</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                        <button type="button" class="btn-agregar-fila" id="btnAgregarActividad">+ Agregar Actividad</button>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="observaciones">
+                    <div class="form-group">
+                        <label for="observacionesGenerales">Observaciones Generales:</label>
+                        <div class="editor-toolbar">
+                            <button type="button" id="btnBold" title="Negrita"><i class="fas fa-bold"></i></button>
+                            <button type="button" id="btnColorAzul" class="color-button azul" title="Color Azul">A</button>
+                            <button type="button" id="btnColorRojo" class="color-button rojo" title="Color Rojo">A</button>
+                            <button type="button" id="btnColorVerde" class="color-button verde" title="Color Verde">A</button>
+                            <button type="button" id="btnColorNormal" class="color-button normal" title="Color Normal">Normal</button>
+                        </div>
+                        <div id="observaciones-editor" contenteditable="true"></div>
+                        <input type="hidden" id="observacionesGenerales" name="observacionesGenerales">
+                        <div class="counter" id="counter">0/1000</div>
+                    </div>
+                </div>
+                
+                <button type="submit" id="btnGuardar">Guardar</button>
+            </form>
         </div>
     </div>
 
-    <!-- Modal para ver detalles - MODIFICADO CON BOTÓN IMPRIMIR -->
     <div id="modalVer" class="modal">
         <div class="modal-content small-modal">
             <a href="#" class="close-btn">&times;</a>
             <h2>Detalle de la Causa</h2>
             <div id="detalleContenido">
-                <!-- Los detalles se cargarán dinámicamente -->
-            </div>
-            <!-- NUEVO: Botones en modal ver -->
-            <div class="modal-buttons">
-                <button id="btnImprimirDetalle" class="btn-imprimir">
-                    🖨️ Imprimir Detalle
-                </button>
-                <button id="btnCerrarDetalle" class="btn-cerrar">
-                    ✕ Cerrar
-                </button>
-            </div>
+                </div>
         </div>
     </div>
 
     <script>
+        // --- ADVERTENCIA DE SEGURIDAD ---
+        // Las claves de API y la configuración de Firebase no deben estar expuestas en el código del lado del cliente.
+        // Un atacante podría usarlas para abusar de tu proyecto de Firebase.
+        // Considera usar variables de entorno y un backend, o las Reglas de Seguridad de Firebase y App Check para proteger tu aplicación.
+
         // --- CONFIGURACIÓN FIREBASE ---
-        // Configuración para cargar expedientes (base original)
         const firebaseConfigOriginal = {
             apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
             authDomain: "causas-defensoria.firebaseapp.com",
@@ -1035,7 +828,6 @@
             appId: "1:186064671470:web:b58bae5eadbe6e469f19ff"
         };
 
-        // Configuración para guardar listado (nueva base)
         const firebaseConfigNueva = {
             apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
             authDomain: "secretarios-def.firebaseapp.com",
@@ -1045,21 +837,22 @@
             appId: "1:533584198983:web:f51f57146ed16c813ca062"
         };
 
-        // Inicializar ambas apps de Firebase
+        // Inicializar Firebase para la base original (solo lectura para autocompletar)
         const appOriginal = firebase.initializeApp(firebaseConfigOriginal, "original");
-        const appNueva = firebase.initializeApp(firebaseConfigNueva, "nueva");
-        
         const dbOriginal = firebase.firestore(appOriginal);
+
+        // Inicializar Firebase para la nueva base (lectura/escritura)
+        const appNueva = firebase.initializeApp(firebaseConfigNueva, "nueva");
         const dbNueva = firebase.firestore(appNueva);
 
         // --- CONFIGURACIÓN Y DATOS PARA PRODUCCIÓN ---
         
         const RECORDS_PER_PAGE = 10;
         let currentPage = 1;
-        let causas = []; // Array principal para almacenar las causas
+        let causas = [];
         let filteredCausas = [];
         let editingId = null;
-        let causasData = []; // Para almacenar datos de la colección "causas" original
+        let causasData = [];
         
         // --- ELEMENTOS DEL DOM ---
         const tablaBody = document.querySelector('#tablaCausas tbody');
@@ -1067,6 +860,7 @@
         const modalRegistro = document.getElementById('modalRegistro');
         const btnNuevoRegistro = document.getElementById('btnNuevoRegistro');
         const btnImprimirListado = document.getElementById('btnImprimirListado');
+        const btnGuardar = document.getElementById('btnGuardar');
         const modalVer = document.getElementById('modalVer');
         const formRegistro = document.getElementById('formRegistro');
         const modalTitle = document.getElementById('modalTitle');
@@ -1074,41 +868,29 @@
         const topPagination = document.getElementById('topPagination');
         const bottomPagination = document.getElementById('bottomPagination');
         const alertContainer = document.getElementById('alert-container');
-        const tablaHistorial = document.getElementById('tablaHistorial');
-        const btnAgregarFila = document.getElementById('btnAgregarFila');
-        const btnNuevoExpediente = document.getElementById('btnNuevoExpediente');
-        
-        // Nuevos elementos para Audiencias y Vencimientos
+        const tablaSeguimiento = document.getElementById('tablaSeguimiento');
+        const btnAgregarSeguimiento = document.getElementById('btnAgregarSeguimiento');
         const tablaAudiencias = document.getElementById('tablaAudiencias');
-        const tablaVencimientos = document.getElementById('tablaVencimientos');
-        const tablaOtrasActividades = document.getElementById('tablaOtrasActividades');
         const btnAgregarAudiencia = document.getElementById('btnAgregarAudiencia');
+        const tablaVencimientos = document.getElementById('tablaVencimientos');
         const btnAgregarVencimiento = document.getElementById('btnAgregarVencimiento');
+        const tablaActividades = document.getElementById('tablaActividades');
         const btnAgregarActividad = document.getElementById('btnAgregarActividad');
+        const tablaFirmaDigital = document.getElementById('tablaFirmaDigital');
+        const btnAgregarFirma = document.getElementById('btnAgregarFirma');
+        const btnNuevoExpediente = document.getElementById('btnNuevoExpediente');
 
-        // NUEVOS ELEMENTOS PARA LA BARRA DE FORMATO
-        const situacionProcesalEditor = document.getElementById('situacionProcesalEditor');
-        const situacionProcesalHidden = document.getElementById('situacionProcesal');
-        const formatButtons = document.querySelectorAll('.format-btn');
-
-        // NUEVOS ELEMENTOS PARA RESUMEN Y FILTROS
-        const totalCausas = document.getElementById('totalCausas');
-        const pendientesCausas = document.getElementById('pendientesCausas');
-        const cumplidasCausas = document.getElementById('cumplidasCausas');
-        const filtroJuzgado = document.getElementById('filtroJuzgado');
-        const filtroTipoProceso = document.getElementById('filtroTipoProceso');
-        const filtroEmpleado = document.getElementById('filtroEmpleado');
-        const filtroEstadoControl = document.getElementById('filtroEstadoControl');
-
-        // NUEVO: Elementos para botones del modal ver
-        const btnImprimirDetalle = document.getElementById('btnImprimirDetalle');
-        const btnCerrarDetalle = document.getElementById('btnCerrarDetalle');
+        // NUEVOS SELECTORES PARA EL EDITOR DE TEXTO
+        const btnBold = document.getElementById('btnBold');
+        const btnColorAzul = document.getElementById('btnColorAzul');
+        const btnColorRojo = document.getElementById('btnColorRojo');
+        const btnColorVerde = document.getElementById('btnColorVerde');
+        const btnColorNormal = document.getElementById('btnColorNormal');
+        const observacionesEditor = document.getElementById('observaciones-editor');
+        const observacionesHidden = document.getElementById('observacionesGenerales');
 
         // --- UTILIDADES ---
 
-        /**
-         * Convierte una fecha de formato YYYY-MM-DD a formato DD/MM/AAAA.
-         */
         function formatDate(dateString) {
             if (!dateString) return 'N/A';
             const parts = dateString.split('-');
@@ -1119,11 +901,22 @@
             return dateString;
         }
 
-        /**
-         * Muestra una alerta visual moderna (toast).
-         * @param {string} message - Mensaje a mostrar.
-         * @param {string} type - Tipo de alerta ('success' o 'error').
-         */
+        function formatDateTime(dateTimeString) {
+            if (!dateTimeString) return 'N/A';
+            try {
+                const date = new Date(dateTimeString);
+                if (isNaN(date)) return dateTimeString; // MEJORA: Validar fecha inválida
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${day}/${month}/${year} ${hours}:${minutes}`;
+            } catch (e) {
+                return dateTimeString;
+            }
+        }
+
         function showToast(message, type) {
             const toast = document.createElement('div');
             toast.className = `toast-alert toast-${type}`;
@@ -1131,260 +924,126 @@
             
             alertContainer.appendChild(toast);
 
-            // Muestra el toast con animación
             setTimeout(() => {
                 toast.classList.add('show');
             }, 10); 
 
-            // Oculta y elimina el toast después de 4 segundos
             setTimeout(() => {
                 toast.classList.remove('show');
-                toast.addEventListener('transitionend', () => {
-                    toast.remove();
-                });
+                toast.addEventListener('transitionend', () => toast.remove());
             }, 4000); 
         }
 
-        /**
-         * Muestra un estado de carga en la tabla
-         */
         function showLoading() {
             tablaBody.innerHTML = `
                 <tr>
-                    <td colspan="8" class="loading">
+                    <td colspan="7" class="loading">
                         Cargando datos...
                     </td>
                 </tr>
             `;
         }
 
-        // NUEVA FUNCIÓN: Actualizar resumen de causas
-        function actualizarResumen() {
-            const total = causas.length;
-            let pendientes = 0;
-            let cumplidas = 0;
-            
-            causas.forEach(causa => {
-                const estado = obtenerEstadoControlTexto(causa.historial);
-                if (estado === 'Pendiente' || estado === 'Parcial') {
-                    pendientes++;
-                } else if (estado === 'Cumplido') {
-                    cumplidas++;
-                }
+        // NUEVA FUNCIÓN: Inicializar editor de texto enriquecido
+        function initEditor() {
+            // Botón negrita
+            btnBold.addEventListener('click', function() {
+                document.execCommand('bold', false, null);
+                observacionesEditor.focus();
             });
             
-            totalCausas.textContent = total;
-            pendientesCausas.textContent = pendientes;
-            cumplidasCausas.textContent = cumplidas;
+            // Botones de color
+            btnColorAzul.addEventListener('click', function() {
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand('foreColor', false, '#007bff');
+                observacionesEditor.focus();
+            });
+            
+            btnColorRojo.addEventListener('click', function() {
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand('foreColor', false, '#dc3545');
+                observacionesEditor.focus();
+            });
+            
+            btnColorVerde.addEventListener('click', function() {
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand('foreColor', false, '#28a745');
+                observacionesEditor.focus();
+            });
+            
+            // Botón para volver al color normal (negro)
+            btnColorNormal.addEventListener('click', function() {
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand('foreColor', false, '#212529');
+                observacionesEditor.focus();
+            });
+            
+            // Actualizar contador de palabras y hidden input
+            observacionesEditor.addEventListener('input', function() {
+                // Obtener texto sin etiquetas HTML para contar palabras
+                const text = this.innerText || this.textContent;
+                const words = text.trim().split(/\s+/).filter(Boolean);
+                document.getElementById("counter").textContent = `${words.length}/1000`;
+                
+                // Actualizar el hidden input con el HTML
+                observacionesHidden.value = this.innerHTML;
+            });
+            
+            // Manejar pegado para eliminar formato no deseado
+            observacionesEditor.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+                document.execCommand('insertText', false, text);
+            });
         }
 
-        // NUEVA FUNCIÓN: Obtener estado de control como texto
-        function obtenerEstadoControlTexto(historial) {
-            if (!historial || !Array.isArray(historial) || historial.length === 0) {
-                return 'Pendiente';
+        // --- FUNCIONES DE AUTORRELLENADO ---
+
+        async function cargarDatosCausas() {
+            try {
+                const causasSnapshot = await dbOriginal.collection('causas').get();
+                const causasList = document.getElementById('causasList');
+                causasList.innerHTML = '';
+                
+                causasData = causasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                causasData.forEach(causa => {
+                    const option = document.createElement('option');
+                    option.value = `${causa.numCausa} - ${causa.caratula || ''}`;
+                    causasList.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Error cargando datos de causas para autocompletar:', error);
+                showToast('Error al cargar la lista de expedientes', 'error');
             }
+        }
+
+        document.getElementById('numeroCaratula').addEventListener('change', function() {
+            const valorSeleccionado = this.value;
+            const causaEncontrada = causasData.find(c => 
+                valorSeleccionado === `${c.numCausa} - ${c.caratula || ''}` || 
+                valorSeleccionado === c.numCausa
+            );
             
-            const tienePendientes = historial.some(item => item.control === 'Pendiente');
-            const tieneCumplidos = historial.some(item => item.control === 'Cumplido');
-            
-            if (tienePendientes && tieneCumplidos) {
-                return 'Parcial';
-            } else if (tienePendientes) {
-                return 'Pendiente';
-            } else if (tieneCumplidos) {
-                return 'Cumplido';
-            } else {
-                return 'Pendiente';
+            if (causaEncontrada) {
+                this.value = `${causaEncontrada.numCausa} - ${causaEncontrada.caratula || ''}`;
+                document.getElementById('tipoProceso').value = causaEncontrada.tipoProceso || '';
+                document.getElementById('juzgado').value = causaEncontrada.juzgado || '';
+                document.getElementById('empleado').value = causaEncontrada.usuarioAsignado || '';
+                document.getElementById('modoIntervencion').value = causaEncontrada.intervencion || '';
             }
-        }
+        });
 
-        // NUEVA FUNCIÓN: Aplicar todos los filtros
-        function aplicarFiltros() {
-            const searchTerm = filtroBusqueda.value.toLowerCase();
-            const juzgadoFiltro = filtroJuzgado.value;
-            const tipoProcesoFiltro = filtroTipoProceso.value;
-            const empleadoFiltro = filtroEmpleado.value;
-            const estadoControlFiltro = filtroEstadoControl.value;
-            
-            filteredCausas = causas.filter(causa => {
-                // Filtro de búsqueda general
-                const cumpleBusqueda = searchTerm === '' || 
-                    (causa.expediente && causa.expediente.toLowerCase().includes(searchTerm)) ||
-                    (causa.caratula && causa.caratula.toLowerCase().includes(searchTerm)) ||
-                    (causa.juzgado && causa.juzgado.toLowerCase().includes(searchTerm)) ||
-                    (causa.tipoProceso && causa.tipoProceso.toLowerCase().includes(searchTerm)) ||
-                    (causa.empleadoAsignado && causa.empleadoAsignado.toLowerCase().includes(searchTerm));
-                
-                // Filtros específicos
-                const cumpleJuzgado = !juzgadoFiltro || causa.juzgado === juzgadoFiltro;
-                const cumpleTipoProceso = !tipoProcesoFiltro || causa.tipoProceso === tipoProcesoFiltro;
-                const cumpleEmpleado = !empleadoFiltro || causa.empleadoAsignado === empleadoFiltro;
-                
-                // Filtro por estado de control
-                let cumpleEstadoControl = true;
-                if (estadoControlFiltro) {
-                    const estado = obtenerEstadoControlTexto(causa.historial);
-                    if (estadoControlFiltro === 'pendiente') {
-                        cumpleEstadoControl = estado === 'Pendiente';
-                    } else if (estadoControlFiltro === 'cumplido') {
-                        cumpleEstadoControl = estado === 'Cumplido';
-                    } else if (estadoControlFiltro === 'parcial') {
-                        cumpleEstadoControl = estado === 'Parcial';
-                    }
-                }
-                
-                return cumpleBusqueda && cumpleJuzgado && cumpleTipoProceso && cumpleEmpleado && cumpleEstadoControl;
-            });
-            
-            currentPage = 1;
-            renderTable(filteredCausas);
-        }
-
-        // NUEVA FUNCIÓN: Poblar filtros con valores únicos
-        function poblarFiltros() {
-            // Obtener valores únicos para cada filtro
-            const juzgados = [...new Set(causas.map(c => c.juzgado).filter(Boolean))].sort();
-            const tiposProceso = [...new Set(causas.map(c => c.tipoProceso).filter(Boolean))].sort();
-            const empleados = [...new Set(causas.map(c => c.empleadoAsignado).filter(Boolean))].sort();
-            
-            // Poblar filtro de juzgados
-            filtroJuzgado.innerHTML = '<option value="">Todos los juzgados</option>';
-            juzgados.forEach(juzgado => {
-                const option = document.createElement('option');
-                option.value = juzgado;
-                option.textContent = juzgado;
-                filtroJuzgado.appendChild(option);
-            });
-            
-            // Poblar filtro de tipos de proceso
-            filtroTipoProceso.innerHTML = '<option value="">Todos los tipos</option>';
-            tiposProceso.forEach(tipo => {
-                const option = document.createElement('option');
-                option.value = tipo;
-                option.textContent = tipo;
-                filtroTipoProceso.appendChild(option);
-            });
-            
-            // Poblar filtro de empleados
-            filtroEmpleado.innerHTML = '<option value="">Todos los empleados</option>';
-            empleados.forEach(empleado => {
-                const option = document.createElement('option');
-                option.value = empleado;
-                option.textContent = empleado;
-                filtroEmpleado.appendChild(option);
-            });
-        }
-
-        // NUEVA FUNCIÓN: Imprimir detalle de causa
-        function imprimirDetalleCausa() {
-            const printWindow = window.open('', '_blank');
-            const fechaHora = new Date().toLocaleString();
-            
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>Detalle de Causa</title>
-                        <style>
-                            body { 
-                                font-family: Arial, sans-serif; 
-                                margin: 20px; 
-                                color: #333;
-                            }
-                            h1 { 
-                                color: #2e7d32; 
-                                text-align: center; 
-                                border-bottom: 2px solid #2e7d32;
-                                padding-bottom: 10px;
-                            }
-                            .detalle-seccion {
-                                margin-bottom: 20px;
-                                padding: 15px;
-                                border: 1px solid #ddd;
-                                border-radius: 5px;
-                            }
-                            .detalle-seccion h3 {
-                                color: #2e7d32;
-                                margin-top: 0;
-                                border-bottom: 1px solid #eee;
-                                padding-bottom: 5px;
-                            }
-                            .info-item {
-                                margin-bottom: 8px;
-                            }
-                            .info-item strong {
-                                color: #555;
-                                min-width: 200px;
-                                display: inline-block;
-                            }
-                            table {
-                                width: 100%;
-                                border-collapse: collapse;
-                                margin-top: 10px;
-                            }
-                            table th, table td {
-                                border: 1px solid #ddd;
-                                padding: 8px;
-                                text-align: left;
-                            }
-                            table th {
-                                background-color: #f5f5f5;
-                                font-weight: bold;
-                            }
-                            .badge {
-                                padding: 3px 8px;
-                                border-radius: 12px;
-                                font-size: 11px;
-                                font-weight: bold;
-                                text-align: center;
-                                display: inline-block;
-                            }
-                            .badge-pendiente {
-                                background-color: #ffeb3b;
-                                color: #333;
-                            }
-                            .badge-cumplido {
-                                background-color: #4caf50;
-                                color: white;
-                            }
-                            .fecha-impresion {
-                                text-align: center;
-                                margin-top: 30px;
-                                color: #666;
-                                font-size: 12px;
-                            }
-                            @media print {
-                                body {
-                                    margin: 0;
-                                    padding: 10px;
-                                }
-                                .no-print {
-                                    display: none !important;
-                                }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <h1>Detalle de Causa</h1>
-                        <div id="contenido-impresion">
-                            ${detalleContenido.innerHTML}
-                        </div>
-                        <div class="fecha-impresion">
-                            Documento generado el ${fechaHora}
-                        </div>
-                    </body>
-                </html>
-            `);
-            
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-        }
+        btnNuevoExpediente.addEventListener('click', () => {
+            document.getElementById('numeroCaratula').value = '';
+            document.getElementById('numeroCaratula').focus();
+        });
 
         // --- FUNCIONES DE RENDERING Y LÓGICA DE DATOS ---
 
         function renderTable(data) {
             filteredCausas = data;
-            
             const totalPages = Math.ceil(filteredCausas.length / RECORDS_PER_PAGE);
             
             if (currentPage < 1) currentPage = 1;
@@ -1396,616 +1055,335 @@
             
             tablaBody.innerHTML = '';
             
-            if (paginatedData.length === 0 && data.length === 0) {
+            if (paginatedData.length === 0) {
                 const row = tablaBody.insertRow();
-                const cell = row.insertCell();
-                cell.colSpan = 8;
-                cell.textContent = "No hay causas registradas para mostrar.";
-                cell.style.textAlign = 'center';
-                cell.style.padding = '30px';
-                cell.style.color = '#666';
+                row.innerHTML = `<td colspan="7" style="text-align: center; padding: 30px; color: #666;">No hay causas para mostrar.</td>`;
+                renderPaginationSelectors(0); // MEJORA: Limpiar paginación si no hay datos
+                return;
             }
 
             paginatedData.forEach(causa => {
                 const row = tablaBody.insertRow();
+                let audienciasVencimientosText = '';
                 
-                // Columna 1: Número y Carátula
-                row.insertCell().textContent = causa.caratula || causa.expediente;
+                if (causa.audiencias && causa.audiencias.length > 0) audienciasVencimientosText += `Audiencias: ${causa.audiencias.length}<br>`;
+                if (causa.vencimientos && causa.vencimientos.length > 0) audienciasVencimientosText += `Vencimientos: ${causa.vencimientos.length}<br>`;
+                if (causa.actividades && causa.actividades.length > 0) audienciasVencimientosText += `Actividades: ${causa.actividades.length}`;
                 
-                // Columna 2: Juzgado
-                row.insertCell().textContent = causa.juzgado || 'N/A';
+                // CORRECCIÓN/MEJORA: Uso de `observacionesGenerales` y truncado para mejor visualización
+                const obsText = causa.observacionesGenerales || '';
+                const shortObs = obsText.length > 50 ? obsText.substring(0, 50) + '...' : obsText;
                 
-                // Columna 3: Tipo de Proceso
-                row.insertCell().textContent = causa.tipoProceso || 'N/A';
-                
-                // Columna 4: Empleado
-                row.insertCell().textContent = causa.empleadoAsignado || 'N/A';
-                
-                // Columna 5: Control (con badge visual)
-                const controlCell = row.insertCell();
-                const estadoControl = obtenerEstadoControl(causa.historial);
-                controlCell.innerHTML = estadoControl;
-                
-                // Columna 6: Próximas Audiencias
-                const audienciasCell = row.insertCell();
-                audienciasCell.innerHTML = obtenerProximasAudiencias(causa.audiencias);
-                
-                // Columna 7: Próximos Vencimientos
-                const vencimientosCell = row.insertCell();
-                vencimientosCell.innerHTML = obtenerProximosVencimientos(causa.vencimientos);
-                
-                // Columna 8: Acciones (mejorada para ser más responsiva)
-                const actionsCell = row.insertCell();
-                actionsCell.classList.add('action-buttons');
-                
-                const btnVer = document.createElement('button');
-                btnVer.textContent = '👁️ Ver';
-                btnVer.title = 'Ver detalles completos';
-                btnVer.classList.add('btn-ver');
-                btnVer.addEventListener('click', () => verRegistro(causa.id));
-                actionsCell.appendChild(btnVer);
-
-                const btnEditar = document.createElement('button');
-                btnEditar.textContent = '✏️ Editar';
-                btnEditar.title = 'Editar registro';
-                btnEditar.classList.add('btn-editar');
-                btnEditar.addEventListener('click', () => abrirModalRegistro(causa.id));
-                actionsCell.appendChild(btnEditar);
-                
-                const btnEliminar = document.createElement('button');
-                btnEliminar.textContent = '🗑️ Eliminar';
-                btnEliminar.title = 'Eliminar registro';
-                btnEliminar.classList.add('btn-eliminar');
-                btnEliminar.addEventListener('click', () => confirmAndDelete(causa.id, causa.expediente));
-                actionsCell.appendChild(btnEliminar);
+                row.innerHTML = `
+                    <td><strong>${causa.numeroCaratula || 'N/A'}</strong></td>
+                    <td>${causa.tipoProceso || 'N/A'}</td>
+                    <td>${causa.juzgado || 'N/A'}</td>
+                    <td>${causa.empleado || 'N/A'}</td>
+                    <td>${audienciasVencimientosText || 'N/A'}</td>
+                    <td title="${obsText}">${shortObs || 'N/A'}</td>
+                    <td class="action-buttons">
+                        <button class="btn-ver" data-id="${causa.id}" title="Ver detalles completos">👁️ Ver</button>
+                        <button class="btn-editar" data-id="${causa.id}" title="Editar registro">✏️ Editar</button>
+                        <button class="btn-eliminar" data-id="${causa.id}" data-caratula="${causa.numeroCaratula}" title="Eliminar registro">🗑️ Eliminar</button>
+                    </td>
+                `;
             });
             
             renderPaginationSelectors(totalPages);
-            actualizarResumen(); // Actualizar resumen al renderizar
         }
+        
+        // MEJORA: Delegación de eventos para los botones de acción en la tabla
+        tablaBody.addEventListener('click', (event) => {
+            const target = event.target.closest('button');
+            if (!target) return;
 
-        // Función para determinar el estado de control basado en el historial
-        function obtenerEstadoControl(historial) {
-            if (!historial || !Array.isArray(historial) || historial.length === 0) {
-                return '<span class="badge badge-pendiente">Pendiente</span>';
+            const id = target.dataset.id;
+            if (target.classList.contains('btn-ver')) {
+                verRegistro(id);
+            } else if (target.classList.contains('btn-editar')) {
+                abrirModalRegistro(id);
+            } else if (target.classList.contains('btn-eliminar')) {
+                const caratula = target.dataset.caratula;
+                confirmAndDelete(id, caratula);
             }
-            
-            const tienePendientes = historial.some(item => item.control === 'Pendiente');
-            const tieneCumplidos = historial.some(item => item.control === 'Cumplido');
-            
-            if (tienePendientes && tieneCumplidos) {
-                return '<span class="badge badge-pendiente">Parcial</span>';
-            } else if (tienePendientes) {
-                return '<span class="badge badge-pendiente">Pendiente</span>';
-            } else if (tieneCumplidos) {
-                return '<span class="badge badge-cumplido">Cumplido</span>';
-            } else {
-                return '<span class="badge badge-pendiente">Pendiente</span>';
-            }
-        }
-
-        // Función para mostrar próximas audiencias
-        function obtenerProximasAudiencias(audiencias) {
-            if (!audiencias || !Array.isArray(audiencias) || audiencias.length === 0) {
-                return '<span style="color: #666;">No hay audiencias</span>';
-            }
-            
-            const hoy = new Date();
-            const proximas = audiencias
-                .filter(aud => {
-                    if (!aud.fecha) return false;
-                    const fechaAudiencia = new Date(aud.fecha);
-                    return fechaAudiencia >= hoy;
-                })
-                .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
-                .slice(0, 2); // Mostrar máximo 2 próximas
-            
-            if (proximas.length === 0) {
-                return '<span style="color: #666;">No hay próximas audiencias</span>';
-            }
-            
-            return proximas.map(aud => {
-                const fecha = formatDate(aud.fecha);
-                const horario = aud.horario || '';
-                return `<div>${fecha} ${horario}</div>`;
-            }).join('');
-        }
-
-        // Función para mostrar próximos vencimientos
-        function obtenerProximosVencimientos(vencimientos) {
-            if (!vencimientos || !Array.isArray(vencimientos) || vencimientos.length === 0) {
-                return '<span style="color: #666;">No hay vencimientos</span>';
-            }
-            
-            const hoy = new Date();
-            const proximos = vencimientos
-                .filter(ven => {
-                    if (!ven.fecha) return false;
-                    const fechaVencimiento = new Date(ven.fecha);
-                    return fechaVencimiento >= hoy;
-                })
-                .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
-                .slice(0, 2); // Mostrar máximo 2 próximos
-            
-            if (proximos.length === 0) {
-                return '<span style="color: #666;">No hay próximos vencimientos</span>';
-            }
-            
-            return proximos.map(ven => {
-                const fecha = formatDate(ven.fecha);
-                const horario = ven.horario || '';
-                return `<div>${fecha} ${horario}</div>`;
-            }).join('');
-        }
+        });
 
         // --- PAGINACIÓN ---
         function changePage(page) {
-            if (page < 1) page = 1;
             const totalPages = Math.ceil(filteredCausas.length / RECORDS_PER_PAGE);
-            if (page > totalPages) page = totalPages;
-            
+            if (page < 1 || page > totalPages) return;
             currentPage = page;
             renderTable(filteredCausas);
         }
 
         function renderPaginationSelectors(totalPages) {
-            const paginationHTML = () => {
-                if (totalPages <= 1) return '';
+            if (totalPages <= 1) {
+                topPagination.innerHTML = '';
+                bottomPagination.innerHTML = '';
+                return;
+            }
 
-                const disabledPrev = currentPage === 1 ? 'disabled' : '';
-                const disabledNext = currentPage === totalPages ? 'disabled' : '';
+            const disabledPrev = currentPage === 1 ? 'disabled' : '';
+            const disabledNext = currentPage === totalPages ? 'disabled' : '';
 
-                let html = `
-                    <button onclick="changePage(${currentPage - 1})" ${disabledPrev}>« Anterior</button>
-                    <span>Página ${currentPage} de ${totalPages}</span>
-                `;
-                
-                let startPage = Math.max(1, currentPage - 2);
-                let endPage = Math.min(totalPages, currentPage + 2);
+            let pagesHtml = '';
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
 
-                if (currentPage <= 3) endPage = Math.min(totalPages, 5);
-                if (currentPage > totalPages - 2) startPage = Math.max(1, totalPages - 4);
-                
-                for (let i = startPage; i <= endPage; i++) {
-                    const activeClass = i === currentPage ? 'active' : '';
-                    html += `<button onclick="changePage(${i})" class="${activeClass}">${i}</button>`;
-                }
+            if (currentPage <= 3) endPage = Math.min(totalPages, 5);
+            if (currentPage > totalPages - 2) startPage = Math.max(1, totalPages - 4);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                pagesHtml += `<button data-page="${i}" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+            }
 
-                html += `<button onclick="changePage(${currentPage + 1})" ${disabledNext}>Siguiente »</button>`;
-                return html;
-            };
-
-            const htmlContent = paginationHTML();
-            topPagination.innerHTML = htmlContent;
-            bottomPagination.innerHTML = htmlContent;
+            const paginationHTML = `
+                <button data-page="${currentPage - 1}" ${disabledPrev}>« Anterior</button>
+                <span>Página ${currentPage} de ${totalPages}</span>
+                ${pagesHtml}
+                <button data-page="${currentPage + 1}" ${disabledNext}>Siguiente »</button>
+            `;
+            
+            topPagination.innerHTML = paginationHTML;
+            bottomPagination.innerHTML = paginationHTML;
         }
 
-        // --- GESTIÓN DE MODALES Y ACCIONES ---
+        function handlePaginationClick(event) {
+            const target = event.target.closest('button');
+            if (target && target.dataset.page) {
+                changePage(parseInt(target.dataset.page, 10));
+            }
+        }
+        topPagination.addEventListener('click', handlePaginationClick);
+        bottomPagination.addEventListener('click', handlePaginationClick);
 
-        // Funcionalidad de solapas
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', () => {
-                // Remover clase activa de todos los botones y contenidos
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        // --- GESTIÓN DE PESTAÑAS ---
+        function initTabs() {
+            const tabsContainer = document.querySelector('.tabs');
+            tabsContainer.addEventListener('click', (event) => {
+                const tab = event.target.closest('.tab');
+                if (!tab) return;
                 
-                // Activar la solapa seleccionada
-                button.classList.add('active');
-                const tabId = button.getAttribute('data-tab');
+                tabsContainer.querySelector('.active').classList.remove('active');
+                tab.classList.add('active');
+                
+                const tabId = tab.dataset.tab;
+                document.querySelector('.tab-content.active').classList.remove('active');
                 document.getElementById(tabId).classList.add('active');
             });
-        });
+        }
+        
+        // --- GESTIÓN DE TABLAS DINÁMICAS (Seguimiento, Firma, etc.) ---
 
-        // NUEVA FUNCIONALIDAD: BARRA DE FORMATO PARA SITUACIÓN PROCESAL
-        formatButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const command = this.getAttribute('data-command');
-                const value = this.getAttribute('data-value');
-                
-                // Aplicar el formato al editor
-                document.execCommand(command, false, value);
-                
-                // Mantener el foco en el editor
-                situacionProcesalEditor.focus();
-                
-                // Actualizar el estado de los botones
-                if (command === 'bold') {
-                    this.classList.toggle('active');
-                } else {
-                    // Remover estado activo de todos los botones
-                    formatButtons.forEach(btn => btn.classList.remove('active'));
-                    // Activar el botón actual
-                    this.classList.add('active');
+        function setupDynamicTable(tableId, addButtonId, addRowFunction) {
+            const table = document.getElementById(tableId);
+            const addButton = document.getElementById(addButtonId);
+            
+            table.querySelector('tbody').addEventListener('click', (event) => {
+                const btn = event.target.closest('.btn-eliminar-fila');
+                if (btn) {
+                    btn.closest('tr').remove();
                 }
             });
-        });
+            
+            addButton.addEventListener('click', () => addRowFunction());
+        }
 
-        // Agregar nueva fila a la tabla de historial
-        function agregarFilaHistorial(piezaProcesal = '', control = '', firmaSecretario = '', firmaDefensor = '', tipoDefensor = '', subroganteDetalle = '') {
-            const row = document.createElement('tr');
+        function agregarFilaGenerica(tbody, rowHTML) {
+            const row = tbody.insertRow();
+            row.innerHTML = rowHTML;
+        }
+
+        function agregarFilaSeguimiento(fecha = '', detalles = '') {
+            const tbody = tablaSeguimiento.querySelector('tbody');
+            agregarFilaGenerica(tbody, `
+                <td><input type="date" value="${fecha}"></td>
+                <td><input type="text" placeholder="Detalles del seguimiento" value="${detalles}"></td>
+                <td><button type="button" class="btn-eliminar-fila">Eliminar</button></td>
+            `);
+        }
+
+        function agregarFilaFechaHora(tabla, fechaHora = '', detalle = '') {
+            const tbody = tabla.querySelector('tbody');
+            agregarFilaGenerica(tbody, `
+                <td><input type="datetime-local" value="${fechaHora}"></td>
+                <td><input type="text" placeholder="Detalle" value="${detalle}"></td>
+                <td><button type="button" class="btn-eliminar-fila">Eliminar</button></td>
+            `);
+        }
+
+        function agregarFilaFirmaDigital(item = {}) {
+            const tbody = tablaFirmaDigital.querySelector('tbody');
+            const row = tbody.insertRow();
+            
             row.innerHTML = `
+                <td><input type="text" placeholder="Pieza procesal" value="${item.piezaProcesal || ''}"></td>
+                <td><input type="date" value="${item.fechaFirma || ''}"></td>
                 <td>
-                    <input type="text" class="pieza-procesal" value="${piezaProcesal}" placeholder="Descripción de la pieza procesal">
-                </td>
-                <td>
-                    <select class="control">
+                    <select class="firma-de-select">
                         <option value="">Seleccionar</option>
-                        <option value="Pendiente" ${control === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                        <option value="Cumplido" ${control === 'Cumplido' ? 'selected' : ''}>Cumplido</option>
+                        <option value="Secretario" ${item.firmaDe === 'Secretario' ? 'selected' : ''}>Secretario</option>
+                        <option value="Defensor" ${item.firmaDe === 'Defensor' ? 'selected' : ''}>Defensor</option>
                     </select>
                 </td>
                 <td>
-                    <div class="firma-digital-mini">
-                        <div class="radio-group">
-                            <label>Firma Secretario:</label>
-                            <div>
-                                <input type="radio" name="firmaSecretario_${Date.now()}" value="si" ${firmaSecretario === 'si' ? 'checked' : ''}>
-                                <label>Sí</label>
-                                <input type="radio" name="firmaSecretario_${Date.now()}" value="no" ${firmaSecretario === 'no' ? 'checked' : ''}>
-                                <label>No</label>
-                            </div>
-                        </div>
-                        <div class="conditional-field" style="display: ${firmaSecretario === 'no' ? 'block' : 'none'};">
-                            <div class="radio-group">
-                                <label>Firma Defensor:</label>
-                                <div>
-                                    <input type="radio" name="firmaDefensor_${Date.now()}" value="si" ${firmaDefensor === 'si' ? 'checked' : ''}>
-                                    <label>Sí</label>
-                                </div>
-                            </div>
-                            <div class="conditional-field" style="display: ${firmaDefensor === 'si' ? 'block' : 'none'};">
-                                <div class="radio-group">
-                                    <label>Defensor:</label>
-                                    <div>
-                                        <input type="radio" name="tipoDefensor_${Date.now()}" value="titular" ${tipoDefensor === 'titular' ? 'checked' : ''}>
-                                        <label>Titular</label>
-                                        <input type="radio" name="tipoDefensor_${Date.now()}" value="subrogante" ${tipoDefensor === 'subrogante' ? 'checked' : ''}>
-                                        <label>Subrogante</label>
-                                    </div>
-                                </div>
-                                <div style="display: ${tipoDefensor === 'subrogante' ? 'block' : 'none'};">
-                                    <input type="text" class="subrogante-detalle" value="${subroganteDetalle || ''}" placeholder="Detalle del subrogante">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <select class="tipo-defensor-select" ${item.firmaDe !== 'Defensor' ? 'disabled' : ''}>
+                        <option value="">Seleccionar</option>
+                        <option value="Titular" ${item.tipoDefensor === 'Titular' ? 'selected' : ''}>Titular</option>
+                        <option value="Subrogante" ${item.tipoDefensor === 'Subrogante' ? 'selected' : ''}>Subrogante</option>
+                    </select>
                 </td>
-                <td>
-                    <button type="button" class="btn-eliminar-fila">🗑️</button>
-                </td>
+                <td><input type="text" class="detalle-subrogante-input" placeholder="Detalle subrogante" value="${item.detalleSubrogante || ''}" ${item.tipoDefensor !== 'Subrogante' ? 'disabled' : ''}></td>
+                <td><button type="button" class="btn-eliminar-fila">Eliminar</button></td>
             `;
-            
-            tablaHistorial.appendChild(row);
-            
-            // Agregar eventos para la lógica condicional
-            const radiosSecretario = row.querySelectorAll('input[name^="firmaSecretario_"]');
-            radiosSecretario.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    const firmaDefensorContainer = row.querySelector('.conditional-field');
-                    if (this.value === 'no') {
-                        firmaDefensorContainer.style.display = 'block';
-                    } else {
-                        firmaDefensorContainer.style.display = 'none';
-                    }
-                });
-            });
-            
-            const radioDefensor = row.querySelector('input[name^="firmaDefensor_"]');
-            if (radioDefensor) {
-                radioDefensor.addEventListener('change', function() {
-                    const datosDefensorContainer = row.querySelectorAll('.conditional-field')[1];
-                    if (this.checked) {
-                        datosDefensorContainer.style.display = 'block';
-                    } else {
-                        datosDefensorContainer.style.display = 'none';
-                    }
-                });
-            }
-            
-            const radiosTipoDefensor = row.querySelectorAll('input[name^="tipoDefensor_"]');
-            radiosTipoDefensor.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    const subroganteContainer = row.querySelector('.subrogante-detalle').parentElement;
-                    if (this.value === 'subrogante') {
-                        subroganteContainer.style.display = 'block';
-                    } else {
-                        subroganteContainer.style.display = 'none';
-                    }
-                });
-            });
-            
-            // NUEVO: Evento para controlar habilitación/deshabilitación de firma digital según control
-            const selectControl = row.querySelector('.control');
-            selectControl.addEventListener('change', function() {
-                const firmaDigitalContainer = row.querySelector('.firma-digital-mini');
-                const inputsFirma = firmaDigitalContainer.querySelectorAll('input, select, textarea');
-                
-                // Aplicar estilos al texto del select
-                if (this.value === 'Pendiente') {
-                    this.classList.add('control-pendiente');
-                    this.classList.remove('control-cumplido');
-                    
-                    // Deshabilitar firma digital
-                    firmaDigitalContainer.classList.add('firma-disabled');
-                    inputsFirma.forEach(input => {
-                        input.disabled = true;
-                    });
-                } else if (this.value === 'Cumplido') {
-                    this.classList.add('control-cumplido');
-                    this.classList.remove('control-pendiente');
-                    
-                    // Habilitar firma digital
-                    firmaDigitalContainer.classList.remove('firma-disabled');
-                    inputsFirma.forEach(input => {
-                        input.disabled = false;
-                    });
-                } else {
-                    this.classList.remove('control-pendiente', 'control-cumplido');
-                    firmaDigitalContainer.classList.remove('firma-disabled');
-                    inputsFirma.forEach(input => {
-                        input.disabled = false;
-                    });
+
+            row.querySelector('.firma-de-select').addEventListener('change', function() {
+                const tipoDefensorSelect = row.querySelector('.tipo-defensor-select');
+                const esDefensor = this.value === 'Defensor';
+                tipoDefensorSelect.disabled = !esDefensor;
+                if (!esDefensor) {
+                    tipoDefensorSelect.value = '';
+                    tipoDefensorSelect.dispatchEvent(new Event('change'));
                 }
             });
-            
-            // Ejecutar el evento change para aplicar el estado inicial
-            selectControl.dispatchEvent(new Event('change'));
-            
-            // Evento para eliminar fila
-            row.querySelector('.btn-eliminar-fila').addEventListener('click', function() {
-                row.remove();
+
+            row.querySelector('.tipo-defensor-select').addEventListener('change', function() {
+                const detalleSubroganteInput = row.querySelector('.detalle-subrogante-input');
+                const esSubrogante = this.value === 'Subrogante';
+                detalleSubroganteInput.disabled = !esSubrogante;
+                if (!esSubrogante) {
+                    detalleSubroganteInput.value = '';
+                }
             });
         }
-
-        // Funciones para agregar filas a las nuevas tablas
-        function agregarFilaAudiencia(fecha = '', horario = '', detalle = '') {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>
-                    <input type="date" class="fecha-audiencia" value="${fecha}">
-                </td>
-                <td>
-                    <input type="time" class="horario-audiencia" value="${horario}">
-                </td>
-                <td>
-                    <input type="text" class="detalle-audiencia" value="${detalle}" placeholder="Detalle de la audiencia">
-                </td>
-                <td>
-                    <button type="button" class="btn-eliminar-fila">🗑️</button>
-                </td>
-            `;
-            
-            tablaAudiencias.appendChild(row);
-            
-            // Evento para eliminar fila
-            row.querySelector('.btn-eliminar-fila').addEventListener('click', function() {
-                row.remove();
-            });
-        }
-
-        function agregarFilaVencimiento(fecha = '', horario = '', detalle = '') {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>
-                    <input type="date" class="fecha-vencimiento" value="${fecha}">
-                </td>
-                <td>
-                    <input type="time" class="horario-vencimiento" value="${horario}">
-                </td>
-                <td>
-                    <input type="text" class="detalle-vencimiento" value="${detalle}" placeholder="Detalle del vencimiento">
-                </td>
-                <td>
-                    <button type="button" class="btn-eliminar-fila">🗑️</button>
-                </td>
-            `;
-            
-            tablaVencimientos.appendChild(row);
-            
-            // Evento para eliminar fila
-            row.querySelector('.btn-eliminar-fila').addEventListener('click', function() {
-                row.remove();
-            });
-        }
-
-        function agregarFilaActividad(fecha = '', horario = '', detalle = '') {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>
-                    <input type="date" class="fecha-actividad" value="${fecha}">
-                </td>
-                <td>
-                    <input type="time" class="horario-actividad" value="${horario}">
-                </td>
-                <td>
-                    <input type="text" class="detalle-actividad" value="${detalle}" placeholder="Detalle de la actividad">
-                </td>
-                <td>
-                    <button type="button" class="btn-eliminar-fila">🗑️</button>
-                </td>
-            `;
-            
-            tablaOtrasActividades.appendChild(row);
-            
-            // Evento para eliminar fila
-            row.querySelector('.btn-eliminar-fila').addEventListener('click', function() {
-                row.remove();
-            });
-        }
-
-        // Inicializar con filas vacías
-        btnAgregarFila.addEventListener('click', () => agregarFilaHistorial());
-        btnAgregarAudiencia.addEventListener('click', () => agregarFilaAudiencia());
-        btnAgregarVencimiento.addEventListener('click', () => agregarFilaVencimiento());
-        btnAgregarActividad.addEventListener('click', () => agregarFilaActividad());
-
-        // Botón para nuevo expediente
-        btnNuevoExpediente.addEventListener('click', function() {
-            document.getElementById('numCausa').value = '';
-            document.getElementById('numCausa').focus();
-        });
-
-        // Abrir modal para nuevo registro
-        btnNuevoRegistro.addEventListener('click', () => abrirModalRegistro());
-
-        // Cerrar modales
-        document.querySelectorAll('.close-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                modalRegistro.style.display = 'none';
-                modalVer.style.display = 'none';
-            });
-        });
-
-        // Cerrar modal al hacer clic fuera del contenido
-        window.addEventListener('click', function(e) {
-            if (e.target === modalRegistro) modalRegistro.style.display = 'none';
-            if (e.target === modalVer) modalVer.style.display = 'none';
-        });
-
-        // NUEVO: Eventos para botones del modal ver
-        btnCerrarDetalle.addEventListener('click', function() {
-            modalVer.style.display = 'none';
-        });
-
-        btnImprimirDetalle.addEventListener('click', imprimirDetalleCausa);
-
-        // --- FUNCIONES DE GESTIÓN DE DATOS ---
-
-        // Cargar datos de expedientes desde la base original
-        async function cargarDatosCausas() {
-            try {
-                const causasSnapshot = await dbOriginal.collection('causas').get();
-                causasData = [];
-                const causasList = document.getElementById('causasList');
-                causasList.innerHTML = '';
-                
-                causasSnapshot.forEach(doc => {
-                    const causa = doc.data();
-                    causa.id = doc.id;
-                    causasData.push(causa);
-                    
-                    // Agregar opción al datalist
-                    const option = document.createElement('option');
-                    option.value = `${causa.numCausa} - ${causa.caratula || ''}`;
-                    option.textContent = `${causa.numCausa} - ${causa.caratula || ''}`;
-                    causasList.appendChild(option);
+        
+        function obtenerDatosTabla(tbodySelector, fields) {
+            const tbody = document.querySelector(tbodySelector);
+            return Array.from(tbody.querySelectorAll('tr')).map(row => {
+                const item = {};
+                row.querySelectorAll('input, select').forEach((input, index) => {
+                    if(fields[index]) item[fields[index]] = input.value;
                 });
+                return item;
+            }).filter(item => Object.values(item).some(val => val));
+        }
+
+        // --- FUNCIONES DE FIREBASE ---
+
+        async function cargarCausasDesdeFirebase() {
+            try {
+                showLoading();
+                const querySnapshot = await dbNueva.collection('miscausas').get();
+                causas = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                localStorage.setItem('causas', JSON.stringify(causas));
+                renderTable(causas);
+                showToast(`Se cargaron ${causas.length} registros desde Firebase.`, 'success');
             } catch (error) {
-                console.error('Error cargando datos de causas:', error);
-                showToast('Error al cargar datos de causas', 'error');
+                console.error('Error cargando datos desde Firebase:', error);
+                showToast('Error al cargar datos. Intentando cargar desde respaldo local.', 'error');
+                const storedCausas = localStorage.getItem('causas');
+                if (storedCausas) {
+                    causas = JSON.parse(storedCausas);
+                    renderTable(causas);
+                    showToast('Datos cargados desde respaldo local.', 'success');
+                }
             }
         }
 
-        // Cuando se selecciona una causa, rellenar automáticamente los campos
-        document.getElementById('numCausa').addEventListener('change', function() {
-            const valorSeleccionado = this.value;
-            
-            // Buscar tanto por número de causa como por el texto completo
-            const causaEncontrada = causasData.find(c => 
-                valorSeleccionado === `${c.numCausa} - ${c.caratula || ''}` || 
-                valorSeleccionado === c.numCausa
-            );
-            
-            if (causaEncontrada) {
-                // Actualizar el campo con número y carátula
-                this.value = `${causaEncontrada.numCausa} - ${causaEncontrada.caratula || ''}`;
-                
-                // Rellenar los demás campos
-                document.getElementById('tipoProceso').value = causaEncontrada.tipoProceso || '';
-                document.getElementById('juzgado').value = causaEncontrada.juzgado || '';
-                document.getElementById('empleadoAsignado').value = causaEncontrada.usuarioAsignado || '';
-                document.getElementById('modoIntervencion').value = causaEncontrada.intervencion || '';
+        async function guardarCausaEnFirebase(causa) {
+            try {
+                if (editingId) {
+                    await dbNueva.collection('miscausas').doc(editingId).update(causa);
+                    showToast('Registro actualizado correctamente.', 'success');
+                } else {
+                    const docRef = await dbNueva.collection('miscausas').add(causa);
+                    causa.id = docRef.id; // Asignar el nuevo ID para la actualización local
+                    showToast('Registro guardado correctamente.', 'success');
+                }
+                return causa;
+            } catch (error) {
+                console.error('Error guardando en Firebase:', error);
+                showToast('Error al guardar en Firebase. Verifique la conexión.', 'error');
+                return null;
             }
-        });
+        }
+
+        async function eliminarCausaDeFirebase(id) {
+            try {
+                await dbNueva.collection('miscausas').doc(id).delete();
+                showToast('Registro eliminado correctamente.', 'success');
+                return true;
+            } catch (error) {
+                console.error('Error eliminando de Firebase:', error);
+                showToast('Error al eliminar. Verifique la conexión.', 'error');
+                return false;
+            }
+        }
+
+        // --- GESTIÓN DE MODALES ---
 
         function abrirModalRegistro(id = null) {
-            editingId = id;
-            modalTitle.textContent = id ? 'Editar' : 'Nuevo';
-            
-            // Limpiar formulario
             formRegistro.reset();
-            tablaHistorial.innerHTML = '';
-            tablaAudiencias.innerHTML = '';
-            tablaVencimientos.innerHTML = '';
-            tablaOtrasActividades.innerHTML = '';
-            
-            // Limpiar el editor de situación procesal
-            situacionProcesalEditor.innerHTML = '';
-            situacionProcesalHidden.value = '';
-            
-            // Cargar datos de causas cada vez que se abre el modal
-            cargarDatosCausas();
-            
+            editingId = id;
+
+            // Limpiar y preparar tablas dinámicas
+            ['#tablaSeguimiento tbody', '#tablaAudiencias tbody', '#tablaVencimientos tbody', '#tablaActividades tbody', '#tablaFirmaDigital tbody'].forEach(sel => document.querySelector(sel).innerHTML = '');
+
             if (id) {
-                // Cargar datos existentes para edición
+                modalTitle.textContent = 'Editar';
                 const causa = causas.find(c => c.id === id);
                 if (causa) {
-                    document.getElementById('numCausa').value = causa.expediente || '';
+                    document.getElementById('numeroCaratula').value = causa.numeroCaratula || '';
                     document.getElementById('tipoProceso').value = causa.tipoProceso || '';
                     document.getElementById('juzgado').value = causa.juzgado || '';
-                    document.getElementById('empleadoAsignado').value = causa.empleadoAsignado || '';
+                    document.getElementById('empleado').value = causa.empleado || '';
+                    document.getElementById('documentosPresentados').value = causa.documentosPresentados || '';
+                    document.getElementById('estadoDocumental').value = causa.estadoDocumental || '';
                     document.getElementById('modoIntervencion').value = causa.modoIntervencion || '';
-                    document.getElementById('documentacion').value = causa.documentacion || '';
+                    document.getElementById('prioridadTarea').value = causa.prioridadTarea || '';
+                    document.getElementById('estadoProcesal').value = causa.estadoProcesal || '';
+                    document.getElementById('fechaEstado').value = causa.fechaEstado || '';
                     
-                    // Cargar situación procesal en el editor
-                    situacionProcesalEditor.innerHTML = causa.situacionProcesal || '';
-                    situacionProcesalHidden.value = causa.situacionProcesal || '';
-                    
-                    // Cargar historial si existe
-                    if (causa.historial && Array.isArray(causa.historial)) {
-                        causa.historial.forEach(item => {
-                            agregarFilaHistorial(
-                                item.piezaProcesal || '',
-                                item.control || '',
-                                item.firmaSecretario || '',
-                                item.firmaDefensor || '',
-                                item.tipoDefensor || '',
-                                item.subroganteDetalle || ''
-                            );
-                        });
+                    // CORRECCIÓN: Cargar observaciones en el editor
+                    if (causa.observacionesGenerales) {
+                        observacionesEditor.innerHTML = causa.observacionesGenerales;
+                        observacionesHidden.value = causa.observacionesGenerales;
+                        // Actualizar contador de palabras
+                        const text = observacionesEditor.innerText || observacionesEditor.textContent;
+                        const words = text.trim().split(/\s+/).filter(Boolean);
+                        document.getElementById("counter").textContent = `${words.length}/1000`;
+                    } else {
+                        observacionesEditor.innerHTML = "";
+                        observacionesHidden.value = "";
+                        document.getElementById("counter").textContent = "0/1000";
                     }
                     
-                    // Cargar audiencias si existen
-                    if (causa.audiencias && Array.isArray(causa.audiencias)) {
-                        causa.audiencias.forEach(audiencia => {
-                            agregarFilaAudiencia(
-                                audiencia.fecha || '',
-                                audiencia.horario || '',
-                                audiencia.detalle || ''
-                            );
-                        });
-                    }
-                    
-                    // Cargar vencimientos si existen
-                    if (causa.vencimientos && Array.isArray(causa.vencimientos)) {
-                        causa.vencimientos.forEach(vencimiento => {
-                            agregarFilaVencimiento(
-                                vencimiento.fecha || '',
-                                vencimiento.horario || '',
-                                vencimiento.detalle || ''
-                            );
-                        });
-                    }
-                    
-                    // Cargar otras actividades si existen
-                    if (causa.otrasActividades && Array.isArray(causa.otrasActividades)) {
-                        causa.otrasActividades.forEach(actividad => {
-                            agregarFilaActividad(
-                                actividad.fecha || '',
-                                actividad.horario || '',
-                                actividad.detalle || ''
-                            );
-                        });
-                    }
+                    (causa.seguimiento || []).forEach(item => agregarFilaSeguimiento(item.fecha, item.detalles));
+                    (causa.audiencias || []).forEach(item => agregarFilaFechaHora(tablaAudiencias, item.fechaHora, item.detalle));
+                    (causa.vencimientos || []).forEach(item => agregarFilaFechaHora(tablaVencimientos, item.fechaHora, item.detalle));
+                    (causa.actividades || []).forEach(item => agregarFilaFechaHora(tablaActividades, item.fechaHora, item.detalle));
+                    (causa.firmaDigital || []).forEach(item => agregarFilaFirmaDigital(item));
                 }
             } else {
-                // Agregar filas vacías para nuevo registro
-                agregarFilaHistorial();
-                agregarFilaAudiencia();
-                agregarFilaVencimiento();
-                agregarFilaActividad();
+                modalTitle.textContent = 'Nuevo';
+                // Añadir una fila vacía por defecto para una mejor UX
+                agregarFilaSeguimiento();
+                agregarFilaFechaHora(tablaAudiencias);
+                agregarFilaFechaHora(tablaVencimientos);
+                agregarFilaFechaHora(tablaActividades);
+                agregarFilaFirmaDigital();
+                // Resetear editor de observaciones
+                observacionesEditor.innerHTML = "";
+                observacionesHidden.value = "";
+                document.getElementById("counter").textContent = "0/1000";
             }
+            
+            // Resetear pestañas
+            document.querySelector('.tab.active').classList.remove('active');
+            document.querySelector('.tab-content.active').classList.remove('active');
+            document.querySelector('.tab[data-tab="datos-expediente"]').classList.add('active');
+            document.getElementById('datos-expediente').classList.add('active');
             
             modalRegistro.style.display = 'block';
         }
@@ -2013,504 +1391,166 @@
         function verRegistro(id) {
             const causa = causas.find(c => c.id === id);
             if (!causa) return;
-            
-            // Mostrar solo el expediente una vez
-            let html = `
-                <div class="detalle-seccion">
-                    <h3>Información Básica</h3>
-                    <div class="info-item"><strong>Expediente:</strong> ${causa.expediente || 'N/A'}</div>
-                    <div class="info-item"><strong>Juzgado:</strong> ${causa.juzgado || 'N/A'}</div>
-                    <div class="info-item"><strong>Tipo de Proceso:</strong> ${causa.tipoProceso || 'N/A'}</div>
-                    <div class="info-item"><strong>Empleado Asignado:</strong> ${causa.empleadoAsignado || 'N/A'}</div>
-                    <div class="info-item"><strong>Modo de Intervención:</strong> ${causa.modoIntervencion || 'N/A'}</div>
+
+            // MEJORA: Función para generar tablas de detalles de forma limpia
+            const createDetailTable = (title, headers, data, formatters) => {
+                if (!data || data.length === 0) return '';
+                let tableHTML = `
+                    <div class="form-group">
+                        <label><strong>${title}:</strong></label>
+                        <table class="seguimiento-table">
+                            <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                            <tbody>
+                `;
+                data.forEach(item => {
+                    tableHTML += `<tr>${Object.keys(item).map((key, i) => `<td>${formatters[i](item[key]) || 'N/A'}</td>`).join('')}</tr>`;
+                });
+                tableHTML += `</tbody></table></div>`;
+                return tableHTML;
+            };
+
+            let contenidoHTML = `
+                <div class="form-group"><label><strong>Número y Carátula:</strong></label><p>${causa.numeroCaratula || 'N/A'}</p></div>
+                <div class="form-row">
+                    <div class="form-group"><label><strong>Tipo de Proceso:</strong></label><p>${causa.tipoProceso || 'N/A'}</p></div>
+                    <div class="form-group"><label><strong>Juzgado:</strong></label><p>${causa.juzgado || 'N/A'}</p></div>
                 </div>
+                <div class="form-group"><label><strong>Empleado Asignado:</strong></label><p>${causa.empleado || 'N/A'}</p></div>
+                <div class="form-group"><label><strong>Documentos Presentados:</strong></label><p>${causa.documentosPresentados || 'N/A'}</p></div>
+                <div class="form-group"><label><strong>Estado Documental:</strong></label><p>${causa.estadoDocumental || 'N/A'}</p></div>
             `;
             
-            if (causa.documentacion) {
-                html += `
-                    <div class="detalle-seccion">
-                        <h3>Documentación</h3>
-                        <div>${causa.documentacion}</div>
-                    </div>
-                `;
-            }
+            contenidoHTML += createDetailTable('Firma Digital', ['Pieza Procesal', 'Fecha', 'Firma de', 'Tipo', 'Detalle'], causa.firmaDigital, [v => v, formatDate, v => v, v => v, v => v]);
+            contenidoHTML += createDetailTable('Seguimiento', ['Fecha', 'Detalles'], causa.seguimiento, [formatDate, v => v]);
+            contenidoHTML += createDetailTable('Audiencias', ['Fecha y Hora', 'Detalle'], causa.audiencias, [formatDateTime, v => v]);
+            contenidoHTML += createDetailTable('Vencimientos', ['Fecha y Hora', 'Detalle'], causa.vencimientos, [formatDateTime, v => v]);
+            contenidoHTML += createDetailTable('Otras Actividades', ['Fecha y Hora', 'Detalle'], causa.actividades, [formatDateTime, v => v]);
             
-            if (causa.situacionProcesal) {
-                html += `
-                    <div class="detalle-seccion">
-                        <h3>Situación Procesal</h3>
-                        <div>${causa.situacionProcesal}</div>
-                    </div>
-                `;
-            }
+            // CORRECCIÓN: Mostrar observaciones generales como HTML
+            contenidoHTML += `<div class="form-group"><label><strong>Observaciones Generales:</strong></label><div>${causa.observacionesGenerales || 'N/A'}</div></div>`;
             
-            if (causa.historial && causa.historial.length > 0) {
-                let historialHTML = `
-                    <div class="detalle-seccion">
-                        <h3>Historial de Control</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Pieza Procesal</th>
-                                    <th>Control</th>
-                                    <th>Firma Secretario</th>
-                                    <th>Firma Defensor</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                
-                causa.historial.forEach(item => {
-                    const estadoControl = item.control === 'Cumplido' ? 
-                        '<span class="badge badge-cumplido">Cumplido</span>' : 
-                        '<span class="badge badge-pendiente">Pendiente</span>';
-                    
-                    historialHTML += `
-                        <tr>
-                            <td>${item.piezaProcesal || 'N/A'}</td>
-                            <td>${estadoControl}</td>
-                            <td>${item.firmaSecretario || 'N/A'}</td>
-                            <td>${item.firmaDefensor || 'N/A'}</td>
-                        </tr>
-                    `;
-                });
-                
-                historialHTML += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                html += historialHTML;
-            }
-            
-            // Mostrar audiencias
-            if (causa.audiencias && causa.audiencias.length > 0) {
-                let audienciasHTML = `
-                    <div class="detalle-seccion">
-                        <h3>Audiencias</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Horario</th>
-                                    <th>Detalle</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                
-                causa.audiencias.forEach(audiencia => {
-                    const fecha = formatDate(audiencia.fecha);
-                    audienciasHTML += `
-                        <tr>
-                            <td>${fecha || 'N/A'}</td>
-                            <td>${audiencia.horario || 'N/A'}</td>
-                            <td>${audiencia.detalle || 'N/A'}</td>
-                        </tr>
-                    `;
-                });
-                
-                audienciasHTML += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                html += audienciasHTML;
-            }
-            
-            // Mostrar vencimientos
-            if (causa.vencimientos && causa.vencimientos.length > 0) {
-                let vencimientosHTML = `
-                    <div class="detalle-seccion">
-                        <h3>Vencimientos</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Horario</th>
-                                    <th>Detalle</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                
-                causa.vencimientos.forEach(vencimiento => {
-                    const fecha = formatDate(vencimiento.fecha);
-                    vencimientosHTML += `
-                        <tr>
-                            <td>${fecha || 'N/A'}</td>
-                            <td>${vencimiento.horario || 'N/A'}</td>
-                            <td>${vencimiento.detalle || 'N/A'}</td>
-                        </tr>
-                    `;
-                });
-                
-                vencimientosHTML += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                html += vencimientosHTML;
-            }
-            
-            // Mostrar otras actividades
-            if (causa.otrasActividades && causa.otrasActividades.length > 0) {
-                let actividadesHTML = `
-                    <div class="detalle-seccion">
-                        <h3>Otras Actividades</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Horario</th>
-                                    <th>Detalle</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                
-                causa.otrasActividades.forEach(actividad => {
-                    const fecha = formatDate(actividad.fecha);
-                    actividadesHTML += `
-                        <tr>
-                            <td>${fecha || 'N/A'}</td>
-                            <td>${actividad.horario || 'N/A'}</td>
-                            <td>${actividad.detalle || 'N/A'}</td>
-                        </tr>
-                    `;
-                });
-                
-                actividadesHTML += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                html += actividadesHTML;
-            }
-            
-            detalleContenido.innerHTML = html;
+            detalleContenido.innerHTML = contenidoHTML;
             modalVer.style.display = 'block';
         }
 
-        function confirmAndDelete(id, expediente) {
-            const confirmacion = confirm(`¿Está seguro de que desea eliminar la causa "${expediente}"?`);
-            if (confirmacion) {
-                deleteCausa(id);
-            }
-        }
+        // --- GESTIÓN DE DATOS ---
 
-        // --- FUNCIONES FIREBASE ---
-
-        // Cargar causas desde la nueva base de Firestore
-        async function loadCausasFromFirestore() {
-            showLoading();
-            try {
-                const snapshot = await dbNueva.collection('causas').get();
-                causas = [];
-                snapshot.forEach(doc => {
-                    causas.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
-                
-                filteredCausas = [...causas];
-                currentPage = 1;
-                renderTable(filteredCausas);
-                
-                // NUEVO: Poblar filtros después de cargar datos
-                poblarFiltros();
-                
-                showToast('Datos cargados desde Firestore', 'success');
-            } catch (error) {
-                console.error('Error cargando datos de Firestore:', error);
-                showToast('Error al cargar datos desde Firestore', 'error');
-                
-                // En caso de error, mantener el array vacío
-                causas = [];
-                filteredCausas = [];
-                renderTable(filteredCausas);
-            }
-        }
-
-        // Guardar causa en la nueva base de Firestore
-        async function saveCausaToFirestore(causaData) {
-            try {
-                let docRef;
-                if (editingId) {
-                    // Actualizar documento existente
-                    await dbNueva.collection('causas').doc(editingId).update(causaData);
-                    docRef = editingId;
-                } else {
-                    // Crear nuevo documento
-                    docRef = await dbNueva.collection('causas').add(causaData);
-                }
-                
-                showToast(`Causa ${editingId ? 'actualizada' : 'guardada'} correctamente`, 'success');
-                return docRef;
-            } catch (error) {
-                console.error('Error guardando en Firestore:', error);
-                showToast('Error al guardar en Firestore', 'error');
-                throw error;
-            }
-        }
-
-        // Eliminar causa de la nueva base de Firestore
-        async function deleteCausa(id) {
-            try {
-                await dbNueva.collection('causas').doc(id).delete();
-                showToast('Causa eliminada correctamente', 'success');
-                
-                // Recargar los datos después de eliminar
-                loadCausasFromFirestore();
-            } catch (error) {
-                console.error('Error eliminando de Firestore:', error);
-                showToast('Error al eliminar de Firestore', 'error');
-            }
-        }
-
-        // --- MANEJO DEL FORMULARIO ---
-        formRegistro.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        async function guardarRegistro(event) {
+            event.preventDefault();
+            const numeroCaratula = document.getElementById('numeroCaratula').value;
             
-            // Actualizar el campo oculto de situación procesal con el contenido del editor
-            situacionProcesalHidden.value = situacionProcesalEditor.innerHTML;
+            if (!numeroCaratula.trim()) {
+                showToast('El campo "Número y Carátula" es obligatorio.', 'error');
+                return;
+            }
             
-            // Recopilar datos del formulario
-            const formData = {
-                expediente: document.getElementById('numCausa').value.trim(),
-                caratula: document.getElementById('numCausa').value.trim(), // Mismo que expediente por ahora
-                tipoProceso: document.getElementById('tipoProceso').value.trim(),
-                juzgado: document.getElementById('juzgado').value.trim(),
-                empleadoAsignado: document.getElementById('empleadoAsignado').value.trim(),
-                modoIntervencion: document.getElementById('modoIntervencion').value.trim(),
-                documentacion: document.getElementById('documentacion').value.trim(),
-                situacionProcesal: situacionProcesalHidden.value,
-                fechaActualizacion: new Date().toISOString()
+            // MEJORA UX: Deshabilitar botón para evitar doble envío
+            btnGuardar.disabled = true;
+            btnGuardar.textContent = 'Guardando...';
+
+            const causa = {
+                numeroCaratula,
+                tipoProceso: document.getElementById('tipoProceso').value,
+                juzgado: document.getElementById('juzgado').value,
+                empleado: document.getElementById('empleado').value,
+                documentosPresentados: document.getElementById('documentosPresentados').value,
+                estadoDocumental: document.getElementById('estadoDocumental').value,
+                modoIntervencion: document.getElementById('modoIntervencion').value,
+                prioridadTarea: document.getElementById('prioridadTarea').value,
+                estadoProcesal: document.getElementById('estadoProcesal').value,
+                fechaEstado: document.getElementById('fechaEstado').value,
+                // CORRECCIÓN: Usar el valor del editor de texto enriquecido
+                observacionesGenerales: observacionesHidden.value,
+                seguimiento: obtenerDatosTabla('#tablaSeguimiento tbody', ['fecha', 'detalles']),
+                audiencias: obtenerDatosTabla('#tablaAudiencias tbody', ['fechaHora', 'detalle']),
+                vencimientos: obtenerDatosTabla('#tablaVencimientos tbody', ['fechaHora', 'detalle']),
+                actividades: obtenerDatosTabla('#tablaActividades tbody', ['fechaHora', 'detalle']),
+                firmaDigital: obtenerDatosTabla('#tablaFirmaDigital tbody', ['piezaProcesal', 'fechaFirma', 'firmaDe', 'tipoDefensor', 'detalleSubrogante'])
             };
             
-            // Recopilar datos del historial
-            const historial = [];
-            const filasHistorial = tablaHistorial.querySelectorAll('tr');
+            const causaGuardada = await guardarCausaEnFirebase(causa);
             
-            filasHistorial.forEach(fila => {
-                const piezaProcesal = fila.querySelector('.pieza-procesal').value.trim();
-                const control = fila.querySelector('.control').value;
-                const firmaSecretario = fila.querySelector('input[name^="firmaSecretario_"]:checked')?.value || '';
-                const firmaDefensor = fila.querySelector('input[name^="firmaDefensor_"]:checked')?.value || '';
-                const tipoDefensor = fila.querySelector('input[name^="tipoDefensor_"]:checked')?.value || '';
-                const subroganteDetalle = fila.querySelector('.subrogante-detalle')?.value.trim() || '';
-                
-                if (piezaProcesal || control) {
-                    historial.push({
-                        piezaProcesal,
-                        control,
-                        firmaSecretario,
-                        firmaDefensor,
-                        tipoDefensor,
-                        subroganteDetalle
-                    });
+            if (causaGuardada) {
+                if (editingId) {
+                    const index = causas.findIndex(c => c.id === editingId);
+                    if (index !== -1) causas[index] = { ...causaGuardada, id: editingId };
+                } else {
+                    causas.push(causaGuardada);
                 }
-            });
-            
-            if (historial.length > 0) {
-                formData.historial = historial;
-            }
-            
-            // Recopilar datos de audiencias
-            const audiencias = [];
-            const filasAudiencias = tablaAudiencias.querySelectorAll('tr');
-            
-            filasAudiencias.forEach(fila => {
-                const fecha = fila.querySelector('.fecha-audiencia').value;
-                const horario = fila.querySelector('.horario-audiencia').value;
-                const detalle = fila.querySelector('.detalle-audiencia').value.trim();
                 
-                if (fecha || detalle) {
-                    audiencias.push({
-                        fecha,
-                        horario,
-                        detalle
-                    });
-                }
-            });
-            
-            if (audiencias.length > 0) {
-                formData.audiencias = audiencias;
-            }
-            
-            // Recopilar datos de vencimientos
-            const vencimientos = [];
-            const filasVencimientos = tablaVencimientos.querySelectorAll('tr');
-            
-            filasVencimientos.forEach(fila => {
-                const fecha = fila.querySelector('.fecha-vencimiento').value;
-                const horario = fila.querySelector('.horario-vencimiento').value;
-                const detalle = fila.querySelector('.detalle-vencimiento').value.trim();
-                
-                if (fecha || detalle) {
-                    vencimientos.push({
-                        fecha,
-                        horario,
-                        detalle
-                    });
-                }
-            });
-            
-            if (vencimientos.length > 0) {
-                formData.vencimientos = vencimientos;
-            }
-            
-            // Recopilar datos de otras actividades
-            const otrasActividades = [];
-            const filasActividades = tablaOtrasActividades.querySelectorAll('tr');
-            
-            filasActividades.forEach(fila => {
-                const fecha = fila.querySelector('.fecha-actividad').value;
-                const horario = fila.querySelector('.horario-actividad').value;
-                const detalle = fila.querySelector('.detalle-actividad').value.trim();
-                
-                if (fecha || detalle) {
-                    otrasActividades.push({
-                        fecha,
-                        horario,
-                        detalle
-                    });
-                }
-            });
-            
-            if (otrasActividades.length > 0) {
-                formData.otrasActividades = otrasActividades;
-            }
-            
-            try {
-                await saveCausaToFirestore(formData);
+                localStorage.setItem('causas', JSON.stringify(causas));
                 modalRegistro.style.display = 'none';
-                loadCausasFromFirestore(); // Recargar los datos
-            } catch (error) {
-                // El error ya se maneja en saveCausaToFirestore
+                // MEJORA: Vuelve a renderizar la tabla con el filtro actual aplicado
+                filtrarYRenderizar();
             }
-        });
+            
+            btnGuardar.disabled = false;
+            btnGuardar.textContent = 'Guardar';
+        }
 
-        // --- IMPRESIÓN ---
-        btnImprimirListado.addEventListener('click', function() {
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>Listado de Causas</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; margin: 20px; }
-                            h1 { color: #2e7d32; text-align: center; }
-                            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                            th { background-color: #2e7d32; color: white; }
-                            .badge { padding: 2px 6px; border-radius: 8px; font-size: 10px; font-weight: bold; }
-                            .badge-pendiente { background-color: #ffeb3b; color: #333; }
-                            .badge-cumplido { background-color: #4caf50; color: white; }
-                            .resumen-impresion { display: flex; justify-content: space-between; margin-bottom: 20px; }
-                            .resumen-item { text-align: center; }
-                            .resumen-numero { font-size: 24px; font-weight: bold; }
-                            .resumen-titulo { font-size: 12px; color: #666; }
-                        </style>
-                    </head>
-                    <body>
-                        <h1>Listado de Causas</h1>
-                        <div class="resumen-impresion">
-                            <div class="resumen-item">
-                                <div class="resumen-numero">${causas.length}</div>
-                                <div class="resumen-titulo">Total</div>
-                            </div>
-                            <div class="resumen-item">
-                                <div class="resumen-numero">${document.getElementById('pendientesCausas').textContent}</div>
-                                <div class="resumen-titulo">Pendientes</div>
-                            </div>
-                            <div class="resumen-item">
-                                <div class="resumen-numero">${document.getElementById('cumplidasCausas').textContent}</div>
-                                <div class="resumen-titulo">Cumplidas</div>
-                            </div>
-                        </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Número y Carátula</th>
-                                    <th>Juzgado</th>
-                                    <th>Tipo de Proceso</th>
-                                    <th>Empleado</th>
-                                    <th>Control</th>
-                                    <th>Próximas Audiencias</th>
-                                    <th>Próximos Vencimientos</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${filteredCausas.map(causa => `
-                                    <tr>
-                                        <td>${causa.caratula || causa.expediente}</td>
-                                        <td>${causa.juzgado || 'N/A'}</td>
-                                        <td>${causa.tipoProceso || 'N/A'}</td>
-                                        <td>${causa.empleadoAsignado || 'N/A'}</td>
-                                        <td>${obtenerEstadoControl(causa.historial)}</td>
-                                        <td>${obtenerProximasAudiencias(causa.audiencias)}</td>
-                                        <td>${obtenerProximosVencimientos(causa.vencimientos)}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                        <p style="text-align: center; margin-top: 20px; color: #666;">
-                            Generado el ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}
-                        </p>
-                    </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
-        });
+        async function confirmAndDelete(id, numeroCaratula) {
+            if (confirm(`¿Está seguro de que desea eliminar la causa:\n"${numeroCaratula}"?`)) {
+                if (await eliminarCausaDeFirebase(id)) {
+                    causas = causas.filter(c => c.id !== id);
+                    localStorage.setItem('causas', JSON.stringify(causas));
+                    filtrarYRenderizar();
+                }
+            }
+        }
+        
+        function filtrarYRenderizar() {
+            const filtro = filtroBusqueda.value.toLowerCase();
+            const filtered = causas.filter(causa => 
+                Object.values(causa).some(val => 
+                    String(val).toLowerCase().includes(filtro)
+                )
+            );
+            renderTable(filtered);
+        }
 
         // --- INICIALIZACIÓN ---
-        document.addEventListener('DOMContentLoaded', function() {
-            // Cargar datos desde la nueva base de Firestore al iniciar
-            loadCausasFromFirestore();
+
+        function init() {
+            cargarCausasDesdeFirebase();
+            cargarDatosCausas(); // Cargar datos para autocompletar
+            initTabs();
             
-            // Agregar filas iniciales
-            agregarFilaHistorial();
-            agregarFilaAudiencia();
-            agregarFilaVencimiento();
-            agregarFilaActividad();
+            // Configurar tablas dinámicas
+            setupDynamicTable('tablaSeguimiento', 'btnAgregarSeguimiento', () => agregarFilaSeguimiento());
+            setupDynamicTable('tablaAudiencias', 'btnAgregarAudiencia', () => agregarFilaFechaHora(tablaAudiencias));
+            setupDynamicTable('tablaVencimientos', 'btnAgregarVencimiento', () => agregarFilaFechaHora(tablaVencimientos));
+            setupDynamicTable('tablaActividades', 'btnAgregarActividad', () => agregarFilaFechaHora(tablaActividades));
+            setupDynamicTable('tablaFirmaDigital', 'btnAgregarFirma', () => agregarFilaFirmaDigital());
+
+            // Inicializar editor de texto enriquecido
+            initEditor();
+
+            btnNuevoRegistro.addEventListener('click', () => abrirModalRegistro());
+            btnImprimirListado.addEventListener('click', () => window.print());
             
-            // NUEVO: Evento para actualizar el campo oculto cuando se edita la situación procesal
-            situacionProcesalEditor.addEventListener('input', function() {
-                situacionProcesalHidden.value = this.innerHTML;
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modalRegistro.style.display = 'none';
+                    modalVer.style.display = 'none';
+                });
             });
             
-            // NUEVO: Event listeners para los filtros
-            filtroBusqueda.addEventListener('input', aplicarFiltros);
-            filtroJuzgado.addEventListener('change', aplicarFiltros);
-            filtroTipoProceso.addEventListener('change', aplicarFiltros);
-            filtroEmpleado.addEventListener('change', aplicarFiltros);
-            filtroEstadoControl.addEventListener('change', aplicarFiltros);
-            
-            // NUEVO: Botón para limpiar filtros
-            const limpiarFiltros = document.createElement('button');
-            limpiarFiltros.textContent = 'Limpiar Filtros';
-            limpiarFiltros.style.cssText = 'padding: 8px 12px; background: #ccc; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;';
-            limpiarFiltros.addEventListener('click', function() {
-                filtroBusqueda.value = '';
-                filtroJuzgado.value = '';
-                filtroTipoProceso.value = '';
-                filtroEmpleado.value = '';
-                filtroEstadoControl.value = '';
-                aplicarFiltros();
+            window.addEventListener('click', (e) => {
+                if (e.target === modalRegistro) modalRegistro.style.display = 'none';
+                if (e.target === modalVer) modalVer.style.display = 'none';
             });
             
-            // Agregar botón de limpiar filtros después del último filtro
-            const filtrosAvanzados = document.querySelector('.filtros-avanzados');
-            const botonLimpiarContainer = document.createElement('div');
-            botonLimpiarContainer.className = 'filtro-grupo';
-            botonLimpiarContainer.style.display = 'flex';
-            botonLimpiarContainer.style.alignItems = 'flex-end';
-            botonLimpiarContainer.appendChild(limpiarFiltros);
-            filtrosAvanzados.appendChild(botonLimpiarContainer);
-        });
+            // CORRECCIÓN/MEJORA: La búsqueda ahora incluye todos los campos, incluyendo observaciones.
+            filtroBusqueda.addEventListener('input', () => {
+                currentPage = 1;
+                filtrarYRenderizar();
+            });
+            
+            formRegistro.addEventListener('submit', guardarRegistro);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
