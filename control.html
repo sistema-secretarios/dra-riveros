@@ -1,4 +1,3 @@
-<!-- CÓDIGO COMPLETO CON INTERFAZ MEJORADA SIMILAR A a.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -650,6 +649,93 @@
             background-color: #616161;
         }
 
+        /* NUEVO: Estilos para alerta de expediente duplicado (tomados de x.html) */
+        .duplicate-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2001;
+            background-color: #c62828;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .duplicate-alert.show {
+            display: block;
+            animation: alertPop 0.3s ease-out;
+        }
+
+        @keyframes alertPop {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -40%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .duplicate-alert h3 {
+            margin-top: 0;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .duplicate-alert-content {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .duplicate-alert .alert-message {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .duplicate-alert .close-alert-btn {
+            background-color: white;
+            color: #c62828;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            float: right;
+        }
+
+        .duplicate-alert .close-alert-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .modal-blocked {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .modal-blocked-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            border-radius: 8px;
+            display: none;
+        }
+
         /* Responsividad */
         @media (max-width: 850px) {
             .header-container {
@@ -734,6 +820,10 @@
             }
             .modal-buttons {
                 flex-direction: column;
+            }
+            .duplicate-alert {
+                width: 95%;
+                max-height: 90vh;
             }
         }
 
@@ -839,11 +929,23 @@
         <div id="bottomPagination" class="pagination-controls centered"></div>
     </div>
     
+    <!-- NUEVO: Alerta para expediente duplicado (tomada de x.html) -->
+    <div id="duplicateAlert" class="duplicate-alert">
+        <h3>⚠️ Expediente Ya Registrado</h3>
+        <div class="alert-message">Esta causa ya fue registrada antes.</div>
+        <div class="duplicate-alert-content" id="duplicateAlertContent">
+            <!-- Los detalles del expediente duplicado se cargarán aquí -->
+        </div>
+        <button class="close-alert-btn" id="closeAlertBtn">Cerrar</button>
+    </div>
+    
     <div id="alert-container"></div>
 
     <!-- Modal para nuevo/editar registro -->
     <div id="modalRegistro" class="modal">
         <div class="modal-content medium-modal">
+            <!-- NUEVO: Overlay para bloquear modal cuando hay alerta de duplicado -->
+            <div id="modalBlockOverlay" class="modal-blocked-overlay" style="display: none;"></div>
             <a href="#" class="close-btn">&times;</a>
             <h2><span id="modalTitle">Nuevo</span> Registro de Causa</h2>
             
@@ -1110,6 +1212,13 @@
         const btnImprimirDetalle = document.getElementById('btnImprimirDetalle');
         const btnCerrarDetalle = document.getElementById('btnCerrarDetalle');
 
+        // NUEVOS ELEMENTOS PARA LA ALERTA DE DUPLICADO (tomados de x.html)
+        const duplicateAlert = document.getElementById('duplicateAlert');
+        const duplicateAlertContent = document.getElementById('duplicateAlertContent');
+        const closeAlertBtn = document.getElementById('closeAlertBtn');
+        const modalBlockOverlay = document.getElementById('modalBlockOverlay');
+        const btnGuardar = document.getElementById('btnGuardar');
+
         // --- UTILIDADES ---
 
         /**
@@ -1162,6 +1271,89 @@
                     </td>
                 </tr>
             `;
+        }
+
+        // --- NUEVAS FUNCIONES PARA DETECCIÓN DE DUPLICADOS (tomadas de x.html) ---
+
+        /**
+         * Verifica si un expediente ya está registrado
+         */
+        function checkDuplicateExpediente(numeroCaratula) {
+            if (!numeroCaratula || !numeroCaratula.trim()) return null;
+            
+            // Extraer solo el número de expediente (antes del guión si existe)
+            const numeroExpediente = numeroCaratula.split('-')[0].trim();
+            
+            // Buscar en las causas ya registradas en la nueva base
+            return causas.find(causa => {
+                if (!causa.expediente && !causa.caratula) return false;
+                
+                // Comparar números de expediente
+                const causaNumero = (causa.expediente || causa.caratula).split('-')[0].trim();
+                return causaNumero === numeroExpediente;
+            });
+        }
+
+        /**
+         * Muestra alerta de expediente duplicado
+         */
+        function showDuplicateAlert(causaDuplicada) {
+            // Bloquear el modal
+            modalRegistro.classList.add('modal-blocked');
+            modalBlockOverlay.style.display = 'block';
+            
+            // Deshabilitar el botón de guardar
+            btnGuardar.disabled = true;
+            
+            // Preparar contenido de la alerta (solo número y carátula)
+            let contenidoHTML = `
+                <div style="font-size: 18px; font-weight: bold; text-align: center; margin: 15px 0;">
+                    ${causaDuplicada.expediente || causaDuplicada.caratula || 'N/A'}
+                </div>
+            `;
+            
+            duplicateAlertContent.innerHTML = contenidoHTML;
+            duplicateAlert.classList.add('show');
+        }
+
+        /**
+         * Oculta alerta de expediente duplicado
+         */
+        function hideDuplicateAlert() {
+            duplicateAlert.classList.remove('show');
+            modalRegistro.classList.remove('modal-blocked');
+            modalBlockOverlay.style.display = 'none';
+            btnGuardar.disabled = false;
+        }
+
+        /**
+         * Configura verificación de duplicados
+         */
+        function setupDuplicateCheck() {
+            const numCausaInput = document.getElementById('numCausa');
+            let checkTimeout;
+            
+            numCausaInput.addEventListener('input', function() {
+                // Solo verificar en modo nuevo registro, no en edición
+                if (editingId) return;
+                
+                clearTimeout(checkTimeout);
+                
+                checkTimeout = setTimeout(() => {
+                    const valor = this.value.trim();
+                    if (!valor) {
+                        hideDuplicateAlert();
+                        return;
+                    }
+                    
+                    const causaDuplicada = checkDuplicateExpediente(valor);
+                    if (causaDuplicada) {
+                        showDuplicateAlert(causaDuplicada);
+                    } else {
+                        hideDuplicateAlert();
+                    }
+                }, 500); // Esperar 500ms después de que el usuario deje de escribir
+            });
         }
 
         // --- NUEVAS FUNCIONES PARA RESUMEN Y FILTROS ---
@@ -1874,6 +2066,7 @@
         btnNuevoExpediente.addEventListener('click', function() {
             document.getElementById('numCausa').value = '';
             document.getElementById('numCausa').focus();
+            hideDuplicateAlert();
         });
 
         // Abrir modal para nuevo registro
@@ -1885,14 +2078,22 @@
                 e.preventDefault();
                 modalRegistro.style.display = 'none';
                 modalVer.style.display = 'none';
+                hideDuplicateAlert();
             });
         });
 
         // Cerrar modal al hacer clic fuera del contenido
         window.addEventListener('click', function(e) {
-            if (e.target === modalRegistro) modalRegistro.style.display = 'none';
+            if (e.target === modalRegistro) {
+                modalRegistro.style.display = 'none';
+                hideDuplicateAlert();
+            }
             if (e.target === modalVer) modalVer.style.display = 'none';
+            if (e.target === duplicateAlert) hideDuplicateAlert();
         });
+
+        // NUEVO: Evento para botón cerrar alerta de duplicado
+        closeAlertBtn.addEventListener('click', hideDuplicateAlert);
 
         // NUEVO: Eventos para botones del modal ver
         btnCerrarDetalle.addEventListener('click', function() {
@@ -1955,6 +2156,14 @@
                 document.getElementById('juzgado').value = causaEncontrada.juzgado || '';
                 document.getElementById('empleadoAsignado').value = causaEncontrada.usuarioAsignado || '';
                 document.getElementById('modoIntervencion').value = causaEncontrada.intervencion || '';
+                
+                // Verificar si este expediente ya está registrado en la nueva base
+                if (!editingId) {
+                    const causaDuplicada = checkDuplicateExpediente(this.value);
+                    if (causaDuplicada) {
+                        showDuplicateAlert(causaDuplicada);
+                    }
+                }
             }
         });
 
@@ -1972,6 +2181,9 @@
             // Limpiar el editor de situación procesal
             situacionProcesalEditor.innerHTML = '';
             situacionProcesalHidden.value = '';
+            
+            // Ocultar alerta de duplicado
+            hideDuplicateAlert();
             
             // Cargar datos de causas cada vez que se abre el modal
             cargarDatosCausas();
@@ -2314,6 +2526,12 @@
         formRegistro.addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Verificar si hay alerta de duplicado activa
+            if (duplicateAlert.classList.contains('show')) {
+                showToast('No se puede guardar: el expediente ya está registrado.', 'error');
+                return;
+            }
+            
             // Actualizar el campo oculto de situación procesal con el contenido del editor
             situacionProcesalHidden.value = situacionProcesalEditor.innerHTML;
             
@@ -2511,6 +2729,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Cargar datos desde la nueva base de Firestore al iniciar
             loadCausasFromFirestore();
+            
+            // NUEVO: Configurar verificación de duplicados
+            setupDuplicateCheck();
             
             // Agregar filas iniciales
             agregarFilaHistorial();
