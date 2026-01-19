@@ -5,6 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Secretarios</title>
     <style>
+        /* =========================================
+           ESTILOS GLASSMORPHISM VERDE (NATURE/INSTITUTIONAL)
+           ========================================= */
+        :root {
+          /* Fondo degradado verde suave */
+          --background-gradient: linear-gradient(135deg, #e8f5e9 0%, #a5d6a7 100%);
+          
+          /* Paleta Verde */
+          --foreground: #1b5e20; /* Verde bosque oscuro para texto */
+          
+          /* Cristal */
+          --card: rgba(255, 255, 255, 0.65); /* Blanco translúcido */
+          --card-border: rgba(46, 125, 50, 0.3); /* Borde verde suave */
+          --shadow-glass: 0 8px 32px 0 rgba(27, 94, 32, 0.15);
+          
+          --popover: rgba(255, 255, 255, 0.95);
+          
+          --primary: #2e7d32; /* Verde principal */
+          --primary-foreground: #ffffff;
+          
+          --secondary: #4caf50;
+          --accent: rgba(76, 175, 80, 0.15); /* Fondo verde suave al pasar el mouse */
+          
+          --destructive: #c62828; /* Rojo estándar para alertas */
+          --destructive-foreground: #ffffff;
+          
+          --radius: 1.5rem;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,544 +42,413 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f4f4;
+            background: var(--background-gradient);
             min-height: 100vh;
-            color: #000;
+            color: var(--foreground);
+            background-attachment: fixed;
+            overflow-x: hidden; /* Prevenir scroll horizontal */
         }
 
-        .app-container {
-            min-height: 100vh;
-        }
-
+        /* Navbar Glass Verde */
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 20px;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 12px 25px;
+            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--card-border);
         }
 
-        .navbar-brand {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1b5e20;
-        }
+        .navbar-left { display: flex; align-items: center; gap: 20px; }
+        .navbar-right { display: flex; align-items: center; gap: 15px; }
+        .navbar-brand { font-size: 22px; font-weight: 800; color: var(--primary); white-space: nowrap; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
-        .navbar-btn {
-            color: white;
+        .menu-container { position: relative; }
+        
+        .menu-toggle {
+            background: linear-gradient(135deg, var(--primary) 0%, #1b5e20 100%);
+            color: var(--primary-foreground);
             border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .navbar-btn + .navbar-btn {
-            margin-left: 10px;
-        }
-
-        .btn-green {
-            background-color: #1b5e20;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 100px;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+            transition: all 0.2s ease;
         }
         
-        .btn-green:hover {
-            background-color: #2e7d32;
+        .menu-toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(46, 125, 50, 0.4); }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 120%;
+            left: 0;
+            width: 260px;
+            background: var(--popover);
+            border-radius: 1rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            z-index: 1100;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            display: none;
+            animation: slideDown 0.2s ease;
         }
 
-        .navbar-toggle {
-            background: #1b5e20;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-menu.active { display: block; }
+        .menu-section { padding: 8px 0; border-bottom: 1px solid rgba(46, 125, 50, 0.1); }
+        .menu-items { max-height: 500px; overflow-y: auto; }
+        
+        .menu-item {
+            padding: 12px 20px;
+            display: block;
+            text-decoration: none;
             cursor: pointer;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .profile-pic {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #1b5e20;
-            cursor: pointer;
-        }
-
-        .profile-pic-placeholder {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #1b5e20;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .welcome-message {
-            color: #000;
+            transition: all 0.2s;
+            font-size: 14px;
             font-weight: 600;
+            color: var(--foreground); 
         }
+        .menu-item:hover { background: var(--accent); color: var(--primary); padding-left: 25px; }
 
-        .logout-btn {
-            background: #c62828;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .profile-pic { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .logout-btn { 
+            background: transparent; 
+            color: var(--destructive); 
+            border: 2px solid var(--destructive); 
+            padding: 8px 16px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            transition: all 0.2s; 
         }
+        .logout-btn:hover { background: var(--destructive); color: white; }
+        
+        .welcome-text { font-size: 0.95em; font-weight: 700; color: var(--foreground); }
 
-        .logout-btn:hover {
-            background: #b71c1c;
-        }
-
-        .main-content {
+        /* Estructura Principal */
+        .welcome-screen {
+            padding: 20px 40px;
+            height: calc(100vh - 80px);
             display: flex;
-            min-height: calc(100vh - 80px);
-        }
-
-        .sidebar {
-            width: 70px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 20px 0;
-            transition: width 0.3s ease;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
         }
 
-        .sidebar.expanded {
-            width: 280px;
-        }
-
-        .sidebar.collapsed {
-            transform: translateX(-100%);
-        }
-
-        .sidebar-menu {
-            list-style: none;
-        }
-
-        .sidebar-menu li {
-            margin-bottom: 5px;
-        }
-
-        .sidebar-menu a {
+        .split-layout {
             display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            color: #000;
-            text-decoration: none;
-            transition: all 0.3s;
-            border-left: 4px solid transparent;
-            cursor: pointer;
+            width: 100%;
+            max-width: 1400px;
+            height: 100%; 
+            max-height: 800px; 
+            gap: 40px;
+            align-items: stretch;
         }
 
-        .sidebar-menu a:hover {
-            background: rgba(27, 94, 32, 0.1);
-            border-left-color: #1b5e20;
-            color: #1b5e20;
-        }
-
-        .sidebar-menu .icon {
-            font-size: 20px;
-            min-width: 30px;
-            text-align: center;
-        }
-
-        .sidebar-menu .text {
-            margin-left: 15px;
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .sidebar.expanded .sidebar-menu .text {
-            opacity: 1;
-        }
-
-        .content-area {
+        /* Panel Izquierdo */
+        .left-panel {
             flex: 1;
-            padding: 0;
-            background: rgba(255, 255, 255, 0.1);
-            position: relative;
-        }
-
-        .welcome-screen {
-            padding: 40px;
-        }
-
-        .welcome-card {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .welcome-card h1 {
-            color: #000;
-            margin-bottom: 20px;
-            font-size: 32px;
-        }
-
-        .welcome-card p {
-            color: #333;
-            font-size: 18px;
-            line-height: 1.6;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-            justify-content: center;
-        }
-
-        @media (min-width: 1200px) {
-            .cards-grid {
-                grid-template-columns: repeat(3, minmax(300px, 1fr));
-            }
-        }
-
-        .feature-card {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .feature-card h3 {
-            color: #000;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        .feature-card .btn-link {
-            background: #1b5e20;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 15px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .feature-card .btn-link:hover {
-            background: #2e7d32;
-        }
-
-        .iframe-container {
-            display: none;
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        .iframe-header {
-            background: white;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e1e5e9;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+            box-shadow: var(--shadow-glass);
         }
 
-        .iframe-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #000;
+        .mp-logo { width: 100%; height: auto; object-fit: contain; display: block; filter: drop-shadow(0 8px 8px rgba(0,0,0,0.1)); }
+
+        /* MODIFICACIÓN: Panel Derecho Ajustado
+           Se centra el contenido y se elimina el scroll.
+        */
+        .right-panel {
+            flex: 2;
+            padding: 30px; /* Reducido ligeramente para dar margen */
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-glass);
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;     
+            position: relative;
+            overflow: hidden;        /* Sin scroll */
         }
 
-        .close-iframe {
-            background: #c62828;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
+        /* Decoración sutil verde detrás */
+        .right-panel::before {
+            content: '';
+            position: absolute;
+            top: -20px; right: -20px;
+            width: 120px; height: 120px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.08;
+            z-index: -1;
+        }
+
+        /* ========================================================
+           NUEVOS ESTILOS: Módulos Rectangulares (Grid Ajustado) 
+           ========================================================
+        */
+        .module-grid {
+            display: grid;
+            /* Se adapta al ancho disponible */
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            /* Las filas se estiran para ocupar todo el alto (grid-auto-rows: 1fr) */
+            grid-auto-rows: 1fr;
+            gap: 20px;
+            width: 100%;
+            height: 100%; /* Ocupa todo el alto del panel */
+        }
+
+        .rect-module {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 15px; /* Padding ajustado */
+            height: 100%; /* Altura completa de la celda */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
             cursor: pointer;
-            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 6px rgba(27, 94, 32, 0.05);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-left-width: 6px;
+            border-left-style: solid;
+            
+            /* Tipografía */
+            color: var(--foreground);
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.3;
         }
 
-        .close-iframe:hover {
-            background: #b71c1c;
+        .rect-module:hover {
+            transform: translateY(-4px); /* Movimiento sutil */
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 15px 30px rgba(27, 94, 32, 0.15);
         }
 
-        .content-iframe {
-            width: 100%;
-            height: calc(100vh - 140px);
-            border: none;
+        /* Colores de bordes laterales */
+        .rect-module:nth-child(1) { border-left-color: rgba(239, 68, 68, 0.8); } /* Rojo */
+        .rect-module:nth-child(2) { border-left-color: rgba(59, 130, 246, 0.8); } /* Azul */
+        .rect-module:nth-child(3) { border-left-color: rgba(46, 125, 50, 0.8); } /* Verde Fuerte */
+        .rect-module:nth-child(4) { border-left-color: rgba(245, 158, 11, 0.8); } /* Naranja */
+        .rect-module:nth-child(5) { border-left-color: rgba(6, 182, 212, 0.8); } /* Celeste */
+        .rect-module:nth-child(6) { border-left-color: rgba(139, 92, 246, 0.8); } /* Violeta */
+
+
+        /* Iframe */
+        .iframe-container { display: none; width: 100%; height: 100%; padding-top: 10px; }
+        
+        .iframe-header { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(10px);
+            padding: 15px 25px; 
+            border: 1px solid var(--card-border);
+            border-bottom: none;
+            border-radius: 1rem 1rem 0 0;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin: 0 20px;
+        }
+        
+        .iframe-title { font-weight: 800; font-size: 20px; color: var(--primary); }
+        
+        .content-iframe { 
+            width: calc(100% - 40px); 
+            height: calc(100vh - 160px); 
+            border: 1px solid var(--card-border);
+            border-top: none;
+            margin: 0 20px;
+            background: white;
+            border-radius: 0 0 1rem 1rem;
+            box-shadow: var(--shadow-glass);
         }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: 0;
-                top: 80px;
-                height: calc(100vh - 80px);
-                z-index: 999;
-                transform: translateX(-100%);
-                width: 280px;
-            }
-
-            .sidebar.show {
-                transform: translateX(0);
-            }
-
-            .sidebar.show .sidebar-menu .text {
-                opacity: 1;
-            }
-
-            .content-area {
-                padding: 20px;
-            }
-
-            .welcome-screen {
-                padding: 20px;
-            }
-
-            .welcome-card {
-                padding: 25px;
-            }
-
-            .welcome-card h1 {
-                font-size: 24px;
-            }
-
-            .cards-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .user-info {
-                gap: 10px;
-            }
-
-            .welcome-message {
-                display: none;
-            }
+        @media (max-width: 850px) {
+            .split-layout { flex-direction: column; padding: 10px; height: auto; }
+            .left-panel { display: none; }
+            .right-panel { padding: 20px; height: auto; min-height: 400px; }
+            .welcome-screen { height: auto; padding: 20px; overflow-y: auto; }
+            .module-grid { height: auto; }
         }
 
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 10px 15px;
-            }
-
-            .navbar-brand {
-                font-size: 20px;
-            }
-
-            .welcome-screen {
-                padding: 15px;
-            }
-
-            .welcome-card {
-                padding: 20px;
-            }
-
-            .feature-card {
-                padding: 20px;
-            }
-        }
-
-        @supports (height: 100svh) {
-            .content-iframe {
-                height: calc(100svh - 140px);
-            }
-            .sidebar {
-                height: calc(100svh - 80px);
-            }
-        }
-
-        .modal {
-            display: none;
+        /* Modal Cerrar Sesión Glass */
+        .modal-overlay {
             position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(27, 94, 32, 0.2); /* Tintado verde oscuro */
+            backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
             z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
         }
 
         .modal-content {
-            background-color: white;
-            margin: 15% auto;
+            background: rgba(255, 255, 255, 0.95);
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 1.5rem;
             width: 90%;
-            max-width: 400px;
+            max-width: 320px;
             text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            border: 2px solid var(--destructive);
         }
 
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+        .modal-title { color: var(--destructive); font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; }
+        .modal-text { color: #4b5563; font-size: 1rem; margin-bottom: 25px; font-weight: 500; }
+        .modal-buttons { display: flex; gap: 15px; justify-content: center; }
+
+        .btn-confirm {
+            background: var(--destructive);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: 700;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(198, 40, 40, 0.3);
         }
 
-        .close:hover {
-            color: black;
+        .btn-cancel {
+            background: #f1f8e9; /* Verde muy claro */
+            color: var(--primary);
+            border: 1px solid transparent;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background 0.2s;
         }
 
-        .file-input {
-            margin: 20px 0;
-        }
+        .btn-confirm:hover { transform: translateY(-2px); opacity: 0.9; }
+        .btn-cancel:hover { background: #dcedc8; }
 
-        .error-message {
-            color: #c62828;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-
-        .success-message {
-            color: #2e7d32;
-            margin-top: 10px;
-            font-size: 14px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
         <nav class="navbar">
-            <div style="display: flex; align-items: center;">
-                <button class="navbar-toggle" onclick="toggleSidebar()">☰</button>
+            <div class="navbar-left">
+                <div class="menu-container">
+                    <button class="menu-toggle" id="menuToggleBtn" onclick="toggleMenu()">
+                        <span>☰</span> Menú
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="menu-items">
+                            <div class="menu-section">
+                                <div class="menu-item" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</div>
+                                <div class="menu-item" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</div>
+                                <div class="menu-item" onclick="openSection('control.html', 'Control de Causas')">Control de causas</div>
+                            </div>
+                            <div class="menu-section">
+                                <div class="menu-item" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</div>
+                                <div class="menu-item" onclick="openSection('estadisticas.html', 'Estadísticas')">Estadistica de Tareas</div>
+                            </div>
+                            <div class="menu-section">
+                                <div class="menu-item" onclick="openExternalSystem()">Sistema Digital</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="navbar-brand">Sistema Secretarios</div>
             </div>
-            <div>
-                <button class="navbar-btn btn-green" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</button>
-                <button class="navbar-btn btn-green" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</button>
-                <button class="navbar-btn btn-green" onclick="openSection('control.html', 'Control de Causas')">Control de causas</button>
-                <button class="navbar-btn btn-green" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</button>
-            </div>
-            <div class="user-info">
-                <span class="welcome-message">Bienvenido, <span id="userName">Usuario</span></span>
-                <div id="profilePicContainer">
-                    <div class="profile-pic-placeholder" id="profilePlaceholder">U</div>
-                    <img class="profile-pic" id="profilePic" style="display: none;" alt="Foto de perfil">
+            
+            <div class="navbar-right">
+                <div class="user-info">
+                    <span id="userName" class="welcome-text">Usuario</span>
+                    <img class="profile-pic" src="https://github.com/sistemadigital/iconos/blob/main/mujer.png?raw=true" alt="Perfil">
+                    <button class="logout-btn" onclick="logout()">Salir</button>
                 </div>
-                <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
             </div>
         </nav>
 
-        <div class="main-content">
-            <aside class="sidebar" id="sidebar">
-                <ul class="sidebar-menu">
-                    <li><a onclick="openSection('causas.html', 'Mis Causas')">
-                        <span class="icon">⚖️</span>
-                        <span class="text">Mis causas</span>
-                    </a></li>
-                    <li><a onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">
-                        <span class="icon">⚖️</span>
-                        <span class="text">Agenda de Clientes</span>
-                    </a></li>
-                    <li><a onclick="openSection('control.html', 'Control de Causas')">
-                        <span class="icon">🔍</span>
-                        <span class="text">Control de causas</span>
-                    </a></li>
-                    <li><a onclick="openSection('agenda.html', 'Calendario de Tareas')">
-                        <span class="icon">📅</span>
-                        <span class="text">Calendario de Tareas</span>
-                    </a></li>
-                    <li><a onclick="openExternalSystem()">
-                        <span class="icon">⚖️</span>
-                        <span class="text">Sistema Digital</span>
-                    </a></li>
-                    <li><a onclick="openSection('estadisticas.html', 'Estadísticas')">
-                        <span class="icon">📊</span>
-                        <span class="text">Estadistica de Tareas</span>
-                    </a></li>
-                </ul>
-            </aside>
-
-            <main class="content-area">
-                <div id="welcomeScreen" class="welcome-screen">
-                    <div class="welcome-card">
-                        <h1>Bienvenido al Sistema Secretarios</h1>
-                        <p>Accede a todas las herramientas y recursos necesarios para gestionar eficientemente los procesos. Utiliza el menú lateral para navegar entre las diferentes secciones del sistema.</p>
+        <main class="main-content">
+            <div id="welcomeScreen" class="welcome-screen">
+                <div class="split-layout">
+                    <div class="left-panel">
+                        <img src="https://github.com/sistemadigital/iconos/blob/main/MP.png?raw=true" alt="Ministerio Público" class="mp-logo">
                     </div>
-
-                    <div class="cards-grid">
-                         <div class="feature-card" onclick="openSection('causas.html', 'Mis Causas')">
-                            <h3>Mis causas</h3>
-                            <p>Gestiona y consulta tus causas asignadas</p>
-                        </div>
-		
-                        <div class="feature-card" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">
-                            <h3>Agenda de Clientes</h3>
-                            <p>Administra tus citas y contactos</p>
-                        </div>
-
-                        <div class="feature-card" onclick="openSection('control.html', 'Control de Causas')">
-                            <h3>Control de causas</h3>
-                            <p>Seguimiento y control de procesos</p>
-                        </div>
-
-                        <div class="feature-card" onclick="openSection('agenda.html', 'Calendario de Tareas')">
-                            <h3>Calendario de Tareas</h3>
-                            <p>Organiza tus actividades y plazos</p>
-                        </div>
-
-                        <div class="feature-card" onclick="openExternalSystem()">
-                            <h3>Sistema Digital</h3>
-                            <p>Acceso al sistema externo de causas</p>
-                        </div>
-
-                        <div class="feature-card" onclick="openSection('estadisticas.html', 'Estadísticas')">
-                            <h3>Estadisticas</h3>
-                            <p>Reportes y análisis de datos</p>
+                    
+                    <div class="right-panel">
+                        <div class="module-grid">
+                            <div class="rect-module" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</div>
+                            <div class="rect-module" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</div>
+                            <div class="rect-module" onclick="openSection('control.html', 'Control de Causas')">Control de causas</div>
+                            <div class="rect-module" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</div>
+                            <div class="rect-module" onclick="openExternalSystem()">Sistema Digital</div>
+                            <div class="rect-module" onclick="openSection('estadisticas.html', 'Estadisticas')">Estadisticas</div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div id="iframeContainer" class="iframe-container">
-                    <div class="iframe-header">
-                        <div class="iframe-title" id="iframeTitle">Cargando...</div>
-                        <button class="close-iframe" onclick="closeIframe()">✕ Cerrar</button>
-                    </div>
-                    <iframe id="contentIframe" class="content-iframe" src=""></iframe>
+            <div id="iframeContainer" class="iframe-container">
+                <div class="iframe-header">
+                    <div class="iframe-title" id="iframeTitle">Cargando...</div>
+                    <button onclick="closeIframe()" style="background:var(--destructive); color:white; border:none; padding:8px 20px; border-radius:10px; cursor:pointer; font-weight:bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">✕ Cerrar</button>
                 </div>
-            </main>
+                <iframe id="contentIframe" class="content-iframe" src=""></iframe>
+            </div>
+        </main>
+    </div>
+
+    <div id="logoutModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-title">Cerrar Sesión</div>
+            <p class="modal-text">¿Estás seguro que deseas salir del sistema?</p>
+            <div class="modal-buttons">
+                <button class="btn-confirm" id="confirmLogoutBtn">Sí, salir</button>
+                <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+            </div>
         </div>
     </div>
 
-    <!-- Firebase SDK para app.html -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
+        // CONFIGURACIÓN ORIGINAL (secretarios-def)
         const firebaseConfig = {
             apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
             authDomain: "secretarios-def.firebaseapp.com",
@@ -563,51 +461,38 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Verificar estado de autenticación al cargar la página
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Usuario autenticado
                 document.getElementById('userName').textContent = user.displayName || user.email || 'Usuario';
-                const placeholder = document.getElementById('profilePlaceholder');
-                if (user.displayName) {
-                    placeholder.textContent = user.displayName.charAt(0).toUpperCase();
-                } else if (user.email) {
-                    placeholder.textContent = user.email.charAt(0).toUpperCase();
-                }
             } else {
-                // No hay usuario autenticado, redirigir al login
                 window.location.href = 'index.html';
             }
         });
 
-        // Función global para cerrar sesión
-        window.logout = async function() {
-            if (confirm('¿Está seguro que desea cerrar sesión?')) {
-                try {
-                    await signOut(auth);
-                    // Redirigir a la página de login
-                    window.location.href = 'index.html';
-                } catch (error) {
-                    console.error('Error al cerrar sesión:', error);
-                    alert('Error al cerrar sesión. Inténtelo de nuevo.');
-                }
-            }
+        // Función de salida
+        window.logout = function() {
+            document.getElementById('logoutModal').style.display = 'flex';
         };
+
+        window.closeLogoutModal = function() {
+            document.getElementById('logoutModal').style.display = 'none';
+        };
+
+        document.getElementById('confirmLogoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        });
     </script>
 
     <script>
-        // Inicializar la aplicación
-        document.addEventListener('DOMContentLoaded', function() {
-            // El usuario ya se muestra desde Firebase
-        });
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth <= 768) {
-                sidebar.classList.toggle('show');
-            } else {
-                sidebar.classList.toggle('expanded');
-            }
+        let menuOpen = false;
+        function toggleMenu() {
+            menuOpen = !menuOpen;
+            document.getElementById('dropdownMenu').classList.toggle('active');
         }
 
         function openSection(url, title) {
@@ -616,18 +501,17 @@
             const iframeTitle = document.getElementById("iframeTitle");
             const welcomeScreen = document.getElementById("welcomeScreen");
 
-            // Mostrar el iframe y ocultar la pantalla de bienvenida
             iframeContainer.style.display = "block";
-            if (welcomeScreen) welcomeScreen.style.display = "none";
-            
-            // Establecer título y cargar la URL
+            welcomeScreen.style.display = "none";
             iframeTitle.textContent = title;
             iframe.src = url;
+
+            if(menuOpen) toggleMenu();
         }
 
         function openExternalSystem() {
-            // Abrir en nueva ventana/pestaña
             window.open('https://sistemadigital.github.io/defensor-secretarios/index.html', '_blank');
+            if(menuOpen) toggleMenu();
         }
 
         function closeIframe() {
@@ -635,31 +519,18 @@
             const iframe = document.getElementById("contentIframe");
             const welcomeScreen = document.getElementById("welcomeScreen");
 
-            // Ocultar el iframe y mostrar la pantalla de bienvenida
             iframeContainer.style.display = "none";
             iframe.src = "";
-            
-            if (welcomeScreen) welcomeScreen.style.display = "block";
+            welcomeScreen.style.display = "flex"; 
         }
 
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const toggleBtn = document.querySelector('.navbar-toggle');
-            
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(event.target) && 
-                !toggleBtn.contains(event.target) && 
-                sidebar.classList.contains('show')) {
-                sidebar.classList.remove('show');
+        window.onclick = (e) => {
+            const menu = document.getElementById('dropdownMenu');
+            const toggleBtn = document.getElementById('menuToggleBtn');
+            if (menuOpen && !menu.contains(e.target) && e.target !== toggleBtn) {
+                toggleMenu();
             }
-        });
-
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('show');
-            }
-        });
+        }
     </script>
 </body>
 </html>
