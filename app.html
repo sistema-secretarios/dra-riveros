@@ -9,28 +9,18 @@
            ESTILOS GLASSMORPHISM VERDE (NATURE/INSTITUTIONAL)
            ========================================= */
         :root {
-          /* Fondo degradado verde suave */
           --background-gradient: linear-gradient(135deg, #e8f5e9 0%, #a5d6a7 100%);
-          
-          /* Paleta Verde */
-          --foreground: #1b5e20; /* Verde bosque oscuro para texto */
-          
-          /* Cristal */
-          --card: rgba(255, 255, 255, 0.65); /* Blanco translúcido */
-          --card-border: rgba(46, 125, 50, 0.3); /* Borde verde suave */
+          --foreground: #1b5e20; 
+          --card: rgba(255, 255, 255, 0.65);
+          --card-border: rgba(46, 125, 50, 0.3);
           --shadow-glass: 0 8px 32px 0 rgba(27, 94, 32, 0.15);
-          
           --popover: rgba(255, 255, 255, 0.95);
-          
-          --primary: #2e7d32; /* Verde principal */
+          --primary: #2e7d32; 
           --primary-foreground: #ffffff;
-          
           --secondary: #4caf50;
-          --accent: rgba(76, 175, 80, 0.15); /* Fondo verde suave al pasar el mouse */
-          
-          --destructive: #c62828; /* Rojo estándar para alertas */
+          --accent: rgba(76, 175, 80, 0.15);
+          --destructive: #c62828; 
           --destructive-foreground: #ffffff;
-          
           --radius: 1.5rem;
         }
 
@@ -46,28 +36,38 @@
             min-height: 100vh;
             color: var(--foreground);
             background-attachment: fixed;
-            overflow-x: hidden; /* Prevenir scroll horizontal */
+            overflow-x: hidden;
         }
 
-        /* Navbar Glass Verde */
+        /* Navbar Glass Verde - AJUSTADA COMO CODIGO A */
         .navbar {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             padding: 12px 25px;
             box-shadow: 0 4px 20px rgba(27, 94, 32, 0.1);
-            position: sticky;
+            /* Cambiado a fixed para paridad con A */
+            position: fixed;
             top: 0;
-            z-index: 1000;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            z-index: 5000;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--card-border);
         }
 
-        .navbar-left { display: flex; align-items: center; gap: 20px; }
-        .navbar-right { display: flex; align-items: center; gap: 15px; }
-        .navbar-brand { font-size: 22px; font-weight: 800; color: var(--primary); white-space: nowrap; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        /* Ajuste de contenido para navbar fija */
+        .main-content {
+            padding-top: 75px; 
+            width: 100%;
+        }
+
+        .navbar-left { display: flex; align-items: center; gap: 20px; min-width: 0; }
+        .navbar-right { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
+        .navbar-brand { font-size: 22px; font-weight: 800; color: var(--primary); white-space: nowrap; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; text-overflow: ellipsis; }
 
         .menu-container { position: relative; }
         
@@ -89,20 +89,19 @@
             transition: all 0.2s ease;
         }
         
-        .menu-toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(46, 125, 50, 0.4); }
-
         .dropdown-menu {
             position: absolute;
-            top: 120%;
+            top: 100%;
             left: 0;
             width: 260px;
             background: var(--popover);
             border-radius: 1rem;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            z-index: 1100;
+            z-index: 5100;
             border: 1px solid var(--card-border);
             overflow: hidden;
             display: none;
+            margin-top: 8px;
             animation: slideDown 0.2s ease;
         }
 
@@ -128,7 +127,7 @@
         .menu-item:hover { background: var(--accent); color: var(--primary); padding-left: 25px; }
 
         .user-info { display: flex; align-items: center; gap: 12px; }
-        .profile-pic { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .profile-pic { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
         
         .logout-btn { 
             background: transparent; 
@@ -164,7 +163,6 @@
             align-items: stretch;
         }
 
-        /* Panel Izquierdo */
         .left-panel {
             flex: 1;
             display: flex;
@@ -180,60 +178,38 @@
             box-shadow: var(--shadow-glass);
         }
 
-        .mp-logo { width: 100%; height: auto; object-fit: contain; display: block; filter: drop-shadow(0 8px 8px rgba(0,0,0,0.1)); }
+        .mp-logo { width: 100%; height: auto; object-fit: contain; display: block; }
 
-        /* MODIFICACIÓN: Panel Derecho Ajustado
-           Se centra el contenido y se elimina el scroll.
-        */
         .right-panel {
             flex: 2;
-            padding: 30px; /* Reducido ligeramente para dar margen */
+            padding: 30px;
             background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.8);
             border-radius: var(--radius);
             box-shadow: var(--shadow-glass);
-            
             display: flex;
             justify-content: center;
             align-items: center;     
             position: relative;
-            overflow: hidden;        /* Sin scroll */
+            overflow: hidden;
         }
 
-        /* Decoración sutil verde detrás */
-        .right-panel::before {
-            content: '';
-            position: absolute;
-            top: -20px; right: -20px;
-            width: 120px; height: 120px;
-            background: var(--primary);
-            border-radius: 50%;
-            opacity: 0.08;
-            z-index: -1;
-        }
-
-        /* ========================================================
-           NUEVOS ESTILOS: Módulos Rectangulares (Grid Ajustado) 
-           ========================================================
-        */
         .module-grid {
             display: grid;
-            /* Se adapta al ancho disponible */
             grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            /* Las filas se estiran para ocupar todo el alto (grid-auto-rows: 1fr) */
             grid-auto-rows: 1fr;
             gap: 20px;
             width: 100%;
-            height: 100%; /* Ocupa todo el alto del panel */
+            height: 100%;
         }
 
         .rect-module {
             background: rgba(255, 255, 255, 0.65);
             backdrop-filter: blur(8px);
             border-radius: 12px;
-            padding: 15px; /* Padding ajustado */
-            height: 100%; /* Altura completa de la celda */
+            padding: 15px;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -241,68 +217,67 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: 0 4px 6px rgba(27, 94, 32, 0.05);
             border: 1px solid rgba(255,255,255,0.6);
             border-left-width: 6px;
             border-left-style: solid;
-            
-            /* Tipografía */
             color: var(--foreground);
             font-weight: 700;
             font-size: 15px;
-            line-height: 1.3;
         }
 
-        .rect-module:hover {
-            transform: translateY(-4px); /* Movimiento sutil */
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 15px 30px rgba(27, 94, 32, 0.15);
-        }
+        .rect-module:hover { transform: translateY(-4px); background: rgba(255, 255, 255, 0.9); }
 
-        /* Colores de bordes laterales */
-        .rect-module:nth-child(1) { border-left-color: rgba(239, 68, 68, 0.8); } /* Rojo */
-        .rect-module:nth-child(2) { border-left-color: rgba(59, 130, 246, 0.8); } /* Azul */
-        .rect-module:nth-child(3) { border-left-color: rgba(46, 125, 50, 0.8); } /* Verde Fuerte */
-        .rect-module:nth-child(4) { border-left-color: rgba(245, 158, 11, 0.8); } /* Naranja */
-        .rect-module:nth-child(5) { border-left-color: rgba(6, 182, 212, 0.8); } /* Celeste */
-        .rect-module:nth-child(6) { border-left-color: rgba(139, 92, 246, 0.8); } /* Violeta */
-
+        .rect-module:nth-child(1) { border-left-color: #ef4444; } 
+        .rect-module:nth-child(2) { border-left-color: #3b82f6; } 
+        .rect-module:nth-child(3) { border-left-color: #2e7d32; } 
+        .rect-module:nth-child(4) { border-left-color: #f59e0b; } 
+        .rect-module:nth-child(5) { border-left-color: #06b6d4; } 
+        .rect-module:nth-child(6) { border-left-color: #8b5cf6; }
 
         /* Iframe */
-        .iframe-container { display: none; width: 100%; height: 100%; padding-top: 10px; }
+        .iframe-container { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            z-index: 4000; 
+            background: white;
+            flex-direction: column;
+            padding-top: 70px;
+        }
         
         .iframe-header { 
             background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(10px);
-            padding: 15px 25px; 
-            border: 1px solid var(--card-border);
-            border-bottom: none;
-            border-radius: 1rem 1rem 0 0;
+            padding: 10px 20px; 
+            border-bottom: 1px solid var(--card-border);
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            margin: 0 20px;
+            height: 50px;
         }
         
-        .iframe-title { font-weight: 800; font-size: 20px; color: var(--primary); }
-        
-        .content-iframe { 
-            width: calc(100% - 40px); 
-            height: calc(100vh - 160px); 
-            border: 1px solid var(--card-border);
-            border-top: none;
-            margin: 0 20px;
-            background: white;
-            border-radius: 0 0 1rem 1rem;
-            box-shadow: var(--shadow-glass);
-        }
+        .iframe-title { font-weight: 800; font-size: 18px; color: var(--primary); }
+        .content-iframe { width: 100%; flex: 1; border: none; }
 
+        /* =========================================
+           ADAPTACIÓN MÓVIL - LÓGICA DEL CÓDIGO A
+           ========================================= */
         @media (max-width: 850px) {
+            .navbar { padding: 10px; }
+            .navbar-brand { font-size: 14px; white-space: normal; line-height: 1.1; max-width: 150px; }
+            .navbar-left { gap: 10px; }
+            .menu-toggle { padding: 8px 10px; font-size: 13px; min-width: 80px; }
+            
+            /* Ocultar nombre para dejar espacio, igual que en A */
+            #userName { display: none; } 
+            .user-info { gap: 8px; }
+            .logout-btn { padding: 8px 10px; font-size: 13px; }
+
             .split-layout { flex-direction: column; padding: 10px; height: auto; }
             .left-panel { display: none; }
-            .right-panel { padding: 20px; height: auto; min-height: 400px; }
+            .right-panel { padding: 20px; height: auto; min-height: 400px; align-items: center; }
             .welcome-screen { height: auto; padding: 20px; overflow-y: auto; }
-            .module-grid { height: auto; }
+            .module-grid { height: auto; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
         }
 
         /* Modal Cerrar Sesión Glass */
@@ -310,13 +285,12 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(27, 94, 32, 0.2); /* Tintado verde oscuro */
+            background: rgba(27, 94, 32, 0.2);
             backdrop-filter: blur(6px);
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
-            animation: fadeIn 0.3s ease;
+            z-index: 6000;
         }
 
         .modal-content {
@@ -326,44 +300,11 @@
             width: 90%;
             max-width: 320px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
             border: 2px solid var(--destructive);
         }
 
-        .modal-title { color: var(--destructive); font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; }
-        .modal-text { color: #4b5563; font-size: 1rem; margin-bottom: 25px; font-weight: 500; }
-        .modal-buttons { display: flex; gap: 15px; justify-content: center; }
-
-        .btn-confirm {
-            background: var(--destructive);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: transform 0.2s;
-            box-shadow: 0 4px 10px rgba(198, 40, 40, 0.3);
-        }
-
-        .btn-cancel {
-            background: #f1f8e9; /* Verde muy claro */
-            color: var(--primary);
-            border: 1px solid transparent;
-            padding: 12px 25px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: background 0.2s;
-        }
-
-        .btn-confirm:hover { transform: translateY(-2px); opacity: 0.9; }
-        .btn-cancel:hover { background: #dcedc8; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        .btn-confirm { background: var(--destructive); color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+        .btn-cancel { background: #f1f8e9; color: var(--primary); border: 1px solid transparent; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -426,7 +367,7 @@
             <div id="iframeContainer" class="iframe-container">
                 <div class="iframe-header">
                     <div class="iframe-title" id="iframeTitle">Cargando...</div>
-                    <button onclick="closeIframe()" style="background:var(--destructive); color:white; border:none; padding:8px 20px; border-radius:10px; cursor:pointer; font-weight:bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">✕ Cerrar</button>
+                    <button onclick="closeIframe()" style="background:var(--destructive); color:white; border:none; padding:8px 20px; border-radius:10px; cursor:pointer; font-weight:bold;">✕ Cerrar</button>
                 </div>
                 <iframe id="contentIframe" class="content-iframe" src=""></iframe>
             </div>
@@ -435,8 +376,8 @@
 
     <div id="logoutModal" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-title">Cerrar Sesión</div>
-            <p class="modal-text">¿Estás seguro que deseas salir del sistema?</p>
+            <div class="modal-title" style="color:var(--destructive); font-weight:800; margin-bottom:10px;">Cerrar Sesión</div>
+            <p class="modal-text" style="margin-bottom:20px;">¿Estás seguro que deseas salir del sistema?</p>
             <div class="modal-buttons">
                 <button class="btn-confirm" id="confirmLogoutBtn">Sí, salir</button>
                 <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
@@ -448,7 +389,6 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-        // CONFIGURACIÓN ORIGINAL (secretarios-def)
         const firebaseConfig = {
             apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
             authDomain: "secretarios-def.firebaseapp.com",
@@ -469,7 +409,6 @@
             }
         });
 
-        // Función de salida
         window.logout = function() {
             document.getElementById('logoutModal').style.display = 'flex';
         };
@@ -501,11 +440,10 @@
             const iframeTitle = document.getElementById("iframeTitle");
             const welcomeScreen = document.getElementById("welcomeScreen");
 
-            iframeContainer.style.display = "block";
+            iframeContainer.style.display = "flex";
             welcomeScreen.style.display = "none";
             iframeTitle.textContent = title;
             iframe.src = url;
-
             if(menuOpen) toggleMenu();
         }
 
@@ -515,18 +453,16 @@
         }
 
         function closeIframe() {
-            const iframeContainer = document.getElementById("iframeContainer");
-            const iframe = document.getElementById("contentIframe");
-            const welcomeScreen = document.getElementById("welcomeScreen");
-
-            iframeContainer.style.display = "none";
-            iframe.src = "";
-            welcomeScreen.style.display = "flex"; 
+            document.getElementById("iframeContainer").style.display = "none";
+            document.getElementById("contentIframe").src = "";
+            document.getElementById("welcomeScreen").style.display = "flex"; 
         }
 
         window.onclick = (e) => {
             const menu = document.getElementById('dropdownMenu');
             const toggleBtn = document.getElementById('menuToggleBtn');
+            const logoutModal = document.getElementById('logoutModal');
+            if (e.target === logoutModal) closeLogoutModal();
             if (menuOpen && !menu.contains(e.target) && e.target !== toggleBtn) {
                 toggleMenu();
             }
