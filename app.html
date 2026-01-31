@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Secretarios</title>
+    <style>
+        /* =========================================
+           ESTILOS GLASSMORPHISM VERDE (NATURE/INSTITUTIONAL)
+           ========================================= */
+        :root {
+          --background-gradient: linear-gradient(135deg, #e8f5e9 0%, #a5d6a7 100%);
+          --foreground: #1b5e20; 
+          --card: rgba(255, 255, 255, 0.65);
+          --card-border: rgba(46, 125, 50, 0.3);
+          --shadow-glass: 0 8px 32px 0 rgba(27, 94, 32, 0.15);
+          --popover: rgba(255, 255, 255, 0.95);
+          --primary: #2e7d32; 
+          --primary-foreground: #ffffff;
+          --secondary: #4caf50;
+          --accent: rgba(76, 175, 80, 0.15);
+          --destructive: #c62828; 
+          --destructive-foreground: #ffffff;
+          --radius: 1.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-gradient);
+            min-height: 100vh;
+            color: var(--foreground);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Glass Verde - AJUSTADA COMO CODIGO A */
+        .navbar {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 12px 25px;
+            box-shadow: 0 4px 20px rgba(27, 94, 32, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            z-index: 5000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        /* Ajuste de contenido para navbar fija */
+        .main-content {
+            padding-top: 75px; 
+            width: 100%;
+        }
+
+        .navbar-left { display: flex; align-items: center; gap: 15px; min-width: 0; }
+        .navbar-right { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
+        .navbar-brand { font-size: 22px; font-weight: 800; color: var(--primary); white-space: nowrap; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; text-overflow: ellipsis; }
+
+        .menu-container { position: relative; }
+        
+        .menu-toggle, .btn-nav-custom {
+            background: linear-gradient(135deg, var(--primary) 0%, #1b5e20 100%);
+            color: var(--primary-foreground);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 90px;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .menu-toggle:hover, .btn-nav-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(46, 125, 50, 0.4);
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 260px;
+            background: var(--popover);
+            border-radius: 1rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            z-index: 5100;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            display: none;
+            margin-top: 8px;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-menu.active { display: block; }
+        .menu-section { padding: 8px 0; border-bottom: 1px solid rgba(46, 125, 50, 0.1); }
+        .menu-items { max-height: 500px; overflow-y: auto; }
+        
+        .menu-item {
+            padding: 12px 20px;
+            display: block;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--foreground); 
+        }
+        .menu-item:hover { background: var(--accent); color: var(--primary); padding-left: 25px; }
+
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .profile-pic { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        
+        .logout-btn { 
+            background: transparent; 
+            color: var(--destructive); 
+            border: 2px solid var(--destructive); 
+            padding: 8px 16px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            transition: all 0.2s; 
+        }
+        .logout-btn:hover { background: var(--destructive); color: white; }
+        
+        .welcome-text { font-size: 0.95em; font-weight: 700; color: var(--foreground); }
+
+        /* Estructura Principal */
+        .welcome-screen {
+            padding: 20px 40px;
+            height: calc(100vh - 80px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .split-layout {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            height: 100%; 
+            max-height: 800px; 
+            gap: 40px;
+            align-items: stretch;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+            box-shadow: var(--shadow-glass);
+        }
+
+        .mp-logo { width: 100%; height: auto; object-fit: contain; display: block; }
+
+        .right-panel {
+            flex: 2;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-glass);
+            display: flex;
+            justify-content: center;
+            align-items: center;     
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            grid-auto-rows: 1fr;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .rect-module {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 15px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-left-width: 6px;
+            border-left-style: solid;
+            color: var(--foreground);
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .rect-module:hover { transform: translateY(-4px); background: rgba(255, 255, 255, 0.9); }
+
+        .rect-module:nth-child(1) { border-left-color: #ef4444; } 
+        .rect-module:nth-child(2) { border-left-color: #3b82f6; } 
+        .rect-module:nth-child(3) { border-left-color: #2e7d32; } 
+        .rect-module:nth-child(4) { border-left-color: #f59e0b; } 
+        .rect-module:nth-child(5) { border-left-color: #06b6d4; } 
+        .rect-module:nth-child(6) { border-left-color: #8b5cf6; }
+
+        /* Iframe */
+        .iframe-container { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            z-index: 4000; 
+            background: white;
+            flex-direction: column;
+            padding-top: 70px;
+        }
+        
+        .iframe-header { 
+            background: rgba(255, 255, 255, 0.85); 
+            padding: 10px 20px; 
+            border-bottom: 1px solid var(--card-border);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 50px;
+        }
+        
+        .iframe-title { font-weight: 800; font-size: 18px; color: var(--primary); }
+        .content-iframe { width: 100%; flex: 1; border: none; }
+
+        /* Adaptación móvil */
+        @media (max-width: 850px) {
+            .navbar { padding: 10px; height: auto; flex-wrap: wrap; }
+            .navbar-brand { font-size: 14px; white-space: normal; order: 1; }
+            .navbar-left { gap: 8px; width: 100%; order: 3; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
+            .navbar-right { order: 2; }
+            .btn-nav-custom, .menu-toggle { font-size: 12px; padding: 8px 12px; white-space: nowrap; }
+            #userName { display: none; } 
+            .split-layout { flex-direction: column; padding: 10px; height: auto; }
+            .left-panel { display: none; }
+            .right-panel { padding: 20px; min-height: 400px; }
+            .welcome-screen { height: auto; padding: 20px; overflow-y: auto; }
+            .main-content { padding-top: 130px; }
+        }
+
+        /* Modal Cerrar Sesión Glass */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(27, 94, 32, 0.2);
+            backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 6000;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 1.5rem;
+            width: 90%;
+            max-width: 320px;
+            text-align: center;
+            border: 2px solid var(--destructive);
+        }
+
+        .btn-confirm { background: var(--destructive); color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+        .btn-cancel { background: #f1f8e9; color: var(--primary); border: 1px solid transparent; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="navbar-left">
+                <div class="menu-container">
+                    <button class="menu-toggle" id="menuToggleBtn" onclick="toggleMenu()">
+                        <span>☰</span> Menú
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="menu-items">
+                            <div class="menu-section">
+                                <div class="menu-item" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</div>
+                                <div class="menu-item" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</div>
+                                <div class="menu-item" onclick="openSection('control.html', 'Control de Causas')">Control de causas</div>
+                            </div>
+                            <div class="menu-section">
+                                <div class="menu-item" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</div>
+                                <div class="menu-item" onclick="openSection('estadisticas.html', 'Estadísticas')">Estadistica de Tareas</div>
+                            </div>
+                            <div class="menu-section">
+                                <div class="menu-item" onclick="openExternalSystem()">Sistema Digital</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-nav-custom" onclick="openSection('https://sistemadigital.github.io/IA/riveros', 'Asistente IA')">
+                    Asistente. IA
+                </button>
+                <button class="btn-nav-custom" onclick="openSection('https://sistemadigital.github.io/consultas-turnos/interno', 'Control Consultas y Turnos')">
+                    Control Consultas y Turnos
+                </button>
+
+                <div class="navbar-brand">Sistema Secretarios</div>
+            </div>
+            
+            <div class="navbar-right">
+                <div class="user-info">
+                    <span id="userName" class="welcome-text">Usuario</span>
+                    <img class="profile-pic" src="https://github.com/sistemadigital/iconos/blob/main/mujer.png?raw=true" alt="Perfil">
+                    <button class="logout-btn" onclick="logout()">Salir</button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div id="welcomeScreen" class="welcome-screen">
+                <div class="split-layout">
+                    <div class="left-panel">
+                        <img src="https://github.com/sistemadigital/iconos/blob/main/MP.png?raw=true" alt="Ministerio Público" class="mp-logo">
+                    </div>
+                    
+                    <div class="right-panel">
+                        <div class="module-grid">
+                            <div class="rect-module" onclick="openSection('causas.html', 'Mis Causas')">Mis causas</div>
+                            <div class="rect-module" onclick="openSection('agenda-clientes.html', 'Agenda de Clientes')">Agenda de Clientes</div>
+                            <div class="rect-module" onclick="openSection('control.html', 'Control de Causas')">Control de causas</div>
+                            <div class="rect-module" onclick="openSection('agenda.html', 'Calendario de Tareas')">Calendario de Tareas</div>
+                            <div class="rect-module" onclick="openExternalSystem()">Sistema Digital</div>
+                            <div class="rect-module" onclick="openSection('estadisticas.html', 'Estadisticas')">Estadisticas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="iframeContainer" class="iframe-container">
+                <div class="iframe-header">
+                    <div class="iframe-title" id="iframeTitle">Cargando...</div>
+                    <button onclick="closeIframe()" style="background:var(--destructive); color:white; border:none; padding:8px 20px; border-radius:10px; cursor:pointer; font-weight:bold;">✕ Cerrar</button>
+                </div>
+                <iframe id="contentIframe" class="content-iframe" src=""></iframe>
+            </div>
+        </main>
+    </div>
+
+    <div id="logoutModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-title" style="color:var(--destructive); font-weight:800; margin-bottom:10px;">Cerrar Sesión</div>
+            <p class="modal-text" style="margin-bottom:20px;">¿Estás seguro que deseas salir del sistema?</p>
+            <div class="modal-buttons">
+                <button class="btn-confirm" id="confirmLogoutBtn">Sí, salir</button>
+                <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
+            authDomain: "secretarios-def.firebaseapp.com",
+            projectId: "secretarios-def",
+            storageBucket: "secretarios-def.firebasestorage.app",
+            messagingSenderId: "533584198983",
+            appId: "1:533584198983:web:f51f57146ed16c813ca062"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('userName').textContent = user.displayName || user.email || 'Usuario';
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        window.logout = function() {
+            document.getElementById('logoutModal').style.display = 'flex';
+        };
+
+        window.closeLogoutModal = function() {
+            document.getElementById('logoutModal').style.display = 'none';
+        };
+
+        document.getElementById('confirmLogoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        });
+    </script>
+
+    <script>
+        let menuOpen = false;
+        function toggleMenu() {
+            menuOpen = !menuOpen;
+            document.getElementById('dropdownMenu').classList.toggle('active');
+        }
+
+        function openSection(url, title) {
+            const iframeContainer = document.getElementById("iframeContainer");
+            const iframe = document.getElementById("contentIframe");
+            const iframeTitle = document.getElementById("iframeTitle");
+            const welcomeScreen = document.getElementById("welcomeScreen");
+
+            iframeContainer.style.display = "flex";
+            welcomeScreen.style.display = "none";
+            iframeTitle.textContent = title;
+            iframe.src = url;
+            if(menuOpen) toggleMenu();
+        }
+
+        function openExternalSystem() {
+            window.open('https://sistemadigital.github.io/defensor-secretarios/index.html', '_blank');
+            if(menuOpen) toggleMenu();
+        }
+
+        function closeIframe() {
+            document.getElementById("iframeContainer").style.display = "none";
+            document.getElementById("contentIframe").src = "";
+            document.getElementById("welcomeScreen").style.display = "flex"; 
+        }
+
+        window.onclick = (e) => {
+            const menu = document.getElementById('dropdownMenu');
+            const toggleBtn = document.getElementById('menuToggleBtn');
+            const logoutModal = document.getElementById('logoutModal');
+            if (e.target === logoutModal) closeLogoutModal();
+            if (menuOpen && !menu.contains(e.target) && e.target !== toggleBtn) {
+                toggleMenu();
+            }
+        }
+    </script>
+</body>
+</html>
