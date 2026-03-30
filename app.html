@@ -54,7 +54,7 @@
             flex-shrink: 0;
         }
 
-        /* Pie de Página - VERDE (basado en index) */
+        /* Pie de Página - VERDE */
         footer {
             height: 70px;
             background-color: oklch(0.55 0.08 145); /* primary-dark */
@@ -103,7 +103,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             padding: 10px 0;
             width: 220px;
-            z-index: 2000;
+            z-index: 4000; /* Z-index aumentado */
             border: 1px solid #e2e8f0;
             animation: fadeIn 0.2s ease-in-out;
             cursor: default;
@@ -138,7 +138,7 @@
         }
         .logout-button:hover { background-color: rgba(46, 125, 50, 0.3); border-color: oklch(0.65 0.10 145); } /* primary */
 
-        /* Menú Hamburguesa (se mantiene azul para contraste, no se cambia) */
+        /* Menú Hamburguesa */
         .hamburger-menu { 
             display: flex; flex-direction: column; gap: 5px; margin-right: 15px; 
             background: rgba(0, 191, 255, 0.15); 
@@ -185,7 +185,7 @@
         .calendar-popup {
             display: none; position: absolute; bottom: 100%; left: 0; margin-bottom: 15px;
             background: white; color: #333; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 15px; width: 260px; z-index: 2000; cursor: default; border: 1px solid #e2e8f0;
+            padding: 15px; width: 260px; z-index: 4000; cursor: default; border: 1px solid #e2e8f0;
             animation: fadeIn 0.2s ease-in-out;
         }
         .calendar-popup.show { display: block; }
@@ -199,7 +199,7 @@
         .calendar-day.current { background-color: #22c55e; color: white; font-weight: bold; box-shadow: 0 2px 6px rgba(34, 197, 94, 0.4); }
         .calendar-day.empty { color: transparent; pointer-events: none; }
 
-        /* MODAL DE CONFIRMACIÓN DE SALIDA (verde) */
+        /* MODAL DE CONFIRMACIÓN DE SALIDA */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
@@ -223,7 +223,7 @@
         .btn-modal.cancelar { background-color: #94a3b8; color: white; box-shadow: none; }
         .btn-modal.cancelar:hover { background-color: #64748b; }
 
-        /* BIENVENIDA Y PERFIL (con colores verdes) */
+        /* BIENVENIDA Y PERFIL */
         .welcome-container {
             display: flex;
             flex-direction: column;
@@ -333,7 +333,7 @@
         .edit-icon { cursor: pointer; margin-left: 8px; color: #64748b; transition: color 0.2s; }
         .edit-icon:hover { color: oklch(0.65 0.10 145); }
 
-        /* Grid de módulos - ajustado para escritorio */
+        /* Grid de módulos */
         .module-grid-container {
             flex: 1;
             display: flex;
@@ -393,10 +393,10 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            border: 1px solid rgba(46, 125, 50, 0.6); /* verde */
+            border: 1px solid rgba(46, 125, 50, 0.6);
             border-left-width: 6px;
             border-left-style: solid;
-            color: oklch(0.55 0.08 145); /* primary-dark */
+            color: oklch(0.55 0.08 145);
             font-weight: 700;
             font-size: 15px;
             min-height: 100px;
@@ -408,14 +408,14 @@
             background: #fff;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        .rect-module:nth-child(1) { border-left-color: #dc2626; } /* rojo (se mantiene por variedad) */
-        .rect-module:nth-child(2) { border-left-color: #7c3aed; } /* púrpura */
-        .rect-module:nth-child(3) { border-left-color: #16a34a; } /* verde */
-        .rect-module:nth-child(4) { border-left-color: #ea580c; } /* naranja */
-        .rect-module:nth-child(5) { border-left-color: #2563eb; } /* azul */
-        .rect-module:nth-child(6) { border-left-color: #0891b2; } /* celeste */
+        .rect-module:nth-child(1) { border-left-color: #dc2626; }
+        .rect-module:nth-child(2) { border-left-color: #7c3aed; }
+        .rect-module:nth-child(3) { border-left-color: #16a34a; }
+        .rect-module:nth-child(4) { border-left-color: #ea580c; }
+        .rect-module:nth-child(5) { border-left-color: #2563eb; }
+        .rect-module:nth-child(6) { border-left-color: #0891b2; }
 
-        /* Modal de cumpleaños (verde) */
+        /* Modal de cumpleaños */
         .birthday-modal {
             display: none;
             position: fixed;
@@ -576,15 +576,39 @@
         </div>
     </div>
 
-    <!-- Scripts de utilidades (reloj, clima, calendario) -->
     <script>
-        function closeAllModals() {
-            document.getElementById('mainMenuPopup')?.classList.remove('show');
-            document.getElementById('calendarPopup')?.classList.remove('show');
+        // Funciones de navegación disponibles globalmente
+        window.closeAllModals = function() {
+            const menu = document.getElementById('mainMenuPopup');
+            if (menu) menu.classList.remove('show');
+            const calendar = document.getElementById('calendarPopup');
+            if (calendar) calendar.classList.remove('show');
             const dropdown = document.getElementById('userDropdown');
-            if(dropdown) dropdown.classList.remove('show');
-        }
+            if (dropdown) dropdown.classList.remove('show');
+        };
 
+        window.openSection = function(url, title) {
+            window.closeAllModals();
+            const iframe = document.getElementById('appIframe');
+            const home = document.getElementById('homeContent');
+            iframe.src = url;
+            iframe.style.display = 'block';
+            home.style.display = 'none';
+        };
+
+        window.mostrarHome = function() {
+            window.closeAllModals();
+            document.getElementById('appIframe').style.display = 'none';
+            document.getElementById('homeContent').style.display = 'flex';
+            document.getElementById('appIframe').src = '';
+        };
+
+        window.openExternalSystem = function() {
+            window.closeAllModals();
+            window.open('https://sistemadigital.github.io/defensor-secretarios/index.html', '_blank');
+        };
+
+        // Cerrar modales al hacer clic fuera
         document.addEventListener('click', (e) => {
             const isClickInsideMenu = document.getElementById('btnMainMenu')?.contains(e.target);
             const isClickInsideCalendar = document.getElementById('dateTimeWeatherBtn')?.contains(e.target);
@@ -592,41 +616,83 @@
             const isClickInsideUser = document.getElementById('welcomeBar')?.contains(e.target) || document.getElementById('userDropdown')?.contains(e.target);
 
             if (!isClickInsideMenu && !isClickInsideCalendar && !isClickInsideFooter && !isClickInsideUser) {
-                closeAllModals();
+                window.closeAllModals();
             }
         });
 
+        // Click en footer para volver al home
         document.getElementById('mainFooter').addEventListener('click', function(e) {
             if (e.target === this || e.target.id === 'footerLeftArea' || e.target.id === 'footerRightArea') {
                 window.mostrarHome();
             }
         });
 
-        document.getElementById('btnMainMenu').addEventListener('click', (e) => {
+        // Alternar menú principal
+        const btnMenu = document.getElementById('btnMainMenu');
+        const menuPopup = document.getElementById('mainMenuPopup');
+        btnMenu.addEventListener('click', (e) => {
             if (e.target.closest('a')) return;
             e.stopPropagation();
-            const menu = document.getElementById('mainMenuPopup');
-            const isShow = menu.classList.contains('show');
-            closeAllModals();
-            if(!isShow) menu.classList.add('show');
+            const isShow = menuPopup.classList.contains('show');
+            window.closeAllModals();
+            if (!isShow) menuPopup.classList.add('show');
         });
 
+        // Módulos del grid central
+        document.querySelectorAll('.rect-module[data-url]').forEach(mod => {
+            mod.addEventListener('click', () => {
+                const url = mod.dataset.url;
+                window.openSection(url);
+            });
+        });
+
+        // ==========================================
+        // LÓGICA DE SALIDA BLINDADA (Forzada a index)
+        // ==========================================
+        const btnSalir = document.getElementById('btnSalir');
+        const modalSalida = document.getElementById('modalSalida');
+        const confirmarSalida = document.getElementById('confirmarSalida');
+        const cancelarSalida = document.getElementById('cancelarSalida');
+
+        btnSalir.addEventListener('click', () => {
+            window.closeAllModals();
+            modalSalida.classList.add('active');
+        });
+        
+        cancelarSalida.addEventListener('click', () => modalSalida.classList.remove('active'));
+
+        // Al confirmar salida, ejecuta Firebase SI ESTÁ LISTO, sino te echa igual a index
+        confirmarSalida.addEventListener('click', () => {
+            modalSalida.classList.remove('active');
+            if (typeof window.ejecutarSalidaFirebase === 'function') {
+                window.ejecutarSalidaFirebase();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+        // ==========================================
+
+        // Cierre del modal de cumpleaños
+        document.getElementById('closeBirthdayBtn').addEventListener('click', () => {
+            document.getElementById('birthdayModal').style.display = 'none';
+        });
+        document.querySelector('.close-birthday').addEventListener('click', () => {
+            document.getElementById('birthdayModal').style.display = 'none';
+        });
+
+        // Reloj, clima y calendario
         const dtwBtn = document.getElementById('dateTimeWeatherBtn');
         const calPopup = document.getElementById('calendarPopup');
 
         dtwBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const isShow = calPopup.classList.contains('show');
-            closeAllModals();
-            if(!isShow) {
+            window.closeAllModals();
+            if (!isShow) {
                 calPopup.classList.add('show');
-                
-                // --- NUEVO: Reiniciar a la fecha actual ---
                 const hoy = new Date();
                 currentMonth = hoy.getMonth();
                 currentYear = hoy.getFullYear();
-                // ------------------------------------------
-
                 renderCalendar(currentMonth, currentYear);
             }
         });
@@ -692,14 +758,12 @@
         setInterval(fetchWeather, 1800000);
     </script>
 
-    <!-- Script principal de Firebase con la configuración de app (1) (secretarios-def) -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         import confetti from 'https://cdn.skypack.dev/canvas-confetti';
 
-        // Configuración de Firebase de app (1).html (secretarios-def)
         const firebaseConfig = {
             apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
             authDomain: "secretarios-def.firebaseapp.com",
@@ -883,7 +947,7 @@
             bar.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const isShow = dropdown.classList.contains('show');
-                closeAllModals();
+                window.closeAllModals();
                 if(!isShow) dropdown.classList.add('show');
             });
 
@@ -927,52 +991,19 @@
             }
         });
 
-        window.openSection = function(url, title) {
-            const iframe = document.getElementById('appIframe');
-            const home = document.getElementById('homeContent');
-            iframe.src = url;
-            iframe.style.display = 'block';
-            home.style.display = 'none';
-            closeAllModals();
+        // ==========================================
+        // FUNCIÓN GLOBAL DE SALIDA EXPUESTA A LA UI
+        // ==========================================
+        window.ejecutarSalidaFirebase = async function() {
+            try {
+                await signOut(auth);
+                window.location.href = 'index.html'; // Redirección explícita de seguridad
+            } catch (error) {
+                console.error('Error al salir de Firebase:', error);
+                window.location.href = 'index.html'; // Expulsar incluso si hay error
+            }
         };
-
-        window.mostrarHome = function() {
-            document.getElementById('appIframe').style.display = 'none';
-            document.getElementById('homeContent').style.display = 'flex';
-            document.getElementById('appIframe').src = '';
-            closeAllModals();
-        };
-
-        window.openExternalSystem = function() {
-            window.open('https://sistemadigital.github.io/defensor-secretarios/index.html', '_blank');
-        };
-
-        document.querySelectorAll('.rect-module[data-url]').forEach(mod => {
-            mod.addEventListener('click', () => {
-                const url = mod.dataset.url;
-                const title = mod.dataset.title;
-                openSection(url, title);
-            });
-        });
-
-        document.getElementById('confirmarSalida').addEventListener('click', async () => {
-            document.getElementById('modalSalida').classList.remove('active');
-            try { await signOut(auth); } catch (error) { console.error('Error al salir:', error); }
-        });
-
-        document.getElementById('btnSalir').addEventListener('click', () => {
-            document.getElementById('modalSalida').classList.add('active');
-        });
-        document.getElementById('cancelarSalida').addEventListener('click', () => {
-            document.getElementById('modalSalida').classList.remove('active');
-        });
-
-        document.getElementById('closeBirthdayBtn').addEventListener('click', () => {
-            document.getElementById('birthdayModal').style.display = 'none';
-        });
-        document.querySelector('.close-birthday').addEventListener('click', () => {
-            document.getElementById('birthdayModal').style.display = 'none';
-        });
+        // ==========================================
     </script>
 </body>
 </html>
