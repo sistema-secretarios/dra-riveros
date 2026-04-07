@@ -6,6 +6,9 @@
     <title>Sistema Secretarios</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -762,7 +765,6 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        import confetti from 'https://cdn.skypack.dev/canvas-confetti';
 
         const firebaseConfig = {
             apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
@@ -818,17 +820,19 @@
             } catch (error) { console.error('Error al actualizar fecha:', error); }
         }
 
+        // FIX: Se utiliza la librería de confetti de manera global y segura
         function launchConfetti() {
+            if (typeof window.confetti !== 'function') return;
             var duration = 3 * 1000;
             var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 5000 };
             function randomInRange(min, max) { return Math.random() * (max - min) + min; }
             var interval = setInterval(function() {
                 var timeLeft = animationEnd - Date.now();
                 if (timeLeft <= 0) return clearInterval(interval);
                 var particleCount = 50 * (timeLeft / duration);
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                window.confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                window.confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
             }, 250);
         }
 
@@ -939,7 +943,7 @@
                 </div>
             `;
 
-            if (esCumpleanos && typeof confetti !== 'undefined') launchConfetti();
+            if (esCumpleanos) launchConfetti();
 
             const bar = document.getElementById('welcomeBar');
             const dropdown = document.getElementById('userDropdown');
