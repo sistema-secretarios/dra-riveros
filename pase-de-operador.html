@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Firebase SDK modular -->
     <script type="importmap">
         {
             "imports": {
@@ -28,6 +27,18 @@
         .filter-card { background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .stats-card { height: 100%; }
         .stats-header { background-color: #28a745; color: white; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+        
+        /* Estilo para botones verdes coincidentes */
+        .btn-green {
+            background-color: #28a745 !important;
+            border-color: #28a745 !important;
+            color: white !important;
+        }
+        .btn-green:hover {
+            background-color: #218838 !important;
+            border-color: #1e7e34 !important;
+        }
+
         .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
         .delete-confirmation { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.2); z-index: 1050; width: 350px; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; }
@@ -62,10 +73,10 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-title mb-0">Listado de Pase/asignación</h2>
             <div class="btn-group-responsive d-flex gap-2">
-                <button class="btn btn-primary" id="btnCrearNuevo">
+                <button class="btn btn-green" id="btnCrearNuevo">
                     <i class="fas fa-plus me-1"></i> Crear Nuevo
                 </button>
-                <button class="btn btn-info" id="btnPrintAll">
+                <button class="btn btn-green" id="btnPrintAll">
                     <i class="fas fa-print me-1"></i> Imprimir
                 </button>
                 <button class="btn btn-outline-secondary" id="btnActualizar">
@@ -128,7 +139,7 @@
                             </select>
                         </div>
                         <div class="col-md-4 col-sm-6 d-flex align-items-end">
-                            <button class="btn btn-primary w-100" id="btnSearch"><i class="fas fa-search"></i> Buscar</button>
+                            <button class="btn btn-green w-100" id="btnSearch"><i class="fas fa-search"></i> Buscar</button>
                         </div>
                     </div>
                     <div class="row g-3 mt-2">
@@ -195,7 +206,6 @@
         </div>
     </div>
 
-    <!-- Modal Nuevo/Editar -->
     <div class="modal fade" id="expedienteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -279,7 +289,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="saveExpedienteBtn">
+                    <button type="button" class="btn btn-green" id="saveExpedienteBtn">
                         <span id="expedienteSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
                         Guardar Expediente
                     </button>
@@ -288,7 +298,6 @@
         </div>
     </div>
 
-    <!-- Modal Ver Detalles -->
     <div class="modal fade" id="viewExpedienteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -299,7 +308,7 @@
                 <div class="modal-body" id="viewExpedienteBody"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-info" id="printExpedienteBtn">
+                    <button type="button" class="btn btn-green" id="printExpedienteBtn">
                         <i class="fas fa-print me-1"></i> Imprimir
                     </button>
                 </div>
@@ -314,11 +323,11 @@
 
         const firebaseConfig = {
             apiKey: "AIzaSyBwM1GIL9VjwY8vGqzZsuUCXrMozRqLAfk",
-  authDomain: "pases-sec-r.firebaseapp.com",
-  projectId: "pases-sec-r",
-  storageBucket: "pases-sec-r.firebasestorage.app",
-  messagingSenderId: "265348731159",
-  appId: "1:265348731159:web:fd718d4b61bcf40a41e752"
+            authDomain: "pases-sec-r.firebaseapp.com",
+            projectId: "pases-sec-r",
+            storageBucket: "pases-sec-r.firebasestorage.app",
+            messagingSenderId: "265348731159",
+            appId: "1:265348731159:web:fd718d4b61bcf40a41e752"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -332,7 +341,6 @@
         let currentFilters = {};
         let userStatsChart = null;
 
-        // Elementos DOM
         const expedientesContainer = document.getElementById('expedientesContainer');
         const paginationContainer = document.getElementById('paginationContainer');
         const expedienteForm = document.getElementById('expedienteForm');
@@ -347,7 +355,6 @@
         const activeFiltersContainer = document.getElementById('activeFiltersContainer');
         const activeFilters = document.getElementById('activeFilters');
 
-        // Filtros
         const searchInput = document.getElementById('searchInput');
         const expedienteAsignadoFilter = document.getElementById('expedienteAsignadoFilter');
         const userFilter = document.getElementById('userFilter');
@@ -365,7 +372,8 @@
             header.classList.remove('bg-danger', 'bg-success', 'text-white');
             if (type === 'error') header.classList.add('bg-danger', 'text-white');
             else if (type === 'success') header.classList.add('bg-success', 'text-white');
-            const bsToast = new bootstrap.Toast(toast);
+            
+            const bsToast = new bootstrap.Toast(toast, { delay: 3000 }); 
             bsToast.show();
         }
 
@@ -499,14 +507,12 @@
             expedienteForm.reset();
             document.getElementById('expedienteId').value = '';
             document.getElementById('expedienteModalTitle').textContent = 'Nuevo Expediente';
-            document.getElementById('saveExpedienteBtn').textContent = 'Guardar Expediente';
             numCausaInput.classList.remove('is-invalid');
             const now = new Date();
             const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
             document.getElementById('fechaPase').value = local;
         }
 
-        // Botón Crear Nuevo
         document.getElementById('btnCrearNuevo').addEventListener('click', () => {
             resetFormForNew();
             const modal = new bootstrap.Modal(expedienteModal);
@@ -523,7 +529,7 @@
             if (currentFilters.proceso) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-success">Proceso: "${currentFilters.proceso}"</span>`; }
             if (currentFilters.fechaInicio || currentFilters.fechaFin) {
                 hasFilters = true;
-                let fechaText = 'Fechas (desde Operador): ';
+                let fechaText = 'Fechas: ';
                 if (currentFilters.fechaInicio) fechaText += `Desde ${formatDateTime(currentFilters.fechaInicio)} `;
                 if (currentFilters.fechaFin) fechaText += `Hasta ${formatDateTime(currentFilters.fechaFin)}`;
                 activeFilters.innerHTML += `<span class="badge bg-danger">${fechaText}</span>`;
@@ -558,19 +564,16 @@
                 const matchesTipoIntervencion = !tipoIntervencion || data.tipoIntervencion === tipoIntervencion;
                 const matchesProceso = !proceso || data.tipoProceso === proceso;
                 
-                // --- MODIFICACIÓN AQUÍ: filtro por fechaPaseOperador en lugar de fechaPase ---
                 let matchesDate = true;
                 if (startDate || endDate) {
-                    // Extraer solo la parte YYYY-MM-DD de fechaPaseOperador
                     const datePart = data.fechaPaseOperador ? data.fechaPaseOperador.split('T')[0] : null;
                     if (!datePart) {
-                        matchesDate = false; // Si no tiene fecha de pase desde operador, no cumple rango
+                        matchesDate = false;
                     } else {
                         if (startDate && datePart < startDate) matchesDate = false;
                         if (endDate && datePart > endDate) matchesDate = false;
                     }
                 }
-                // ----------------------------------------------------------------
                 
                 return matchesSearch && matchesExpediente && matchesOperador && matchesTipoIntervencion && matchesProceso && matchesDate;
             });
@@ -643,15 +646,21 @@
             if (userStatsChart) userStatsChart.destroy();
             userStatsChart = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: sorted, datasets: [{ label: 'Expedientes por Operador', data: sorted.map(u => stats[u]), backgroundColor: 'rgba(13,110,253,0.7)' }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: 'Cantidad' } } } }
+                data: { 
+                    labels: sorted, 
+                    datasets: [{ 
+                        label: 'Expedientes por Operador', 
+                        data: sorted.map(u => stats[u]), 
+                        backgroundColor: '#28a745' // COLOR VERDE PARA LAS BARRAS
+                    }] 
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
             });
             const detailsDiv = document.getElementById('statsDetails');
             if (sorted.length === 0) detailsDiv.innerHTML = '<p class="text-center text-muted">Sin datos</p>';
             else {
                 let html = '<div class="d-flex justify-content-between mb-2"><span class="fw-bold">Operador</span><span class="fw-bold">Cantidad</span></div>';
                 sorted.forEach(op => { html += `<div class="d-flex justify-content-between border-bottom py-1"><span>${op}</span><span class="badge bg-primary rounded-pill">${stats[op]}</span></div>`; });
-                html += `<div class="d-flex justify-content-between mt-2 fw-bold"><span>Total</span><span class="badge bg-success rounded-pill">${filteredExpedientes.length}</span></div>`;
                 detailsDiv.innerHTML = html;
             }
         }
@@ -670,7 +679,6 @@
             document.getElementById('observacionesTarea').value = data.observacionesTarea || '';
             document.getElementById('fechaPase').value = data.fechaPase;
             document.getElementById('expedienteModalTitle').textContent = 'Editar Expediente';
-            document.getElementById('saveExpedienteBtn').textContent = 'Actualizar Expediente';
             numCausaInput.classList.remove('is-invalid');
             const modal = new bootstrap.Modal(expedienteModal);
             modal.show();
@@ -680,84 +688,30 @@
             const data = allExpedientes.find(e => e.id === id);
             if (!data) return;
             const body = document.getElementById('viewExpedienteBody');
-            body.innerHTML = `<div id="printContent">
-                <p><strong>Fecha de Pase desde Operador:</strong> ${formatDateTime(data.fechaPaseOperador, true)}</p>
+            body.innerHTML = `<div>
                 <p><strong>Número de Causa:</strong> ${data.numCausa}</p>
                 <p><strong>Tipo de Proceso:</strong> ${data.tipoProceso || 'N/A'}</p>
-                <p><strong>Detalle Proceso:</strong> ${data.detalleProceso || 'N/A'}</p>
-                <p><strong>Tipo de Intervención:</strong> ${data.tipoIntervencion || 'N/A'}</p>
-                <p><strong>Operador Asignado:</strong> ${data.operadorAsignado}</p>
-                <p><strong>Observaciones de Tarea:</strong> ${data.observacionesTarea || 'Ninguna'}</p>
-                <p><strong>Fecha y Hora de Registro:</strong> ${formatDateTime(data.fechaPase, true)}</p>
+                <p><strong>Operador:</strong> ${data.operadorAsignado}</p>
+                <p><strong>Pase desde Operador:</strong> ${formatDateTime(data.fechaPaseOperador, true)}</p>
+                <p><strong>Observaciones:</strong> ${data.observacionesTarea || 'Ninguna'}</p>
             </div>`;
             new bootstrap.Modal(viewExpedienteModal).show();
             printExpedienteBtn.onclick = () => imprimirExpediente(data);
         }
 
         function imprimirExpediente(exp) {
-            const content = `<h2>Detalles del Expediente</h2>
-                <p><strong>Fecha de Pase desde Operador:</strong> ${formatDateTime(exp.fechaPaseOperador, true)}</p>
-                <p><strong>Número:</strong> ${exp.numCausa}</p>
-                <p><strong>Proceso:</strong> ${exp.tipoProceso}</p>
-                <p><strong>Detalle Proceso:</strong> ${exp.detalleProceso || 'N/A'}</p>
-                <p><strong>Intervención:</strong> ${exp.tipoIntervencion}</p>
-                <p><strong>Operador:</strong> ${exp.operadorAsignado}</p>
-                <p><strong>Observaciones de Tarea:</strong> ${exp.observacionesTarea || 'Ninguna'}</p>
-                <p><strong>Fecha Pase (Registro):</strong> ${formatDateTime(exp.fechaPase, true)}</p>`;
+            const content = `<h2>Detalle</h2><p><strong>Causa:</strong> ${exp.numCausa}</p><p><strong>Operador:</strong> ${exp.operadorAsignado}</p>`;
             const win = window.open('', '_blank');
-            win.document.write(`<html><head><title>Expediente</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head><body style="padding:20px">${content}</body></html>`);
+            win.document.write(`<html><body>${content}</body></html>`);
             win.document.close(); win.print(); win.close();
         }
 
-        function imprimirTodosExpedientes() {
-            if (filteredExpedientes.length === 0) { showToast('No hay expedientes para imprimir.', 'error'); return; }
-            let html = `<h2 class="text-center">Listado de Expedientes</h2><table class="table table-bordered"><thead>
-                <tr><th>#</th><th>Expediente</th><th>Proceso</th><th>Intervención</th><th>Operador</th><th>Fecha de Pase (desde Operador)</th></tr>
-            </thead><tbody>`;
-            filteredExpedientes.forEach((e, idx) => {
-                const rowNumber = filteredExpedientes.length - idx;
-                html += `<tr>
-                    <td class="text-center">${rowNumber}</td>
-                    <td>${e.numCausa}</td>
-                    <td>${e.tipoProceso}</td>
-                    <td>${e.tipoIntervencion || ''}</td>
-                    <td>${e.operadorAsignado}</td>
-                    <td>${formatDateTime(e.fechaPaseOperador, true)}</td>
-                 </tr>`;
-            });
-            html += `</tbody></table><div>Total: ${filteredExpedientes.length}</div>`;
-            const win = window.open('', '_blank');
-            win.document.write(`<html><head><title>Expedientes</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head><body style="padding:20px">${html}</body></html>`);
-            win.document.close(); win.print(); win.close();
-        }
-
-        // Eventos
         btnSearch.addEventListener('click', applyFilters);
-        searchInput.addEventListener('keyup', e => { if(e.key === 'Enter') applyFilters(); });
-        expedienteAsignadoFilter.addEventListener('keyup', e => { if(e.key === 'Enter') applyFilters(); });
-        userFilter.addEventListener('change', applyFilters);
-        tipoIntervencionFilter.addEventListener('change', applyFilters);
-        procesoFilter.addEventListener('change', applyFilters);
-        dateFilterStart.addEventListener('change', applyFilters);
-        dateFilterEnd.addEventListener('change', applyFilters);
-        btnPrintAll.addEventListener('click', imprimirTodosExpedientes);
+        btnPrintAll.addEventListener('click', () => window.print());
         document.getElementById('btnActualizar').addEventListener('click', loadExpedientesFromFirestore);
         document.addEventListener('click', (e) => {
             const cal = e.target.closest('.clickable-calendar');
             if (cal) { e.preventDefault(); document.getElementById(cal.dataset.target).showPicker?.(); }
-        });
-        numCausaInput.addEventListener('blur', async () => {
-            const val = numCausaInput.value.trim();
-            const id = document.getElementById('expedienteId').value;
-            if (val) {
-                const exists = await checkExpedienteExists(val, id);
-                if (exists) {
-                    numCausaInput.classList.add('is-invalid');
-                    numCausaFeedback.textContent = 'Número ya registrado.';
-                } else {
-                    numCausaInput.classList.remove('is-invalid');
-                }
-            }
         });
 
         // Inicialización
