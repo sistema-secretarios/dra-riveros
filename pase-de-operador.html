@@ -43,7 +43,6 @@
         .chart-container { position: relative; height: 300px; width: 100%; }
         .clickable-calendar { cursor: pointer; }
 
-        /* Estilo adicional para mejorar visualización en móviles */
         @media (max-width: 576px) {
             .btn-group-responsive { flex-direction: column; width: 100%; }
             .btn-group-responsive button { width: 100%; }
@@ -103,17 +102,35 @@
                                 <option value="">Todos</option>
                                 <option>Defensor Oficial</option>
                                 <option>Ministerio Principal</option>
+                                <option>Ministerio Complementario</option>
+                                <option>Patrocinante Actor</option>
+                                <option>Patrocinante Demandado</option>
+                                <option>Patrocinante Tercero</option>
+                                <option>Defensor de Ausente</option>
+                                <option>Defensor Oficial Asesor Letrado</option>
                                 <option>Asistencia Letrada del incapaz</option>
+                                <option>Ministerio Público del incapaz</option>
+                                <option>Ministerio Público en turno Abril</option>
+                                <option>Ministerio Público en turno Agosto</option>
+                                <option>Ministerio Público en turno Diciembre</option>
                                 <option>Tutor Ad Litem</option>
+                                <option>Defensor Oficial Art 329 CPCC</option>
+                                <option>Defensor Oficial Art 626 CPCC</option>
                             </select>
                         </div>
                         <div class="col-md-4 col-sm-6">
                             <label class="form-label">Filtrar por Proceso</label>
                             <select id="procesoFilter" class="form-select">
                                 <option value="">Todos</option>
+                                <option>Civil y Comercial</option>                                
                                 <option>Acción de Protección de Persona</option>
                                 <option>Medida de Proteccion Integral</option>
+                                <option>Evaluación Art 42 C.C.C.N.</option>
+                                <option>Medida Autosatisfactiva</option>
                                 <option>Determinación de Capacidad</option>
+                                <option>Proceso de Declaración de Incapacidad - Interdicción</option>
+                                <option>Restitución de menores</option>
+                                <option>Filiación</option>
                                 <option>Restricción de capacidad</option>
                             </select>
                         </div>
@@ -188,21 +205,47 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Tipo de Proceso</label>
-                                <select class="form-select" id="tipoProceso">
+                                <label class="form-label">Tipo de Proceso *</label>
+                                <select class="form-select" id="tipoProceso" required>
                                     <option value="">-- Seleccionar --</option>
+                                    <option>Civil y Comercial</option>
                                     <option>Acción de Protección de Persona</option>
                                     <option>Medida de Proteccion Integral</option>
+                                    <option>Evaluación Art 42 C.C.C.N.</option>
+                                    <option>Medida Autosatisfactiva</option>
+                                    <option>Determinación de Capacidad</option>
+                                    <option>Proceso de Declaración de Incapacidad - Interdicción</option>
+                                    <option>Restitución de menores</option>
+                                    <option>Filiación</option>
+                                    <option>Restricción de capacidad</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Tipo de Intervención</label>
-                                <select class="form-select" id="tipoIntervencion">
-                                    <option value="">-- Seleccionar --</option>
-                                    <option>Defensor Oficial</option>
-                                    <option>Ministerio Principal</option>
-                                </select>
+                                <label class="form-label">Detalle Proceso</label>
+                                <input type="text" class="form-control" id="detalleProceso">
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Intervención *</label>
+                            <select class="form-select" id="tipoIntervencion" required>
+                                <option value="">-- Seleccionar --</option>
+                                <option>Defensor Oficial</option>
+                                <option>Ministerio Principal</option>
+                                <option>Ministerio Complementario</option>
+                                <option>Patrocinante Actor</option>
+                                <option>Patrocinante Demandado</option>
+                                <option>Patrocinante Tercero</option>
+                                <option>Defensor de Ausente</option>
+                                <option>Defensor Oficial Asesor Letrado</option>
+                                <option>Asistencia Letrada del incapaz</option>
+                                <option>Ministerio Público del incapaz</option>
+                                <option>Ministerio Público en turno Abril</option>
+                                <option>Ministerio Público en turno Agosto</option>
+                                <option>Ministerio Público en turno Diciembre</option>
+                                <option>Tutor Ad Litem</option>
+                                <option>Defensor Oficial Art 329 CPCC</option>
+                                <option>Defensor Oficial Art 626 CPCC</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Fecha de Pase desde Operador</label>
@@ -230,8 +273,7 @@
                     <h5 class="modal-title"><i class="fas fa-file-alt me-2"></i>Detalles del Pase</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body p-4" id="viewModalBody">
-                    </div>
+                <div class="modal-body p-4" id="viewModalBody"></div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
@@ -282,6 +324,7 @@
                         id: docSnap.id,
                         numCausa: data.numCausa || data.Causas || 'S/N',
                         tipoProceso: data.tipoProceso || '',
+                        detalleProceso: data.detalleProceso || '',
                         tipoIntervencion: data.tipoIntervencion || '',
                         operadorAsignado: data.operadorAsignado || '',
                         fechaPase: data.fechaPase || '',
@@ -315,6 +358,7 @@
                 numCausa: numCausa,
                 Causas: numCausa,
                 tipoProceso: document.getElementById('tipoProceso').value,
+                detalleProceso: document.getElementById('detalleProceso').value,
                 tipoIntervencion: document.getElementById('tipoIntervencion').value,
                 operadorAsignado: op,
                 fechaPaseOperador: document.getElementById('fechaPaseOperador').value,
@@ -363,6 +407,8 @@
             const search = document.getElementById('searchInput').value.toLowerCase();
             const expF = document.getElementById('expedienteAsignadoFilter').value.toLowerCase();
             const opF = document.getElementById('userFilter').value;
+            const tIntF = document.getElementById('tipoIntervencionFilter').value;
+            const procF = document.getElementById('procesoFilter').value;
             const start = document.getElementById('dateFilterStart').value;
             const end = document.getElementById('dateFilterEnd').value;
 
@@ -370,13 +416,15 @@
                 const mSearch = !search || Object.values(i).some(v => String(v).toLowerCase().includes(search));
                 const mExp = !expF || i.numCausa.toLowerCase().includes(expF);
                 const mOp = !opF || i.operadorAsignado === opF;
+                const mInt = !tIntF || i.tipoIntervencion === tIntF;
+                const mProc = !procF || i.tipoProceso === procF;
                 let mDate = true;
                 if (start || end) {
                     const d = i.fechaPaseOperador ? i.fechaPaseOperador.split('T')[0] : null;
                     if (start && d < start) mDate = false;
                     if (end && d > end) mDate = false;
                 }
-                return mSearch && mExp && mOp && mDate;
+                return mSearch && mExp && mOp && mInt && mProc && mDate;
             });
             document.getElementById('totalRegistros').innerText = `(${filteredExpedientes.length} registros)`;
             currentPage = 1;
@@ -453,10 +501,8 @@
             new bootstrap.Toast(toast).show();
         }
 
-        // --- FUNCIONES GLOBALES ---
         window.changePage = (p) => { currentPage = p; renderTable(); };
         
-        // FUNCIÓN VER (NUEVA)
         window.viewItem = (id) => {
             const item = allExpedientes.find(e => e.id === id);
             const body = document.getElementById('viewModalBody');
@@ -473,6 +519,7 @@
                     <div class="col-6">
                         <label class="text-muted small d-block">Tipo de Proceso</label>
                         <span>${item.tipoProceso || 'No especificado'}</span>
+                        <div class="small text-muted">${item.detalleProceso || ''}</div>
                     </div>
                     <div class="col-6">
                         <label class="text-muted small d-block">Intervención</label>
@@ -497,6 +544,7 @@
             document.getElementById('numCausa').value = item.numCausa;
             document.getElementById('operadorAsignado').value = item.operadorAsignado;
             document.getElementById('tipoProceso').value = item.tipoProceso;
+            document.getElementById('detalleProceso').value = item.detalleProceso || '';
             document.getElementById('tipoIntervencion').value = item.tipoIntervencion;
             document.getElementById('fechaPaseOperador').value = item.fechaPaseOperador;
             document.getElementById('observacionesTarea').value = item.observacionesTarea;
