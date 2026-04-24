@@ -42,6 +42,12 @@
         .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
         .chart-container { position: relative; height: 300px; width: 100%; }
         .clickable-calendar { cursor: pointer; }
+
+        /* Estilo adicional para mejorar visualización en móviles */
+        @media (max-width: 576px) {
+            .btn-group-responsive { flex-direction: column; width: 100%; }
+            .btn-group-responsive button { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -53,7 +59,7 @@
 
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="section-title mb-0">Listado de Pase/asignación</h2>
+            <h2 class="section-title mb-0">Listado de Pase/asignación <small id="totalRegistros" class="text-muted" style="font-size: 0.6em;"></small></h2>
             <div class="btn-group-responsive d-flex gap-2">
                 <button class="btn btn-green" id="btnCrearNuevo">
                     <i class="fas fa-plus me-1"></i> Crear Nuevo
@@ -217,6 +223,22 @@
         </div>
     </div>
 
+    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-file-alt me-2"></i>Detalles del Pase</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="viewModalBody">
+                    </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header" id="toastHeader">
@@ -247,10 +269,9 @@
         let allExpedientes = [];
         let filteredExpedientes = [];
         let currentPage = 1;
-        const itemsPerPage = 20;
+        const itemsPerPage = 10;
         let userStatsChart = null;
 
-        // CARGA CON NORMALIZACIÓN (PARA NO PERDER DATOS VIEJOS)
         async function loadData() {
             try {
                 const q = query(causasCol, orderBy("fechaPase", "desc"));
@@ -259,7 +280,6 @@
                     const data = docSnap.data();
                     return {
                         id: docSnap.id,
-                        // Normalización de nombres de campo
                         numCausa: data.numCausa || data.Causas || 'S/N',
                         tipoProceso: data.tipoProceso || '',
                         tipoIntervencion: data.tipoIntervencion || '',
@@ -275,7 +295,6 @@
             }
         }
 
-        // GUARDADO CON PREVENCIÓN DE DUPLICADOS
         async function saveRecord() {
             const id = document.getElementById('expedienteId').value;
             const numCausa = document.getElementById('numCausa').value.trim();
@@ -283,7 +302,6 @@
 
             if (!numCausa || !op) return showToast("Faltan campos obligatorios", "danger");
 
-            // Si es nuevo, verificar si ya existe
             if (!id) {
                 const q = query(causasCol, where("numCausa", "==", numCausa));
                 const check = await getDocs(q);
@@ -295,7 +313,7 @@
 
             const payload = {
                 numCausa: numCausa,
-                Causas: numCausa, // Doble guardado para asegurar compatibilidad
+                Causas: numCausa,
                 tipoProceso: document.getElementById('tipoProceso').value,
                 tipoIntervencion: document.getElementById('tipoIntervencion').value,
                 operadorAsignado: op,
@@ -317,15 +335,12 @@
             } catch (e) { showToast("Error: " + e.message, "danger"); }
         }
 
-        // FUNCIÓN DE LIMPIEZA DE LA BASE DE DATOS
         async function limpiarDuplicados() {
             if (!confirm("Se eliminarán los registros repetidos dejando solo uno por causa. ¿Continuar?")) return;
-            
             const snapshot = await getDocs(causasCol);
             const batch = writeBatch(db);
             const vistos = new Set();
             let count = 0;
-
             snapshot.forEach(d => {
                 const causa = (d.data().numCausa || d.data().Causas || "").toString().trim();
                 if (causa && vistos.has(causa)) {
@@ -335,7 +350,6 @@
                     vistos.add(causa);
                 }
             });
-
             if (count > 0) {
                 await batch.commit();
                 showToast(`Se eliminaron ${count} duplicados`, "success");
@@ -345,7 +359,6 @@
             }
         }
 
-        // RENDERIZADO Y FILTROS (Mismo estilo que el original)
         function applyFilters() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const expF = document.getElementById('expedienteAsignadoFilter').value.toLowerCase();
@@ -357,7 +370,6 @@
                 const mSearch = !search || Object.values(i).some(v => String(v).toLowerCase().includes(search));
                 const mExp = !expF || i.numCausa.toLowerCase().includes(expF);
                 const mOp = !opF || i.operadorAsignado === opF;
-                
                 let mDate = true;
                 if (start || end) {
                     const d = i.fechaPaseOperador ? i.fechaPaseOperador.split('T')[0] : null;
@@ -366,7 +378,7 @@
                 }
                 return mSearch && mExp && mOp && mDate;
             });
-
+            document.getElementById('totalRegistros').innerText = `(${filteredExpedientes.length} registros)`;
             currentPage = 1;
             renderTable();
             renderStats();
@@ -377,8 +389,8 @@
             const start = (currentPage - 1) * itemsPerPage;
             const pageData = filteredExpedientes.slice(start, start + itemsPerPage);
 
-            let html = `<div class="table-responsive"><table class="table table-hover">
-                <thead class="table-light"><tr><th>#</th><th>Expediente</th><th>Operador</th><th>Fecha Pase</th><th class="text-end">Acción</th></tr></thead><tbody>`;
+            let html = `<div class="table-responsive"><table class="table table-hover align-middle">
+                <thead class="table-light"><tr><th>#</th><th>Expediente</th><th>Operador</th><th>Fecha Pase</th><th class="text-end">Acciones</th></tr></thead><tbody>`;
             
             pageData.forEach((data, idx) => {
                 const num = filteredExpedientes.length - (start + idx);
@@ -388,7 +400,10 @@
                     <td>${data.operadorAsignado}</td>
                     <td>${data.fechaPaseOperador ? data.fechaPaseOperador.replace('T', ' ') : '---'}</td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-warning" onclick="editItem('${data.id}')"><i class="fas fa-edit"></i></button>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-info" onclick="viewItem('${data.id}')" title="Ver Detalle"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning" onclick="editItem('${data.id}')" title="Editar"><i class="fas fa-edit"></i></button>
+                        </div>
                     </td>
                 </tr>`;
             });
@@ -402,17 +417,22 @@
             container.innerHTML = '';
             if (totalPages <= 1) return;
             for (let i = 1; i <= totalPages; i++) {
-                const li = `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
-                container.innerHTML += li;
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+                container.appendChild(li);
             }
         }
 
         function renderStats() {
             const stats = {};
-            filteredExpedientes.forEach(e => stats[e.operadorAsignado] = (stats[e.operadorAsignado] || 0) + 1);
+            let totalGeneral = 0;
+            filteredExpedientes.forEach(e => {
+                stats[e.operadorAsignado] = (stats[e.operadorAsignado] || 0) + 1;
+                totalGeneral++;
+            });
             const labels = Object.keys(stats);
             const data = Object.values(stats);
-
             const ctx = document.getElementById('userStatsChart').getContext('2d');
             if (userStatsChart) userStatsChart.destroy();
             userStatsChart = new Chart(ctx, {
@@ -420,13 +440,10 @@
                 data: { labels, datasets: [{ label: 'Pases', data, backgroundColor: '#28a745' }] },
                 options: { responsive: true, maintainAspectRatio: false }
             });
-            
             const details = document.getElementById('statsDetails');
-            details.innerHTML = labels.map(l => `
-                <div class="d-flex justify-content-between border-bottom py-1">
-                    <span>${l}</span><span class="badge bg-success">${stats[l]}</span>
-                </div>
-            `).join('');
+            let htmlStats = labels.map(l => `<div class="d-flex justify-content-between border-bottom py-1"><span>${l}</span><span class="badge bg-success">${stats[l]}</span></div>`).join('');
+            htmlStats += `<div class="d-flex justify-content-between py-2 mt-2 border-top fw-bold"><span>TOTAL GENERAL</span><span class="badge bg-dark">${totalGeneral}</span></div>`;
+            details.innerHTML = htmlStats;
         }
 
         function showToast(msg, type) {
@@ -436,8 +453,44 @@
             new bootstrap.Toast(toast).show();
         }
 
-        // EXPOSICIÓN GLOBAL
+        // --- FUNCIONES GLOBALES ---
         window.changePage = (p) => { currentPage = p; renderTable(); };
+        
+        // FUNCIÓN VER (NUEVA)
+        window.viewItem = (id) => {
+            const item = allExpedientes.find(e => e.id === id);
+            const body = document.getElementById('viewModalBody');
+            body.innerHTML = `
+                <div class="mb-3 border-bottom pb-2">
+                    <label class="text-muted small d-block">Número de Causa</label>
+                    <span class="h5 text-primary fw-bold">${item.numCausa}</span>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small d-block">Operador Responsable</label>
+                    <span>${item.operadorAsignado}</span>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label class="text-muted small d-block">Tipo de Proceso</label>
+                        <span>${item.tipoProceso || 'No especificado'}</span>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-muted small d-block">Intervención</label>
+                        <span>${item.tipoIntervencion || 'No especificada'}</span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small d-block">Fecha de Pase</label>
+                    <span><i class="far fa-calendar-alt me-1"></i> ${item.fechaPaseOperador ? item.fechaPaseOperador.replace('T', ' ') : 'S/D'}</span>
+                </div>
+                <div class="mb-0">
+                    <label class="text-muted small d-block">Observaciones</label>
+                    <div class="p-3 bg-light rounded mt-1 shadow-sm" style="white-space: pre-wrap; font-size: 0.95rem;">${item.observacionesTarea || 'Sin observaciones registradas.'}</div>
+                </div>
+            `;
+            new bootstrap.Modal(document.getElementById('viewModal')).show();
+        };
+
         window.editItem = (id) => {
             const item = allExpedientes.find(e => e.id === id);
             document.getElementById('expedienteId').value = item.id;
@@ -452,7 +505,6 @@
             new bootstrap.Modal(document.getElementById('expedienteModal')).show();
         };
 
-        // EVENTOS
         document.getElementById('saveExpedienteBtn').onclick = saveRecord;
         document.getElementById('btnSearch').onclick = applyFilters;
         document.getElementById('btnActualizar').onclick = loadData;
@@ -463,6 +515,15 @@
             document.getElementById('fechaPase').value = new Date().toISOString().slice(0,16);
             new bootstrap.Modal(document.getElementById('expedienteModal')).show();
         };
+
+        document.querySelectorAll('.filter-card input, .filter-card select').forEach(element => {
+            element.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    applyFilters();
+                }
+            });
+        });
 
         document.addEventListener('DOMContentLoaded', loadData);
     </script>
