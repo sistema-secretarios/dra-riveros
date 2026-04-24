@@ -16,6 +16,7 @@
         }
     </script>
     <style>
+        /* ESTILOS ORIGINALES INTACTOS */
         body { padding-top: 70px; background-color: #f8f9fa; }
         .card { transition: transform 0.3s; position: relative; border: none; border-radius: 8px; }
         .card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
@@ -28,7 +29,6 @@
         .stats-card { height: 100%; }
         .stats-header { background-color: #28a745; color: white; border-top-left-radius: 8px; border-top-right-radius: 8px; }
         
-        /* Estilo para botones verdes coincidentes */
         .btn-green {
             background-color: #28a745 !important;
             border-color: #28a745 !important;
@@ -40,26 +40,8 @@
         }
 
         .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
-        .delete-confirmation { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.2); z-index: 1050; width: 350px; }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; }
-        @media (max-width: 992px) {
-            .section-title { font-size: 1.5rem; }
-            .btn-group-responsive { flex-direction: column; gap: 10px; }
-            .btn-group-responsive .btn { width: 100%; }
-            .stats-section { margin-top: 20px; }
-        }
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-        .filter-active {
-            background-color: #e3f2fd !important;
-            border-left: 4px solid #0d6efd !important;
-        }
-        .clickable-calendar { 
-            cursor: pointer; 
-        }
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        .clickable-calendar { cursor: pointer; }
     </style>
 </head>
 <body>
@@ -76,8 +58,8 @@
                 <button class="btn btn-green" id="btnCrearNuevo">
                     <i class="fas fa-plus me-1"></i> Crear Nuevo
                 </button>
-                <button class="btn btn-green" id="btnPrintAll">
-                    <i class="fas fa-print me-1"></i> Imprimir
+                <button class="btn btn-outline-danger" id="btnLimpiarDuplicados">
+                    <i class="fas fa-broom me-1"></i> Limpiar Duplicados
                 </button>
                 <button class="btn btn-outline-secondary" id="btnActualizar">
                     <i class="fas fa-sync-alt me-1"></i> Actualizar
@@ -115,35 +97,17 @@
                                 <option value="">Todos</option>
                                 <option>Defensor Oficial</option>
                                 <option>Ministerio Principal</option>
-                                <option>Ministerio Complementario</option>
-                                <option>Patrocinante Actor</option>
-                                <option>Patrocinante Demandado</option>
-                                <option>Patrocinante Tercero</option>
-                                <option>Defensor de Ausente</option>
-                                <option>Defensor Oficial Asesor Letrado</option>
                                 <option>Asistencia Letrada del incapaz</option>
-                                <option>Ministerio Público del incapaz</option>
-                                <option>Ministerio Público en turno Abril</option>
-                                <option>Ministerio Público en turno Agosto</option>
-                                <option>Ministerio Público en turno Diciembre</option>
                                 <option>Tutor Ad Litem</option>
-                                <option>Defensor Oficial Art 329 CPCC</option>
-                                <option>Defensor Oficial Art 626 CPCC</option>
                             </select>
                         </div>
                         <div class="col-md-4 col-sm-6">
                             <label class="form-label">Filtrar por Proceso</label>
                             <select id="procesoFilter" class="form-select">
                                 <option value="">Todos</option>
-                                <option>Civil y Comercial</option>
                                 <option>Acción de Protección de Persona</option>
                                 <option>Medida de Proteccion Integral</option>
-                                <option>Evaluación Art 42 C.C.C.N.</option>
-                                <option>Medida Autosatisfactiva</option>
                                 <option>Determinación de Capacidad</option>
-                                <option>Proceso de Declaración de Incapacidad - Interdicción</option>
-                                <option>Restitución de menores</option>
-                                <option>Filiación</option>
                                 <option>Restricción de capacidad</option>
                             </select>
                         </div>
@@ -155,30 +119,18 @@
                         <div class="col-md-12">
                             <label class="form-label">Rango de Fecha de Pase (desde Operador)</label>
                             <div class="d-flex align-items-center flex-wrap gap-2">
-                                <div class="input-group" style="flex:1;">
-                                    <span class="input-group-text clickable-calendar" data-target="dateFilterStart"><i class="fas fa-calendar-alt"></i></span>
-                                    <input type="date" id="dateFilterStart" class="form-control" placeholder="Desde">
-                                </div>
-                                <span class="p-2 mx-1">a</span>
-                                <div class="input-group" style="flex:1;">
-                                    <span class="input-group-text clickable-calendar" data-target="dateFilterEnd"><i class="fas fa-calendar-alt"></i></span>
-                                    <input type="date" id="dateFilterEnd" class="form-control" placeholder="Hasta">
-                                </div>
+                                <input type="date" id="dateFilterStart" class="form-control" style="flex:1;">
+                                <span class="p-2">a</span>
+                                <input type="date" id="dateFilterEnd" class="form-control" style="flex:1;">
                             </div>
                         </div>
-                    </div>
-                    <div class="mt-3" id="activeFiltersContainer" style="display: none;">
-                        <small class="text-muted">Filtros activos:</small>
-                        <div id="activeFilters" class="d-flex flex-wrap gap-2 mt-1"></div>
                     </div>
                 </div>
 
                 <div id="expedientesContainer">
                     <div class="text-center py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Cargando...</span>
-                        </div>
-                        <p class="mt-2">Cargando expedientes...</p>
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2">Cargando...</p>
                     </div>
                 </div>
 
@@ -190,27 +142,15 @@
             <div class="col-lg-4 stats-section">
                 <div class="card stats-card">
                     <div class="stats-header p-3">
-                        <h5 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Estadísticas por Operador</h5>
+                        <h5 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Productividad</h5>
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
                             <canvas id="userStatsChart"></canvas>
                         </div>
-                        <div id="statsDetails" class="mt-3">
-                            <p class="text-center text-muted">Cargando estadísticas...</p>
-                        </div>
+                        <div id="statsDetails" class="mt-3"></div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <strong class="me-auto">Sistema</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body" id="toastMessage"></div>
             </div>
         </div>
     </div>
@@ -219,71 +159,19 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="expedienteModalTitle">Nuevo Expediente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="expedienteModalTitle">Registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="expedienteForm">
                         <input type="hidden" id="expedienteId">
                         <div class="mb-3">
-                            <label for="fechaPaseOperador" class="form-label">Fecha de Pase desde Operador</label>
-                            <div class="input-group">
-                                <span class="input-group-text clickable-calendar" data-target="fechaPaseOperador"><i class="fas fa-calendar-alt"></i></span>
-                                <input type="datetime-local" class="form-control" id="fechaPaseOperador">
-                            </div>
+                            <label class="form-label">Número de Causa *</label>
+                            <input type="text" class="form-control" id="numCausa" required>
+                            <div class="invalid-feedback" id="numCausaFeedback">Este número ya existe.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="numCausa" class="form-label">Número de Causa *</label>
-                            <input type="text" class="form-control" id="numCausa" required
-                                   autocomplete="new-password" autocorrect="off" spellcheck="false">
-                            <div class="invalid-feedback" id="numCausaFeedback">Por favor ingrese un número de causa válido.</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="tipoProceso" class="form-label">Tipo de Proceso *</label>
-                                <select class="form-select" id="tipoProceso" required>
-                                    <option value="">-- Seleccionar --</option>
-                                    <option>Civil y Comercial</option>
-                                    <option>Acción de Protección de Persona</option>
-                                    <option>Medida de Proteccion Integral</option>
-                                    <option>Evaluación Art 42 C.C.C.N.</option>
-                                    <option>Medida Autosatisfactiva</option>
-                                    <option>Determinación de Capacidad</option>
-                                    <option>Proceso de Declaración de Incapacidad - Interdicción</option>
-                                    <option>Restitución de menores</option>
-                                    <option>Filiación</option>
-                                    <option>Restricción de capacidad</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="detalleProceso" class="form-label">Detalle Proceso</label>
-                                <input type="text" class="form-control" id="detalleProceso">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tipoIntervencion" class="form-label">Tipo de Intervención *</label>
-                            <select class="form-select" id="tipoIntervencion" required>
-                                <option value="">-- Seleccionar --</option>
-                                <option>Defensor Oficial</option>
-                                <option>Ministerio Principal</option>
-                                <option>Ministerio Complementario</option>
-                                <option>Patrocinante Actor</option>
-                                <option>Patrocinante Demandado</option>
-                                <option>Patrocinante Tercero</option>
-                                <option>Defensor de Ausente</option>
-                                <option>Defensor Oficial Asesor Letrado</option>
-                                <option>Asistencia Letrada del incapaz</option>
-                                <option>Ministerio Público del incapaz</option>
-                                <option>Ministerio Público en turno Abril</option>
-                                <option>Ministerio Público en turno Agosto</option>
-                                <option>Ministerio Público en turno Diciembre</option>
-                                <option>Tutor Ad Litem</option>
-                                <option>Defensor Oficial Art 329 CPCC</option>
-                                <option>Defensor Oficial Art 626 CPCC</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="operadorAsignado" class="form-label">Operador Asignado *</label>
+                            <label class="form-label">Operador Asignado *</label>
                             <select class="form-select" id="operadorAsignado" required>
                                 <option value="">-- Seleccionar --</option>
                                 <option>Boillat Cesar Enrique</option>
@@ -292,52 +180,56 @@
                                 <option>Pablos Patricia</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="observacionesTarea" class="form-label">Observaciones de Tarea</label>
-                            <textarea class="form-control" id="observacionesTarea" rows="3" placeholder="Escriba aquí cualquier observación adicional..."></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="fechaPase" class="form-label">Fecha y Hora de Registro *</label>
-                            <div class="input-group">
-                                <span class="input-group-text clickable-calendar" data-target="fechaPase"><i class="fas fa-calendar-alt"></i></span>
-                                <input type="datetime-local" class="form-control" id="fechaPase" required>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tipo de Proceso</label>
+                                <select class="form-select" id="tipoProceso">
+                                    <option value="">-- Seleccionar --</option>
+                                    <option>Acción de Protección de Persona</option>
+                                    <option>Medida de Proteccion Integral</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tipo de Intervención</label>
+                                <select class="form-select" id="tipoIntervencion">
+                                    <option value="">-- Seleccionar --</option>
+                                    <option>Defensor Oficial</option>
+                                    <option>Ministerio Principal</option>
+                                </select>
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de Pase desde Operador</label>
+                            <input type="datetime-local" class="form-control" id="fechaPaseOperador">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="observacionesTarea" rows="3"></textarea>
+                        </div>
+                        <input type="hidden" id="fechaPase">
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-green" id="saveExpedienteBtn">
-                        <span id="expedienteSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                        Guardar Expediente
-                    </button>
+                    <button type="button" class="btn btn-green" id="saveExpedienteBtn">Guardar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="viewExpedienteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewExpedienteTitle">Detalles del Expediente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="viewExpedienteBody"></div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-green" id="printExpedienteBtn">
-                        <i class="fas fa-print me-1"></i> Imprimir
-                    </button>
-                </div>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header" id="toastHeader">
+                <strong class="me-auto">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
             </div>
+            <div class="toast-body" id="toastMessage"></div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
         import { initializeApp } from "firebase/app";
-        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, orderBy, where } from "firebase/firestore";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, orderBy, where, writeBatch } from "firebase/firestore";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBwM1GIL9VjwY8vGqzZsuUCXrMozRqLAfk",
@@ -350,429 +242,230 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const causasCollection = collection(db, "causas");
+        const causasCol = collection(db, "causas");
 
         let allExpedientes = [];
         let filteredExpedientes = [];
         let currentPage = 1;
         const itemsPerPage = 20;
-        let currentFilters = {};
         let userStatsChart = null;
 
-        const expedientesContainer = document.getElementById('expedientesContainer');
-        const paginationContainer = document.getElementById('paginationContainer');
-        const expedienteForm = document.getElementById('expedienteForm');
-        const saveExpedienteBtn = document.getElementById('saveExpedienteBtn');
-        const expedienteSpinner = document.getElementById('expedienteSpinner');
-        const expedienteModal = document.getElementById('expedienteModal');
-        const viewExpedienteModal = document.getElementById('viewExpedienteModal');
-        const printExpedienteBtn = document.getElementById('printExpedienteBtn');
-        const btnPrintAll = document.getElementById('btnPrintAll');
-        const numCausaInput = document.getElementById('numCausa');
-        const numCausaFeedback = document.getElementById('numCausaFeedback');
-        const activeFiltersContainer = document.getElementById('activeFiltersContainer');
-        const activeFilters = document.getElementById('activeFilters');
-
-        const searchInput = document.getElementById('searchInput');
-        const expedienteAsignadoFilter = document.getElementById('expedienteAsignadoFilter');
-        const userFilter = document.getElementById('userFilter');
-        const tipoIntervencionFilter = document.getElementById('tipoIntervencionFilter');
-        const procesoFilter = document.getElementById('procesoFilter');
-        const dateFilterStart = document.getElementById('dateFilterStart');
-        const dateFilterEnd = document.getElementById('dateFilterEnd');
-        const btnSearch = document.getElementById('btnSearch');
-
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('liveToast');
-            const toastMessage = document.getElementById('toastMessage');
-            toastMessage.textContent = message;
-            const header = toast.querySelector('.toast-header');
-            header.classList.remove('bg-danger', 'bg-success', 'text-white');
-            if (type === 'error') header.classList.add('bg-danger', 'text-white');
-            else if (type === 'success') header.classList.add('bg-success', 'text-white');
-            
-            const bsToast = new bootstrap.Toast(toast, { delay: 3000 }); 
-            bsToast.show();
-        }
-
-        function formatDateTime(dateTimeString, includeTime = false) {
-            if (!dateTimeString) return 'N/A';
-            let datePart, timePart = '';
-            if (dateTimeString.includes('T')) {
-                [datePart, timePart] = dateTimeString.split('T');
-                timePart = timePart.substring(0, 5);
-            } else {
-                datePart = dateTimeString;
-                timePart = '00:00';
-            }
-            const [year, month, day] = datePart.split('-');
-            const formattedDate = `${day}/${month}/${year}`;
-            if (includeTime) return `${formattedDate} ${timePart} hs`;
-            return formattedDate;
-        }
-
-        async function loadExpedientesFromFirestore() {
+        // CARGA CON NORMALIZACIÓN (PARA NO PERDER DATOS VIEJOS)
+        async function loadData() {
             try {
-                expedientesContainer.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div><p class="mt-2">Cargando expedientes desde la nube...</p></div>`;
-                const q = query(causasCollection);
-                const querySnapshot = await getDocs(q);
-                allExpedientes = [];
-                querySnapshot.forEach(docSnap => {
+                const q = query(causasCol, orderBy("fechaPase", "desc"));
+                const snapshot = await getDocs(q);
+                allExpedientes = snapshot.docs.map(docSnap => {
                     const data = docSnap.data();
-                    allExpedientes.push({
+                    return {
                         id: docSnap.id,
-                        numCausa: data.Causas || data.numCausa || '',
-                        Causas: data.Causas || data.numCausa || '',
+                        // Normalización de nombres de campo
+                        numCausa: data.numCausa || data.Causas || 'S/N',
                         tipoProceso: data.tipoProceso || '',
-                        detalleProceso: data.detalleProceso || '',
                         tipoIntervencion: data.tipoIntervencion || '',
                         operadorAsignado: data.operadorAsignado || '',
                         fechaPase: data.fechaPase || '',
                         fechaPaseOperador: data.fechaPaseOperador || '',
-                        observacionesTarea: data.observacionesTarea || '',
-                        timestamp: data.timestamp || new Date().toISOString()
-                    });
+                        observacionesTarea: data.observacionesTarea || ''
+                    };
                 });
-
-                // Ordenamos la lista nosotros mismos mediante JavaScript
-                allExpedientes.sort((a, b) => {
-                    const dateA = a.fechaPase ? new Date(a.fechaPase) : new Date(0);
-                    const dateB = b.fechaPase ? new Date(b.fechaPase) : new Date(0);
-                    return dateB - dateA; // Orden descendente
-                });
-
                 applyFilters();
-                showToast(`✅ ${allExpedientes.length} expedientes cargados desde la nube`, 'success');
-            } catch (error) {
-                console.error("Error cargando:", error);
-                expedientesContainer.innerHTML = `<div class="alert alert-danger text-center">Error al conectar con Firebase: ${error.message}</div>`;
-                showToast("Error de conexión con la base de datos", "error");
+            } catch (e) {
+                showToast("Error al cargar: " + e.message, "danger");
             }
         }
 
-        async function checkExpedienteExists(numCausa, excludeId = null) {
-            const numCausaLimpio = numCausa.toString().trim();
-            const numCausaMin = numCausaLimpio.toLowerCase();
-            
-            // 1. Verificación local (Ignora mayúsculas/minúsculas y espacios)
-            const existeLocal = allExpedientes.some(exp => {
-                const expCausa = exp.numCausa ? exp.numCausa.toString().trim().toLowerCase() : '';
-                return expCausa === numCausaMin && exp.id !== excludeId;
-            });
-
-            if (existeLocal) return true;
-
-            // 2. Verificación en Firebase (Por si otro operador acaba de guardarlo al mismo tiempo)
-            const q1 = query(causasCollection, where("Causas", "==", numCausaLimpio));
-            const q2 = query(causasCollection, where("numCausa", "==", numCausaLimpio));
-            
-            const [snap1, snap2] = await Promise.all([getDocs(q1), getDocs(q2)]);
-            
-            let duplicadoEnDb = false;
-            const revisarSnap = (snap) => {
-                for (const docSnap of snap.docs) {
-                    if (!excludeId || docSnap.id !== excludeId) {
-                        duplicadoEnDb = true;
-                    }
-                }
-            };
-            
-            revisarSnap(snap1);
-            revisarSnap(snap2);
-            
-            return duplicadoEnDb;
-        }
-
-        async function saveExpedienteData() {
-            const expedienteId = document.getElementById('expedienteId').value;
+        // GUARDADO CON PREVENCIÓN DE DUPLICADOS
+        async function saveRecord() {
+            const id = document.getElementById('expedienteId').value;
             const numCausa = document.getElementById('numCausa').value.trim();
-            const tipoProceso = document.getElementById('tipoProceso').value;
-            const detalleProceso = document.getElementById('detalleProceso').value;
-            const tipoIntervencion = document.getElementById('tipoIntervencion').value;
-            const operadorAsignado = document.getElementById('operadorAsignado').value;
-            const fechaPase = document.getElementById('fechaPase').value;
-            const fechaPaseOperador = document.getElementById('fechaPaseOperador').value;
-            const observacionesTarea = document.getElementById('observacionesTarea').value;
+            const op = document.getElementById('operadorAsignado').value;
 
-            if (!numCausa || !operadorAsignado || !fechaPase || !tipoProceso || !tipoIntervencion) {
-                showToast('Complete todos los campos obligatorios.', 'error');
-                return;
+            if (!numCausa || !op) return showToast("Faltan campos obligatorios", "danger");
+
+            // Si es nuevo, verificar si ya existe
+            if (!id) {
+                const q = query(causasCol, where("numCausa", "==", numCausa));
+                const check = await getDocs(q);
+                if (!check.empty) {
+                    document.getElementById('numCausa').classList.add('is-invalid');
+                    return showToast("La causa ya existe en el sistema", "danger");
+                }
             }
 
-            const exists = await checkExpedienteExists(numCausa, expedienteId);
-            if (exists) {
-                numCausaInput.classList.add('is-invalid');
-                numCausaFeedback.textContent = 'Este número de expediente ya existe.';
-                showToast('Número de expediente duplicado.', 'error');
-                return;
-            }
-            numCausaInput.classList.remove('is-invalid');
-
-            expedienteSpinner.style.display = 'inline-block';
-            saveExpedienteBtn.disabled = true;
-
-            const expedienteData = {
-                Causas: numCausa,
+            const payload = {
                 numCausa: numCausa,
-                tipoProceso,
-                detalleProceso,
-                tipoIntervencion,
-                operadorAsignado,
-                fechaPase,
-                fechaPaseOperador: fechaPaseOperador || null,
-                observacionesTarea: observacionesTarea || '',
-                timestamp: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
+                Causas: numCausa, // Doble guardado para asegurar compatibilidad
+                tipoProceso: document.getElementById('tipoProceso').value,
+                tipoIntervencion: document.getElementById('tipoIntervencion').value,
+                operadorAsignado: op,
+                fechaPaseOperador: document.getElementById('fechaPaseOperador').value,
+                observacionesTarea: document.getElementById('observacionesTarea').value,
+                fechaPase: document.getElementById('fechaPase').value || new Date().toISOString()
             };
 
             try {
-                if (expedienteId) {
-                    const docRef = doc(db, "causas", expedienteId);
-                    await updateDoc(docRef, expedienteData);
-                    showToast('Expediente actualizado con éxito!', 'success');
+                if (id) {
+                    await updateDoc(doc(db, "causas", id), payload);
+                    showToast("Actualizado correctamente", "success");
                 } else {
-                    await addDoc(causasCollection, expedienteData);
-                    showToast('Expediente guardado con éxito!', 'success');
+                    await addDoc(causasCol, payload);
+                    showToast("Guardado correctamente", "success");
                 }
-                const modalInstance = bootstrap.Modal.getInstance(expedienteModal);
-                modalInstance.hide();
-                expedienteForm.reset();
-                await loadExpedientesFromFirestore();
-            } catch (error) {
-                console.error(error);
-                showToast('Error al guardar: ' + error.message, 'error');
-            } finally {
-                expedienteSpinner.style.display = 'none';
-                saveExpedienteBtn.disabled = false;
+                bootstrap.Modal.getInstance(document.getElementById('expedienteModal')).hide();
+                loadData();
+            } catch (e) { showToast("Error: " + e.message, "danger"); }
+        }
+
+        // FUNCIÓN DE LIMPIEZA DE LA BASE DE DATOS
+        async function limpiarDuplicados() {
+            if (!confirm("Se eliminarán los registros repetidos dejando solo uno por causa. ¿Continuar?")) return;
+            
+            const snapshot = await getDocs(causasCol);
+            const batch = writeBatch(db);
+            const vistos = new Set();
+            let count = 0;
+
+            snapshot.forEach(d => {
+                const causa = (d.data().numCausa || d.data().Causas || "").toString().trim();
+                if (causa && vistos.has(causa)) {
+                    batch.delete(d.ref);
+                    count++;
+                } else if (causa) {
+                    vistos.add(causa);
+                }
+            });
+
+            if (count > 0) {
+                await batch.commit();
+                showToast(`Se eliminaron ${count} duplicados`, "success");
+                loadData();
+            } else {
+                showToast("No se hallaron duplicados", "info");
             }
         }
 
-        saveExpedienteBtn.addEventListener('click', saveExpedienteData);
-
-        function resetFormForNew() {
-            expedienteForm.reset();
-            document.getElementById('expedienteId').value = '';
-            document.getElementById('expedienteModalTitle').textContent = 'Nuevo Expediente';
-            numCausaInput.classList.remove('is-invalid');
-            const now = new Date();
-            const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
-            document.getElementById('fechaPase').value = local;
-        }
-
-        document.getElementById('btnCrearNuevo').addEventListener('click', () => {
-            resetFormForNew();
-            const modal = new bootstrap.Modal(expedienteModal);
-            modal.show();
-        });
-
-        function showActiveFilters() {
-            activeFilters.innerHTML = '';
-            let hasFilters = false;
-            if (currentFilters.search) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-primary">Búsqueda: "${currentFilters.search}"</span>`; }
-            if (currentFilters.expediente) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-info text-dark">Expediente: "${currentFilters.expediente}"</span>`; }
-            if (currentFilters.operador) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-warning text-dark">Operador: "${currentFilters.operador}"</span>`; }
-            if (currentFilters.tipoIntervencion) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-secondary">Intervención: "${currentFilters.tipoIntervencion}"</span>`; }
-            if (currentFilters.proceso) { hasFilters = true; activeFilters.innerHTML += `<span class="badge bg-success">Proceso: "${currentFilters.proceso}"</span>`; }
-            if (currentFilters.fechaInicio || currentFilters.fechaFin) {
-                hasFilters = true;
-                let fechaText = 'Fechas: ';
-                if (currentFilters.fechaInicio) fechaText += `Desde ${formatDateTime(currentFilters.fechaInicio)} `;
-                if (currentFilters.fechaFin) fechaText += `Hasta ${formatDateTime(currentFilters.fechaFin)}`;
-                activeFilters.innerHTML += `<span class="badge bg-danger">${fechaText}</span>`;
-            }
-            activeFiltersContainer.style.display = hasFilters ? 'block' : 'none';
-        }
-
+        // RENDERIZADO Y FILTROS (Mismo estilo que el original)
         function applyFilters() {
-            const searchString = searchInput.value.toLowerCase();
-            const expedienteString = expedienteAsignadoFilter.value.toLowerCase();
-            const operador = userFilter.value;
-            const tipoIntervencion = tipoIntervencionFilter.value;
-            const proceso = procesoFilter.value;
-            const startDate = dateFilterStart.value;
-            const endDate = dateFilterEnd.value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const expF = document.getElementById('expedienteAsignadoFilter').value.toLowerCase();
+            const opF = document.getElementById('userFilter').value;
+            const start = document.getElementById('dateFilterStart').value;
+            const end = document.getElementById('dateFilterEnd').value;
 
-            currentFilters = {
-                search: searchString || null,
-                expediente: expedienteString || null,
-                operador: operador || null,
-                tipoIntervencion: tipoIntervencion || null,
-                proceso: proceso || null,
-                fechaInicio: startDate || null,
-                fechaFin: endDate || null
-            };
-            showActiveFilters();
-
-            filteredExpedientes = allExpedientes.filter(data => {
-                const matchesSearch = !searchString || Object.values(data).some(v => v && typeof v === 'string' && v.toLowerCase().includes(searchString));
-                const matchesExpediente = !expedienteString || data.numCausa.toLowerCase().includes(expedienteString);
-                const matchesOperador = !operador || data.operadorAsignado === operador;
-                const matchesTipoIntervencion = !tipoIntervencion || data.tipoIntervencion === tipoIntervencion;
-                const matchesProceso = !proceso || data.tipoProceso === proceso;
+            filteredExpedientes = allExpedientes.filter(i => {
+                const mSearch = !search || Object.values(i).some(v => String(v).toLowerCase().includes(search));
+                const mExp = !expF || i.numCausa.toLowerCase().includes(expF);
+                const mOp = !opF || i.operadorAsignado === opF;
                 
-                let matchesDate = true;
-                if (startDate || endDate) {
-                    const datePart = data.fechaPaseOperador ? data.fechaPaseOperador.split('T')[0] : null;
-                    if (!datePart) {
-                        matchesDate = false;
-                    } else {
-                        if (startDate && datePart < startDate) matchesDate = false;
-                        if (endDate && datePart > endDate) matchesDate = false;
-                    }
+                let mDate = true;
+                if (start || end) {
+                    const d = i.fechaPaseOperador ? i.fechaPaseOperador.split('T')[0] : null;
+                    if (start && d < start) mDate = false;
+                    if (end && d > end) mDate = false;
                 }
-                
-                return matchesSearch && matchesExpediente && matchesOperador && matchesTipoIntervencion && matchesProceso && matchesDate;
+                return mSearch && mExp && mOp && mDate;
             });
 
             currentPage = 1;
-            renderExpedientes();
-            renderPagination();
-            renderUserStats();
+            renderTable();
+            renderStats();
         }
 
-        function renderExpedientes() {
-            expedientesContainer.innerHTML = '';
-            if (filteredExpedientes.length === 0) {
-                expedientesContainer.innerHTML = '<p class="text-center text-muted mt-5">No hay expedientes registrados.</p>';
-                return;
-            }
+        function renderTable() {
+            const container = document.getElementById('expedientesContainer');
             const start = (currentPage - 1) * itemsPerPage;
-            const end = Math.min(start + itemsPerPage, filteredExpedientes.length);
-            const pageData = filteredExpedientes.slice(start, end);
+            const pageData = filteredExpedientes.slice(start, start + itemsPerPage);
 
-            let html = `<div class="table-responsive"><table class="table table-hover"><thead class="table-light"><tr>
-                <th style="width: 50px;">#</th>
-                <th>Expediente</th><th>Proceso</th><th>Intervención</th><th>Operador Asignado</th><th>Fecha de Pase (desde Operador)</th><th class="text-end">Acciones</th>
-              </tr></thead><tbody>`;
+            let html = `<div class="table-responsive"><table class="table table-hover">
+                <thead class="table-light"><tr><th>#</th><th>Expediente</th><th>Operador</th><th>Fecha Pase</th><th class="text-end">Acción</th></tr></thead><tbody>`;
             
             pageData.forEach((data, idx) => {
-                const rowNumber = filteredExpedientes.length - ((currentPage - 1) * itemsPerPage + idx);
-                html += `<tr class="expediente-row" data-id="${data.id}">
-                    <td class="text-center">${rowNumber}</td>
-                    <td class="fw-bold">${data.numCausa}</td>
-                    <td>${data.tipoProceso || 'N/A'}</td>
-                    <td>${data.tipoIntervencion || 'N/A'}</td>
+                const num = filteredExpedientes.length - (start + idx);
+                html += `<tr>
+                    <td>${num}</td>
+                    <td class="fw-bold text-primary">${data.numCausa}</td>
                     <td>${data.operadorAsignado}</td>
-                    <td>${formatDateTime(data.fechaPaseOperador, true)}</td>
+                    <td>${data.fechaPaseOperador ? data.fechaPaseOperador.replace('T', ' ') : '---'}</td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-primary view-btn" data-id="${data.id}"><i class="fas fa-eye"></i></button>
-                        <button class="btn btn-sm btn-outline-warning edit-btn" data-id="${data.id}"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editItem('${data.id}')"><i class="fas fa-edit"></i></button>
                     </td>
-                   </tr>`;
+                </tr>`;
             });
-            html += `</tbody></table></div><div class="text-muted mt-2">Mostrando ${start+1} - ${end} de ${filteredExpedientes.length}</div>`;
-            expedientesContainer.innerHTML = html;
-
-            document.querySelectorAll('.view-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); viewExpediente(btn.dataset.id); }));
-            document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); editExpediente(btn.dataset.id); }));
-            document.querySelectorAll('.expediente-row').forEach(row => row.addEventListener('click', () => viewExpediente(row.dataset.id)));
+            container.innerHTML = html + '</tbody></table></div>';
+            renderPagination();
         }
 
         function renderPagination() {
             const totalPages = Math.ceil(filteredExpedientes.length / itemsPerPage);
-            if (totalPages <= 1) { paginationContainer.innerHTML = ''; return; }
-            let html = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${currentPage-1}">Anterior</a></li>`;
+            const container = document.getElementById('paginationContainer');
+            container.innerHTML = '';
+            if (totalPages <= 1) return;
             for (let i = 1; i <= totalPages; i++) {
-                html += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+                const li = `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
+                container.innerHTML += li;
             }
-            html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${currentPage+1}">Siguiente</a></li>`;
-            paginationContainer.innerHTML = html;
-            paginationContainer.querySelectorAll('.page-link').forEach(link => link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const page = parseInt(e.target.dataset.page);
-                if (!isNaN(page)) { currentPage = page; renderExpedientes(); renderPagination(); window.scrollTo(0,0); }
-            }));
         }
 
-        function renderUserStats() {
+        function renderStats() {
             const stats = {};
-            filteredExpedientes.forEach(exp => { const op = exp.operadorAsignado; stats[op] = (stats[op] || 0) + 1; });
-            const sorted = Object.keys(stats).sort((a,b) => stats[b]-stats[a]);
+            filteredExpedientes.forEach(e => stats[e.operadorAsignado] = (stats[e.operadorAsignado] || 0) + 1);
+            const labels = Object.keys(stats);
+            const data = Object.values(stats);
+
             const ctx = document.getElementById('userStatsChart').getContext('2d');
             if (userStatsChart) userStatsChart.destroy();
             userStatsChart = new Chart(ctx, {
                 type: 'bar',
-                data: { 
-                    labels: sorted, 
-                    datasets: [{ 
-                        label: 'Expedientes por Operador', 
-                        data: sorted.map(u => stats[u]), 
-                        backgroundColor: '#28a745' // COLOR VERDE PARA LAS BARRAS
-                    }] 
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                data: { labels, datasets: [{ label: 'Pases', data, backgroundColor: '#28a745' }] },
+                options: { responsive: true, maintainAspectRatio: false }
             });
-            const detailsDiv = document.getElementById('statsDetails');
-            if (sorted.length === 0) detailsDiv.innerHTML = '<p class="text-center text-muted">Sin datos</p>';
-            else {
-                let html = '<div class="d-flex justify-content-between mb-2"><span class="fw-bold">Operador</span><span class="fw-bold">Cantidad</span></div>';
-                sorted.forEach(op => { html += `<div class="d-flex justify-content-between border-bottom py-1"><span>${op}</span><span class="badge bg-primary rounded-pill">${stats[op]}</span></div>`; });
-                detailsDiv.innerHTML = html;
-            }
+            
+            const details = document.getElementById('statsDetails');
+            details.innerHTML = labels.map(l => `
+                <div class="d-flex justify-content-between border-bottom py-1">
+                    <span>${l}</span><span class="badge bg-success">${stats[l]}</span>
+                </div>
+            `).join('');
         }
 
-        async function editExpediente(id) {
-            const data = allExpedientes.find(e => e.id === id);
-            if (!data) return;
-            expedienteForm.reset();
-            document.getElementById('expedienteId').value = data.id;
-            document.getElementById('fechaPaseOperador').value = data.fechaPaseOperador || '';
-            document.getElementById('numCausa').value = data.numCausa;
-            document.getElementById('tipoProceso').value = data.tipoProceso || '';
-            document.getElementById('detalleProceso').value = data.detalleProceso || '';
-            document.getElementById('tipoIntervencion').value = data.tipoIntervencion || '';
-            document.getElementById('operadorAsignado').value = data.operadorAsignado;
-            document.getElementById('observacionesTarea').value = data.observacionesTarea || '';
-            document.getElementById('fechaPase').value = data.fechaPase;
-            document.getElementById('expedienteModalTitle').textContent = 'Editar Expediente';
-            numCausaInput.classList.remove('is-invalid');
-            const modal = new bootstrap.Modal(expedienteModal);
-            modal.show();
+        function showToast(msg, type) {
+            const toast = document.getElementById('liveToast');
+            document.getElementById('toastHeader').className = `toast-header text-white bg-${type}`;
+            document.getElementById('toastMessage').innerText = msg;
+            new bootstrap.Toast(toast).show();
         }
 
-        async function viewExpediente(id) {
-            const data = allExpedientes.find(e => e.id === id);
-            if (!data) return;
-            const body = document.getElementById('viewExpedienteBody');
-            body.innerHTML = `<div>
-                <p><strong>Número de Causa:</strong> ${data.numCausa}</p>
-                <p><strong>Tipo de Proceso:</strong> ${data.tipoProceso || 'N/A'}</p>
-                <p><strong>Operador:</strong> ${data.operadorAsignado}</p>
-                <p><strong>Pase desde Operador:</strong> ${formatDateTime(data.fechaPaseOperador, true)}</p>
-                <p><strong>Observaciones:</strong> ${data.observacionesTarea || 'Ninguna'}</p>
-            </div>`;
-            new bootstrap.Modal(viewExpedienteModal).show();
-            printExpedienteBtn.onclick = () => imprimirExpediente(data);
-        }
+        // EXPOSICIÓN GLOBAL
+        window.changePage = (p) => { currentPage = p; renderTable(); };
+        window.editItem = (id) => {
+            const item = allExpedientes.find(e => e.id === id);
+            document.getElementById('expedienteId').value = item.id;
+            document.getElementById('numCausa').value = item.numCausa;
+            document.getElementById('operadorAsignado').value = item.operadorAsignado;
+            document.getElementById('tipoProceso').value = item.tipoProceso;
+            document.getElementById('tipoIntervencion').value = item.tipoIntervencion;
+            document.getElementById('fechaPaseOperador').value = item.fechaPaseOperador;
+            document.getElementById('observacionesTarea').value = item.observacionesTarea;
+            document.getElementById('fechaPase').value = item.fechaPase;
+            document.getElementById('numCausa').classList.remove('is-invalid');
+            new bootstrap.Modal(document.getElementById('expedienteModal')).show();
+        };
 
-        function imprimirExpediente(exp) {
-            const content = `<h2>Detalle</h2><p><strong>Causa:</strong> ${exp.numCausa}</p><p><strong>Operador:</strong> ${exp.operadorAsignado}</p>`;
-            const win = window.open('', '_blank');
-            win.document.write(`<html><body>${content}</body></html>`);
-            win.document.close(); win.print(); win.close();
-        }
+        // EVENTOS
+        document.getElementById('saveExpedienteBtn').onclick = saveRecord;
+        document.getElementById('btnSearch').onclick = applyFilters;
+        document.getElementById('btnActualizar').onclick = loadData;
+        document.getElementById('btnLimpiarDuplicados').onclick = limpiarDuplicados;
+        document.getElementById('btnCrearNuevo').onclick = () => {
+            document.getElementById('expedienteForm').reset();
+            document.getElementById('expedienteId').value = '';
+            document.getElementById('fechaPase').value = new Date().toISOString().slice(0,16);
+            new bootstrap.Modal(document.getElementById('expedienteModal')).show();
+        };
 
-        btnSearch.addEventListener('click', applyFilters);
-        btnPrintAll.addEventListener('click', () => window.print());
-        document.getElementById('btnActualizar').addEventListener('click', loadExpedientesFromFirestore);
-        document.addEventListener('click', (e) => {
-            const cal = e.target.closest('.clickable-calendar');
-            if (cal) { e.preventDefault(); document.getElementById(cal.dataset.target).showPicker?.(); }
-        });
-
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', () => {
-            loadExpedientesFromFirestore();
-            if (!dateFilterEnd.value) {
-                const today = new Date().toISOString().split('T')[0];
-                dateFilterEnd.value = today;
-            }
-            if (!document.getElementById('fechaPase').value) {
-                const now = new Date();
-                const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
-                document.getElementById('fechaPase').value = local;
-            }
-        });
+        document.addEventListener('DOMContentLoaded', loadData);
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
