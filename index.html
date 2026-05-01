@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Dra. Riveros - Secretaria</title>
     
     <!-- Fuente Inter -->
@@ -22,7 +22,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #ffffff;
             overflow-x: hidden;
-            color: oklch(0.25 0.02 145); /* verde oscuro */
+            color: oklch(0.25 0.02 145);
         }
 
         /* --- FLOTANTE DE CRÉDITOS Y VERSIÓN --- */
@@ -30,7 +30,7 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: oklch(0.55 0.08 145); /* primary-dark */
+            background-color: oklch(0.55 0.08 145);
             color: white;
             padding: 10px 18px;
             border-radius: 8px;
@@ -79,7 +79,7 @@
             justify-content: space-around;
             position: relative;
             padding: 0 5%;
-            background: radial-gradient(circle at 10% 50%, #e0f2e0 0%, #ffffff 100%);
+            background: radial-gradient(circle at 10% 50%, #d9f0e0 0%, #ffffff 100%);
         }
 
         .brand-container {
@@ -96,27 +96,28 @@
             line-height: 0.85;
             letter-spacing: -0.05em;
             margin-bottom: 20px;
-            color: oklch(0.55 0.08 145); /* primary-dark */
+            color: oklch(0.55 0.08 145);
         }
 
         .subtitulo-azul {
             font-size: 1.3rem;
-            color: oklch(0.40 0.04 145); /* secondary */
+            color: oklch(0.40 0.04 145);
             font-weight: 700;
             margin-bottom: 30px;
         }
 
         .info-institucional {
-            border-left: 4px solid oklch(0.65 0.10 145); /* primary */
+            border-left: 4px solid oklch(0.65 0.10 145);
             padding-left: 20px;
             font-size: 1.1rem;
         }
 
         .info-institucional p:first-child {
             font-weight: 700;
-            color: oklch(0.25 0.02 145); /* foreground */
+            color: oklch(0.25 0.02 145);
         }
 
+        /* CONTENEDOR IMAGEN CON ANIMACIÓN MODERNA (RING VERDE) */
         .img-container {
             flex: 1;
             display: flex;
@@ -125,18 +126,102 @@
             z-index: 1;
         }
 
-        .img-3d {
-            width: 100%;
-            max-width: 420px;
-            height: auto;
-            animation: float 6s ease-in-out infinite;
+        /* Wrapper para el anillo animado (versión verde) */
+        .img-wrapper {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite, softPulseGreen 3s ease-in-out infinite;
         }
 
+        /* Anillo giratorio principal (gradiente cónico en tonos verdes) */
+        .img-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #00ff88,
+                #00cc66,
+                #2e8b57,
+                #00994d,
+                #00ff88
+            );
+            opacity: 0.8;
+            z-index: -1;
+            animation: rotateRing 4s linear infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 128, 0.5);
+        }
+
+        /* Segundo anillo externo con blur y rotación inversa (verde translúcido) */
+        .img-wrapper::after {
+            content: '';
+            position: absolute;
+            top: -25px;
+            left: -25px;
+            right: -25px;
+            bottom: -25px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 90deg,
+                rgba(0, 255, 136, 0.3),
+                rgba(0, 204, 102, 0.3),
+                rgba(46, 139, 86, 0.3),
+                rgba(0, 153, 77, 0.3),
+                rgba(0, 255, 136, 0.3)
+            );
+            z-index: -2;
+            animation: rotateRingReverse 6s linear infinite;
+            filter: blur(8px);
+        }
+
+        /* Rotación anillo principal */
+        @keyframes rotateRing {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Rotación inversa anillo externo */
+        @keyframes rotateRingReverse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
+        }
+
+        /* Pulso verde suave (glow) */
+        @keyframes softPulseGreen {
+            0% { filter: drop-shadow(0 0 5px rgba(0, 200, 100, 0.3)); }
+            50% { filter: drop-shadow(0 0 22px rgba(0, 255, 128, 0.7)); }
+            100% { filter: drop-shadow(0 0 5px rgba(0, 200, 100, 0.3)); }
+        }
+
+        /* Flotación */
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-15px); }
         }
 
+        /* Imagen circular con transición suave */
+        .img-3d {
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            display: block;
+            border-radius: 50%;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            object-fit: cover;
+            aspect-ratio: 1 / 1;
+        }
+
+        .img-3d:hover {
+            transform: scale(1.02);
+        }
+
+        /* Cintas decorativas superiores e inferiores */
         .panel-izquierdo::before, .panel-izquierdo::after {
             content: "";
             position: absolute;
@@ -149,7 +234,7 @@
         .panel-izquierdo::before { top: 30px; }
         .panel-izquierdo::after { bottom: 30px; }
 
-        /* --- PANEL DERECHO (blanco) --- */
+        /* --- PANEL DERECHO (blanco, intacto) --- */
         .panel-derecho {
             flex: 1;
             display: flex;
@@ -314,14 +399,53 @@
             display: none;
         }
 
+        /* --- RESPONSIVE / MODO MÓVIL (ajuste de anillos) --- */
         @media (max-width: 1024px) {
-            .contenedor-principal { flex-direction: column; height: auto; overflow-y: auto; }
-            .panel-izquierdo { flex: none; padding: 60px 20px; text-align: center; flex-direction: column; }
-            .brand-container { align-items: center; max-width: 100%; margin-bottom: 30px; }
-            .info-institucional { border-left: none; border-top: 3px solid oklch(0.65 0.10 145); padding: 15px 0 0 0; }
-            .img-3d { max-width: 250px; margin-bottom: 20px; }
-            .panel-derecho { flex: none; padding: 40px 20px 80px 20px; }
-            .formulario-login h2 { justify-content: center; }
+            .contenedor-principal { 
+                flex-direction: column; 
+                height: auto; 
+                overflow-y: auto; 
+            }
+            .panel-izquierdo { 
+                flex: none; 
+                padding: 60px 20px; 
+                text-align: center; 
+                flex-direction: column; 
+            }
+            .brand-container { 
+                align-items: center; 
+                max-width: 100%; 
+                margin-bottom: 30px; 
+            }
+            .info-institucional { 
+                border-left: none; 
+                border-top: 3px solid oklch(0.65 0.10 145); 
+                padding: 15px 0 0 0; 
+            }
+            .img-3d { 
+                max-width: 250px; 
+                margin-bottom: 20px; 
+            }
+            .panel-derecho { 
+                flex: none; 
+                padding: 40px 20px 80px 20px; 
+            }
+            .formulario-login h2 { 
+                justify-content: center; 
+            }
+            /* Reducir tamaño de los anillos en móvil */
+            .img-wrapper::before {
+                top: -10px;
+                left: -10px;
+                right: -10px;
+                bottom: -10px;
+            }
+            .img-wrapper::after {
+                top: -18px;
+                left: -18px;
+                right: -18px;
+                bottom: -18px;
+            }
         }
     </style>
 </head>
@@ -334,7 +458,7 @@
 
     <div class="contenedor-principal">
         
-        <!-- PANEL IZQUIERDO (Riveros) -->
+        <!-- PANEL IZQUIERDO (Riveros + animación de anillos verdes) -->
         <div class="panel-izquierdo">
             <div class="brand-container">
                 <h1 class="titulo-principal">Dra.<br>Riveros</h1>
@@ -347,13 +471,16 @@
             </div>
 
             <div class="img-container">
-                <img src="https://github.com/sistemadigital/iconos/blob/main/pc-verde.png?raw=true" 
-                     alt="Sistema Digital" 
-                     class="img-3d">
+                <!-- Wrapper con animación de anillos giratorios (verde) -->
+                <div class="img-wrapper">
+                    <img src="https://github.com/sistemadigital/iconos/blob/main/pc-verde.png?raw=true" 
+                         alt="Sistema Digital" 
+                         class="img-3d">
+                </div>
             </div>
         </div>
 
-        <!-- PANEL DERECHO -->
+        <!-- PANEL DERECHO (Login / Registro intacto) -->
         <div class="panel-derecho">
             <div class="formulario-login">
                 <h2>
@@ -423,7 +550,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE (configuración original de Riveros) -->
+    <!-- FIREBASE (configuración original de Riveros, intacta) -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -552,7 +679,7 @@
         });
     </script>
 
-    <!-- Script para desvanecer créditos -->
+    <!-- Script para desvanecer créditos a los 5 segundos -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const flotante = document.getElementById('creditos-flotante');
