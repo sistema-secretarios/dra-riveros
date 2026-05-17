@@ -784,14 +784,14 @@
                 if (state === 'loading') {
                     imgWrapper.classList.add('cargando');
                     imgWrapper.classList.remove('reproduciendo');
-                    audioBadge.textContent = '⏳';
+                    audioBadge.textContent = '🔊';
                 } else if (state === 'playing') {
                     imgWrapper.classList.remove('cargando');
                     imgWrapper.classList.add('reproduciendo');
                     audioBadge.textContent = '⏸️';
                 } else { // stopped / error
                     imgWrapper.classList.remove('cargando', 'reproduciendo');
-                    audioBadge.textContent = '🎵';
+                    audioBadge.textContent = '🔊';
                 }
             }
 
