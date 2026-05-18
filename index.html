@@ -557,7 +557,8 @@
                          alt="Sistema Digital" 
                          class="img-3d">
                     
-                    <div class="audio-badge" id="audioBadgeState" aria-hidden="true">🎵</div>
+                    <!-- Ícono inicial cambiado a 🔊 (altavoz) -->
+                    <div class="audio-badge" id="audioBadgeState" aria-hidden="true">🔊</div>
                 </div>
             </div>
         </div>
@@ -778,20 +779,19 @@
 
             if (!imgWrapper || !audioBadge) return;
 
-            // Función para actualizar la UI según estado del audio
+            // Función para actualizar la UI según estado del audio (íconos idénticos al anterior)
             function setAudioState(state) {
-                // state: 'loading', 'playing', 'stopped'
                 if (state === 'loading') {
                     imgWrapper.classList.add('cargando');
                     imgWrapper.classList.remove('reproduciendo');
-                    audioBadge.textContent = '🔊';
+                    audioBadge.textContent = '⏳';   // Ícono de carga
                 } else if (state === 'playing') {
                     imgWrapper.classList.remove('cargando');
                     imgWrapper.classList.add('reproduciendo');
-                    audioBadge.textContent = '⏸️';
-                } else { // stopped / error
+                    audioBadge.textContent = '⏸️';   // Ícono de pausa
+                } else { // stopped o error
                     imgWrapper.classList.remove('cargando', 'reproduciendo');
-                    audioBadge.textContent = '🔊';
+                    audioBadge.textContent = '🔊';   // Ícono de altavoz (reproducir)
                 }
             }
 
