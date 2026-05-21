@@ -34,7 +34,7 @@
             color: white;
             padding: 10px 18px;
             border-radius: 8px;
-            z-index: 1000;
+            z-index: 1100;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             display: flex;
             flex-direction: column;
@@ -64,22 +64,30 @@
             transform: translateY(-20px) !important;
         }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
+        /* --- CONTENEDOR PRINCIPAL (sin panel derecho, todo centrado) --- */
         .contenedor-principal {
             display: flex;
-            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
             width: 100%;
+            padding: 2rem;
         }
 
-        /* --- PANEL IZQUIERDO (verde suave) --- */
-        .panel-izquierdo {
-            flex: 2;
+        /* Panel izquierdo ahora es único y centrado */
+        .panel-unico {
+            flex: 1;
+            max-width: 1300px;
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            justify-content: space-around;
-            position: relative;
-            padding: 0 5%;
+            justify-content: center;
+            gap: 3rem;
             background: radial-gradient(circle at 10% 50%, #d9f0e0 0%, #ffffff 100%);
+            border-radius: 3rem;
+            padding: 2rem 3rem;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
         }
 
         .brand-container {
@@ -87,13 +95,13 @@
             flex-direction: column;
             align-items: flex-start;
             z-index: 2;
-            max-width: 50%;
+            max-width: 45%;
         }
 
         .titulo-principal {
             font-size: clamp(3rem, 8vw, 5.5rem);
             font-weight: 900;
-            line-height: 0.85;
+            line-height: 1.1;
             letter-spacing: -0.05em;
             margin-bottom: 20px;
             color: oklch(0.55 0.08 145);
@@ -117,7 +125,7 @@
             color: oklch(0.25 0.02 145);
         }
 
-        /* CONTENEDOR IMAGEN CON ANIMACIÓN MODERNA (RING VERDE) + AUDIO */
+        /* CONTENEDOR IMAGEN CON ANIMACIÓN VERDE + AUDIO (sin badge) */
         .img-container {
             flex: 1;
             display: flex;
@@ -127,7 +135,6 @@
             z-index: 1;
         }
 
-        /* Wrapper para el anillo animado (versión verde) */
         .img-wrapper {
             position: relative;
             display: inline-block;
@@ -137,13 +144,12 @@
             outline: none;
         }
 
-        /* Accesibilidad: foco visible */
         .img-wrapper:focus-visible {
             box-shadow: 0 0 0 4px oklch(0.65 0.10 145);
             border-radius: 50%;
         }
 
-        /* Anillo giratorio principal (gradiente cónico en tonos verdes) */
+        /* Anillo giratorio principal verde */
         .img-wrapper::before {
             content: '';
             position: absolute;
@@ -167,7 +173,7 @@
             transition: all 0.3s ease;
         }
 
-        /* Segundo anillo externo con blur y rotación inversa (verde translúcido) */
+        /* Segundo anillo externo blur */
         .img-wrapper::after {
             content: '';
             position: absolute;
@@ -189,7 +195,7 @@
             filter: blur(8px);
         }
 
-        /* Estados dinámicos del audio: cargando y reproduciendo */
+        /* Estados del audio */
         .img-wrapper.cargando::before {
             animation: rotateRing 1s linear infinite;
             filter: saturate(1.5);
@@ -208,32 +214,27 @@
             );
         }
 
-        /* Rotación anillo principal */
         @keyframes rotateRing {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* Rotación inversa anillo externo */
         @keyframes rotateRingReverse {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(-360deg); }
         }
 
-        /* Pulso verde suave (glow) */
         @keyframes softPulseGreen {
             0% { filter: drop-shadow(0 0 5px rgba(0, 200, 100, 0.3)); }
             50% { filter: drop-shadow(0 0 22px rgba(0, 255, 128, 0.7)); }
             100% { filter: drop-shadow(0 0 5px rgba(0, 200, 100, 0.3)); }
         }
 
-        /* Flotación */
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-15px); }
         }
 
-        /* Imagen circular con transición suave */
         .img-3d {
             width: 100%;
             max-width: 420px;
@@ -244,106 +245,94 @@
             transition: transform 0.3s ease;
             object-fit: cover;
             aspect-ratio: 1 / 1;
-            pointer-events: none;  /* Para que el click se gestione desde el wrapper */
+            pointer-events: none;
         }
 
         .img-3d:hover {
             transform: scale(1.02);
         }
 
-        /* Badge de audio (ícono flotante) */
-        .audio-badge {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            background-color: oklch(0.55 0.08 145);
-            color: white;
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-            z-index: 10;
-            font-size: 1.2rem;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid #ffffff;
-            backdrop-filter: blur(2px);
-            pointer-events: none;  /* El clic lo maneja el wrapper */
-        }
-
-        .img-wrapper:hover .audio-badge {
-            transform: scale(1.15);
-            background-color: oklch(0.45 0.12 145);
-        }
-
-        .img-wrapper.reproduciendo .audio-badge {
-            background-color: #28a745;
-            animation: pulseBadge 1.5s infinite;
-        }
-
-        @keyframes pulseBadge {
-            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
-        }
-
-        /* Cintas decorativas superiores e inferiores */
-        .panel-izquierdo::before, .panel-izquierdo::after {
+        /* Cintas decorativas */
+        .panel-unico::before, .panel-unico::after {
             content: "";
             position: absolute;
+            left: 30px;
+            right: 30px;
+            height: 8px;
+            background: oklch(0.65 0.10 145);
+            opacity: 0.25;
+            border-radius: 4px;
+        }
+        .panel-unico::before { top: 30px; }
+        .panel-unico::after { bottom: 30px; }
+
+        /* --- MODALES ESTILO VERDE --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
             left: 0;
             width: 100%;
-            height: 12px;
-            background: oklch(0.65 0.10 145);
-            opacity: 0.20;
-        }
-        .panel-izquierdo::before { top: 30px; }
-        .panel-izquierdo::after { bottom: 30px; }
-
-        /* --- PANEL DERECHO (blanco, intacto) --- */
-        .panel-derecho {
-            flex: 1;
+            height: 100%;
+            background-color: rgba(0, 30, 15, 0.85);
+            backdrop-filter: blur(6px);
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #ffffff;
-            box-shadow: -15px 0 50px rgba(0, 0, 0, 0.04);
-            z-index: 10;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s ease;
         }
 
-        .formulario-login {
-            width: 100%;
-            max-width: 320px;
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
         }
 
-        .formulario-login h2 {
-            font-weight: 900;
-            font-size: 2rem;
-            margin-bottom: 25px;
-            letter-spacing: -0.03em;
+        .modal-contenido {
+            background: #ffffff;
+            max-width: 460px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.4);
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-top: 6px solid oklch(0.65 0.10 145);
+        }
+
+        .modal-overlay.active .modal-contenido {
+            transform: scale(1);
+        }
+
+        .btn-cerrar-modal {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.4rem;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #aaa;
+            transition: 0.2s;
+            line-height: 1;
+        }
+
+        .btn-cerrar-modal:hover {
             color: oklch(0.55 0.08 145);
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .power-icon {
-            width: 0.9em;
-            height: 0.9em;
-            stroke: oklch(0.55 0.08 145);
-            stroke-width: 3.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            fill: none;
-            transition: all 0.4s ease;
-            vertical-align: middle;
-            margin-bottom: 4px;
+        .modal-contenido h3 {
+            font-weight: 900;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: oklch(0.55 0.08 145);
+            letter-spacing: -0.02em;
         }
 
         .grupo-input {
-            margin-bottom: 18px;
+            margin-bottom: 1.2rem;
             display: flex;
             flex-direction: column;
             gap: 6px;
@@ -352,156 +341,118 @@
         .grupo-input label {
             font-size: 0.7rem;
             font-weight: 700;
-            color: #aaa;
+            color: #4a6e5a;
             text-transform: uppercase;
         }
 
         .grupo-input input {
             padding: 14px;
-            border: 1px solid #eef0f2;
-            border-radius: 12px;
-            font-size: 1rem;
-            background-color: #f8fafc;
-            transition: all 0.3s;
+            border: 1px solid #d5ebe0;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            background-color: #f9fff9;
+            transition: all 0.2s;
             width: 100%;
         }
 
         .grupo-input input:focus {
             outline: none;
-            border-color: oklch(0.65 0.10 145);
-            box-shadow: 0 0 0 4px oklch(0.65 0.10 145 / 0.15);
+            border-color: #00cc66;
+            box-shadow: 0 0 0 3px rgba(0, 204, 102, 0.2);
         }
 
         .mostrar-clave {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.85rem;
-            color: #666;
+            font-size: 0.8rem;
+            color: #2d3e2d;
+            margin: -5px 0 12px 0;
             cursor: pointer;
-            margin-top: -10px;
-            margin-bottom: 15px;
         }
 
-        .mostrar-clave input {
-            cursor: pointer;
-            width: auto;
-        }
-
-        .btn-ingresar {
+        .btn-modal-primario {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: oklch(0.65 0.10 145);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 40px;
+            font-weight: 800;
             font-size: 1rem;
-            font-weight: 700;
             cursor: pointer;
-            margin-top: 10px;
-            transition: 0.3s;
+            margin-top: 8px;
+            transition: 0.2s;
         }
 
-        .btn-ingresar:hover {
-            transform: translateY(-2px);
+        .btn-modal-primario:hover {
             background: oklch(0.55 0.08 145);
-        }
-
-        .btn-secundario {
-            width: 100%;
-            padding: 16px;
-            background: transparent;
-            color: oklch(0.65 0.10 145);
-            border: 2px solid oklch(0.65 0.10 145);
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-
-        .btn-secundario:hover {
-            background: oklch(0.65 0.10 145 / 0.05);
             transform: translateY(-2px);
         }
 
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-            color: #aaa;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: #eef0f2;
-            margin: 0 10px;
-        }
-
-        .auth-message {
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+        .enlace-modal {
             text-align: center;
+            margin-top: 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .enlace-modal span {
+            color: #00994d;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Toast de mensajes global */
+        .auth-message-global {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e2a36;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
             font-size: 0.9rem;
+            z-index: 2100;
             display: none;
+            backdrop-filter: blur(8px);
+            background: rgba(30, 60, 40, 0.95);
+            font-weight: 500;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 85vw;
         }
 
-        .error-message {
-            background: oklch(0.60 0.18 25 / 0.1);
-            color: oklch(0.60 0.18 25);
+        .auth-message-global.error {
+            background: #c0392b;
         }
 
-        .success-message {
-            background: oklch(0.62 0.17 145 / 0.1);
-            color: #2e7d32;
+        .auth-message-global.success {
+            background: #2c6e2f;
         }
 
-        .hidden {
-            display: none;
-        }
-
-        /* --- RESPONSIVE / MODO MÓVIL (ajuste de anillos) --- */
+        /* Responsive */
         @media (max-width: 1024px) {
-            .contenedor-principal { 
-                flex-direction: column; 
-                height: auto; 
-                overflow-y: auto; 
+            .panel-unico {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem 1.5rem;
+                gap: 2rem;
             }
-            .panel-izquierdo { 
-                flex: none; 
-                padding: 60px 20px; 
-                text-align: center; 
-                flex-direction: column; 
+            .brand-container {
+                align-items: center;
+                max-width: 100%;
             }
-            .brand-container { 
-                align-items: center; 
-                max-width: 100%; 
-                margin-bottom: 30px; 
+            .info-institucional {
+                border-left: none;
+                border-top: 3px solid oklch(0.65 0.10 145);
+                padding: 15px 0 0 0;
+                text-align: center;
             }
-            .info-institucional { 
-                border-left: none; 
-                border-top: 3px solid oklch(0.65 0.10 145); 
-                padding: 15px 0 0 0; 
+            .img-3d {
+                max-width: 280px;
             }
-            .img-3d { 
-                max-width: 250px; 
-                margin-bottom: 20px; 
-            }
-            .panel-derecho { 
-                flex: none; 
-                padding: 40px 20px 80px 20px; 
-            }
-            .formulario-login h2 { 
-                justify-content: center; 
-            }
-            /* Reducir tamaño de los anillos en móvil */
             .img-wrapper::before {
                 top: -10px;
                 left: -10px;
@@ -514,12 +465,15 @@
                 right: -18px;
                 bottom: -18px;
             }
-            .audio-badge {
-                bottom: 8px;
-                right: 8px;
-                width: 38px;
-                height: 38px;
-                font-size: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .modal-contenido {
+                padding: 1.5rem;
+            }
+            .titulo-principal {
+                font-size: 3rem;
+                line-height: 1.1;
             }
         }
     </style>
@@ -528,112 +482,95 @@
 
     <div id="creditos-flotante">
         <span class="texto-autor">Diseño y programación: Rómulo Fioravante</span>
-        <span class="texto-version">Versión 3.1.2026 - Audio integrado</span>
+        <span class="texto-version">Versión 3.2.2026 - Acceso modal</span>
     </div>
 
     <div class="contenedor-principal">
-        
-        <!-- PANEL IZQUIERDO (Riveros + animación de anillos verdes + audio) -->
-        <div class="panel-izquierdo">
+        <div class="panel-unico">
             <div class="brand-container">
-                <h1 class="titulo-principal">Dra.<br>Riveros</h1>
+                <!-- Título en una sola línea: Dra. Riveros -->
+                <h1 class="titulo-principal">Dra. Riveros</h1>
                 <p class="subtitulo-azul">Defensoría Civil y Comercial 6</p>
-                
                 <div class="info-institucional">
                     <p>MINISTERIO PÚBLICO DE MISIONES</p>
-                    <p>Acceso exclusivo de Secretaria</p>
+                    <p>Acceso Exclusivo de Secretaria</p>
+                    <p style="font-size: 0.85rem; margin-top: 10px;">Haz clic en la imagen para acceder</p>
                 </div>
             </div>
 
             <div class="img-container">
-                <!-- Wrapper con animación de anillos giratorios + audio interactivo -->
+                <!-- Wrapper con anillos giratorios (sin badge de audio) -->
                 <div class="img-wrapper" id="imagenClickAudio" 
                      role="button" 
                      tabindex="0" 
-                     aria-label="Escuchar saludo institucional de la Dra. Riveros" 
-                     title="Haga clic para escuchar o pausar el saludo institucional">
-                    
+                     aria-label="Abrir acceso al sistema y escuchar saludo institucional" 
+                     title="Haz clic: abre inicio de sesión + audio">
                     <img src="https://github.com/sistemadigital/iconos/blob/main/pc-verde.png?raw=true" 
                          alt="Sistema Digital" 
                          class="img-3d">
-                    
-                    <!-- Ícono inicial cambiado a 🔊 (altavoz) -->
-                    <div class="audio-badge" id="audioBadgeState" aria-hidden="true">🔊</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PANEL DERECHO (Login / Registro intacto) -->
-        <div class="panel-derecho">
-            <div class="formulario-login">
-                <h2>
-                    Bienvenida
-                    <!-- SVG Power (verde) -->
-                    <svg id="powerIcon" class="power-icon" viewBox="0 0 24 24">
-                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
-                        <line x1="12" y1="2" x2="12" y2="12"></line>
-                    </svg>
-                </h2>
-
-                <div id="authMessage" class="auth-message"></div>
-
-                <!-- FORMULARIO DE LOGIN -->
-                <div id="loginForm">
-                    <div class="grupo-input">
-                        <label>Correo electrónico</label>
-                        <input type="email" id="loginEmail" placeholder="usuario Zimbra o email completo distinto" required>
-                    </div>
-
-                    <div class="grupo-input">
-                        <label>Contraseña</label>
-                        <input type="password" id="loginPassword" placeholder="••••••••" required>
-                    </div>
-
-                    <label class="mostrar-clave">
-                        <input type="checkbox" onchange="document.getElementById('loginPassword').type = this.checked ? 'text' : 'password'">
-                        Mostrar contraseña
-                    </label>
-
-                    <button class="btn-ingresar" onclick="loginUser()">Entrar al sistema</button>
-
-                    <div class="divider"><span>¿Nuevo integrante?</span></div>
-
-                    <button class="btn-secundario" onclick="showRegisterForm()">Crear cuenta</button>
-                </div>
-
-                <!-- FORMULARIO DE REGISTRO -->
-                <div id="registerForm" class="hidden">
-                    <div class="grupo-input">
-                        <label>Nombre completo</label>
-                        <input type="text" id="registerName" placeholder="Tu nombre y apellido" required>
-                    </div>
-
-                    <div class="grupo-input">
-                        <label>Correo electrónico</label>
-                        <input type="email" id="registerEmail" placeholder="usuario Zimbra o email distinto" required>
-                    </div>
-
-                    <div class="grupo-input">
-                        <label>Contraseña</label>
-                        <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required>
-                    </div>
-
-                    <label class="mostrar-clave">
-                        <input type="checkbox" onchange="document.getElementById('registerPassword').type = this.checked ? 'text' : 'password'">
-                        Mostrar contraseña
-                    </label>
-
-                    <button class="btn-ingresar" onclick="registerUser()">Registrarse</button>
-
-                    <div class="divider"><span>¿Ya tienes acceso?</span></div>
-
-                    <button class="btn-secundario" onclick="showLoginForm()">Volver al login</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- FIREBASE (configuración original de Riveros, intacta) -->
+    <!-- MODAL LOGIN -->
+    <div id="modalLogin" class="modal-overlay">
+        <div class="modal-contenido">
+            <button class="btn-cerrar-modal" id="cerrarModalLoginBtn">&times;</button>
+            <h3>Bienvenida</h3>
+            <div>
+                <div class="grupo-input">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="loginEmail" placeholder="usuario o email@mpmisiones.gob.ar" autocomplete="email">
+                </div>
+                <div class="grupo-input">
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <label class="mostrar-clave">
+                    <input type="checkbox" id="mostrarLoginPass"> Mostrar contraseña
+                </label>
+                <button class="btn-modal-primario" id="btnLoginAction">Entrar al sistema</button>
+                <div class="enlace-modal">
+                    ¿No tienes cuenta? <span id="cambiarARegistroDesdeLogin">Regístrate aquí</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO -->
+    <div id="modalRegistro" class="modal-overlay">
+        <div class="modal-contenido">
+            <button class="btn-cerrar-modal" id="cerrarModalRegistroBtn">&times;</button>
+            <h3>Registro</h3>
+            <div>
+                <div class="grupo-input">
+                    <label>Nombre completo</label>
+                    <input type="text" id="registerName" placeholder="Nombre y apellido" autocomplete="name">
+                </div>
+                <div class="grupo-input">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="registerEmail" placeholder="usuario o email@mpmisiones.gob.ar" autocomplete="email">
+                </div>
+                <div class="grupo-input">
+                    <label>Contraseña</label>
+                    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                </div>
+                <label class="mostrar-clave">
+                    <input type="checkbox" id="mostrarRegPass"> Mostrar contraseña
+                </label>
+                <button class="btn-modal-primario" id="btnRegisterAction">Registrarse</button>
+                <div class="enlace-modal">
+                    ¿Ya tienes cuenta? <span id="cambiarALoginDesdeRegistro">Inicia sesión</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para mensajes -->
+    <div id="globalAuthMessage" class="auth-message-global"></div>
+
+    <!-- FIREBASE (configuración original de Riveros) y lógica de autenticación + audio modal (sin badge) -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -649,7 +586,6 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-
         const DEFAULT_DOMAIN = "@mpmisiones.gob.ar";
 
         let isRegistering = false;
@@ -663,65 +599,65 @@
             return email;
         }
 
-        window.showMessage = function(msg, type) {
-            const div = document.getElementById('authMessage');
+        function showMessage(msg, type) {
+            const div = document.getElementById('globalAuthMessage');
             div.textContent = msg;
-            div.className = 'auth-message ' + (type === 'error' ? 'error-message' : 'success-message');
+            div.className = 'auth-message-global';
+            if (type === 'error') div.classList.add('error');
+            else if (type === 'success') div.classList.add('success');
             div.style.display = 'block';
-            setTimeout(() => div.style.display = 'none', 4000);
-        };
+            setTimeout(() => {
+                div.style.display = 'none';
+                div.classList.remove('error', 'success');
+            }, 4000);
+        }
 
+        // === LOGIN desde modal ===
         window.loginUser = async function() {
             const rawEmail = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const email = formatEmail(rawEmail);
 
             if (!email || !password) {
-                return showMessage('Completa todos los campos', 'error');
+                showMessage('Completa todos los campos', 'error');
+                return;
             }
             try {
                 isLoggingIn = true;
                 await signInWithEmailAndPassword(auth, email, password);
-
-                // Animación del icono (verde éxito y más grueso)
-                const icon = document.getElementById('powerIcon');
-                if (icon) {
-                    icon.style.stroke = '#28a745';
-                    icon.style.strokeWidth = '4.5';
-                }
-
-                showMessage('Acceso concedido. Iniciando sistema...', 'success');
-
+                showMessage('Acceso concedido. Redirigiendo...', 'success');
                 setTimeout(() => {
                     window.location.href = 'app.html';
-                }, 3000);
-
+                }, 2000);
             } catch (error) {
                 isLoggingIn = false;
                 showMessage('Credenciales inválidas', 'error');
             }
         };
 
+        // === REGISTRO desde modal ===
         window.registerUser = async function() {
-            const name = document.getElementById('registerName').value;
+            const name = document.getElementById('registerName').value.trim();
             const rawEmail = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             const email = formatEmail(rawEmail);
 
             if (!name || !email || !password) {
-                return showMessage('Completa todos los campos', 'error');
+                showMessage('Completa todos los campos', 'error');
+                return;
             }
             if (password.length < 6) {
-                return showMessage('La contraseña debe tener al menos 6 caracteres', 'error');
+                showMessage('La contraseña debe tener al menos 6 caracteres', 'error');
+                return;
             }
-
             isRegistering = true;
-
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, password);
                 await updateProfile(cred.user, { displayName: name });
                 showMessage('Cuenta creada con éxito', 'success');
-                window.location.href = 'app.html';
+                setTimeout(() => {
+                    window.location.href = 'app.html';
+                }, 2000);
             } catch (error) {
                 isRegistering = false;
                 if (error.code === 'auth/email-already-in-use') {
@@ -732,145 +668,169 @@
             }
         };
 
+        // Redirección si ya está autenticado
         onAuthStateChanged(auth, user => {
-            if (user && !isRegistering && !isLoggingIn) {
+            if (user && !isRegistering && !isLoggingIn && (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '')) {
                 window.location.href = 'app.html';
             }
         });
 
-        window.showRegisterForm = function() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('registerForm').classList.remove('hidden');
-            document.getElementById('authMessage').style.display = 'none';
-        };
+        // === MANEJO DE MODALES ===
+        const modalLogin = document.getElementById('modalLogin');
+        const modalRegistro = document.getElementById('modalRegistro');
 
-        window.showLoginForm = function() {
-            document.getElementById('registerForm').classList.add('hidden');
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('authMessage').style.display = 'none';
-        };
+        function abrirModalLogin() {
+            modalLogin.classList.add('active');
+            document.getElementById('loginEmail').focus();
+        }
+        function cerrarModalLogin() {
+            modalLogin.classList.remove('active');
+        }
+        function abrirModalRegistro() {
+            modalRegistro.classList.add('active');
+            document.getElementById('registerName').focus();
+        }
+        function cerrarModalRegistro() {
+            modalRegistro.classList.remove('active');
+        }
 
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                // Prevenir conflicto si el usuario está sobre el elemento de audio
-                if (document.activeElement === document.getElementById('imagenClickAudio')) return;
-                
-                const loginHidden = document.getElementById('loginForm').classList.contains('hidden');
-                if (!loginHidden) {
-                    loginUser();
-                } else {
-                    registerUser();
-                }
+        // Cerrar con X
+        document.getElementById('cerrarModalLoginBtn').addEventListener('click', cerrarModalLogin);
+        document.getElementById('cerrarModalRegistroBtn').addEventListener('click', cerrarModalRegistro);
+
+        // Cerrar al hacer clic fuera
+        modalLogin.addEventListener('click', (e) => {
+            if (e.target === modalLogin) cerrarModalLogin();
+        });
+        modalRegistro.addEventListener('click', (e) => {
+            if (e.target === modalRegistro) cerrarModalRegistro();
+        });
+
+        // Botones acción
+        document.getElementById('btnLoginAction').addEventListener('click', () => loginUser());
+        document.getElementById('btnRegisterAction').addEventListener('click', () => registerUser());
+
+        // Mostrar/ocultar contraseña
+        const mostrarLoginCheck = document.getElementById('mostrarLoginPass');
+        const loginPassInput = document.getElementById('loginPassword');
+        mostrarLoginCheck.addEventListener('change', () => {
+            loginPassInput.type = mostrarLoginCheck.checked ? 'text' : 'password';
+        });
+        const mostrarRegCheck = document.getElementById('mostrarRegPass');
+        const regPassInput = document.getElementById('registerPassword');
+        mostrarRegCheck.addEventListener('change', () => {
+            regPassInput.type = mostrarRegCheck.checked ? 'text' : 'password';
+        });
+
+        // Navegación entre modales
+        document.getElementById('cambiarARegistroDesdeLogin').addEventListener('click', () => {
+            cerrarModalLogin();
+            abrirModalRegistro();
+        });
+        document.getElementById('cambiarALoginDesdeRegistro').addEventListener('click', () => {
+            cerrarModalRegistro();
+            abrirModalLogin();
+        });
+
+        // Enter para login y registro
+        const loginEmailInput = document.getElementById('loginEmail');
+        const loginPasswordInput = document.getElementById('loginPassword');
+        const handleLoginEnter = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                loginUser();
+            }
+        };
+        loginEmailInput.addEventListener('keypress', handleLoginEnter);
+        loginPasswordInput.addEventListener('keypress', handleLoginEnter);
+
+        const regNameInput = document.getElementById('registerName');
+        const regEmailInput = document.getElementById('registerEmail');
+        const regPasswordInput = document.getElementById('registerPassword');
+        const handleRegisterEnter = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                registerUser();
+            }
+        };
+        regNameInput.addEventListener('keypress', handleRegisterEnter);
+        regEmailInput.addEventListener('keypress', handleRegisterEnter);
+        regPasswordInput.addEventListener('keypress', handleRegisterEnter);
+
+        // Escape cierra modales
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (modalLogin.classList.contains('active')) cerrarModalLogin();
+                if (modalRegistro.classList.contains('active')) cerrarModalRegistro();
             }
         });
-    </script>
 
-    <!-- Script independiente para el control del audio (MP3 Dra. Riveros) -->
-    <script>
-        (function() {
-            // URL del audio proporcionada
-            const AUDIO_URL = 'https://github.com/sistema-secretarios/dra-riveros/raw/refs/heads/main/dra%20riveros.mp3';
-            let currentAudio = null;
-            let isPlaying = false;
+        // === AUDIO SIN BADGE (MP3 Riveros) y apertura de modal ===
+        let currentAudio = null;
+        const imgWrapper = document.getElementById('imagenClickAudio');
+        const AUDIO_URL = 'https://github.com/sistema-secretarios/dra-riveros/raw/refs/heads/main/dra%20riveros.mp3';
 
-            // Elementos del DOM
-            const imgWrapper = document.getElementById('imagenClickAudio');
-            const audioBadge = document.getElementById('audioBadgeState');
-
-            if (!imgWrapper || !audioBadge) return;
-
-            // Función para actualizar la UI según estado del audio (íconos idénticos al anterior)
-            function setAudioState(state) {
-                if (state === 'loading') {
-                    imgWrapper.classList.add('cargando');
-                    imgWrapper.classList.remove('reproduciendo');
-                    audioBadge.textContent = '⏳';   // Ícono de carga
-                } else if (state === 'playing') {
-                    imgWrapper.classList.remove('cargando');
-                    imgWrapper.classList.add('reproduciendo');
-                    audioBadge.textContent = '⏸️';   // Ícono de pausa
-                } else { // stopped o error
-                    imgWrapper.classList.remove('cargando', 'reproduciendo');
-                    audioBadge.textContent = '🔊';   // Ícono de altavoz (reproducir)
-                }
+        function setAudioState(state) {
+            if (state === 'loading') {
+                imgWrapper.classList.add('cargando');
+                imgWrapper.classList.remove('reproduciendo');
+            } else if (state === 'playing') {
+                imgWrapper.classList.remove('cargando');
+                imgWrapper.classList.add('reproduciendo');
+            } else {
+                imgWrapper.classList.remove('cargando', 'reproduciendo');
             }
+        }
 
-            // Función principal toggle (play / pause)
-            function toggleSaludo() {
-                // Si no existe la instancia de audio, la creamos
-                if (!currentAudio) {
-                    currentAudio = new Audio(AUDIO_URL);
-                    currentAudio.preload = 'auto';
+        function toggleSaludoYAbrirModal() {
+            abrirModalLogin(); // Abre el modal de login al hacer clic
 
-                    // Eventos de la etiqueta audio
-                    currentAudio.addEventListener('waiting', () => setAudioState('loading'));
-                    currentAudio.addEventListener('playing', () => setAudioState('playing'));
-                    currentAudio.addEventListener('pause', () => setAudioState('stopped'));
-                    currentAudio.addEventListener('ended', () => {
-                        setAudioState('stopped');
-                        currentAudio.currentTime = 0;
-                        isPlaying = false;
-                    });
-                    currentAudio.addEventListener('error', (e) => {
-                        console.error('Error al cargar el audio:', e);
-                        setAudioState('stopped');
-                        audioBadge.textContent = '⚠️';
-                    });
-                }
-
-                // Si ya existe y está reproduciendo, pausamos
-                if (isPlaying && !currentAudio.paused) {
-                    currentAudio.pause();
-                    isPlaying = false;
-                    return;
-                }
-
-                // En cualquier otro caso, intentamos reproducir
-                setAudioState('loading');
-                currentAudio.play()
-                    .then(() => {
-                        isPlaying = true;
-                    })
-                    .catch(error => {
-                        console.warn('Reproducción bloqueada o error:', error);
-                        setAudioState('stopped');
-                        isPlaying = false;
-                    });
+            if (currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                return;
             }
+            if (!currentAudio) {
+                currentAudio = new Audio(AUDIO_URL);
+                currentAudio.preload = 'auto';
+                currentAudio.addEventListener('waiting', () => setAudioState('loading'));
+                currentAudio.addEventListener('playing', () => setAudioState('playing'));
+                currentAudio.addEventListener('pause', () => setAudioState('stopped'));
+                currentAudio.addEventListener('ended', () => {
+                    setAudioState('stopped');
+                    currentAudio.currentTime = 0;
+                });
+                currentAudio.addEventListener('error', () => {
+                    setAudioState('stopped');
+                    console.warn('Error en el audio');
+                });
+            }
+            setAudioState('loading');
+            currentAudio.play().catch(err => {
+                setAudioState('stopped');
+                console.warn('Audio bloqueado:', err);
+            });
+        }
 
-            // Asignar eventos: click y teclado (accesibilidad)
-            imgWrapper.addEventListener('click', (e) => {
+        imgWrapper.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSaludoYAbrirModal();
+        });
+        imgWrapper.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
                 e.stopPropagation();
-                toggleSaludo();
-            });
+                toggleSaludoYAbrirModal();
+            }
+        });
 
-            imgWrapper.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleSaludo();
-                }
-            });
-
-            // Limpiar referencia si la página se descarga (opcional)
-            window.addEventListener('beforeunload', () => {
-                if (currentAudio && !currentAudio.paused) {
-                    currentAudio.pause();
-                }
-            });
-        })();
-    </script>
-
-    <!-- Script para desvanecer créditos a los 5 segundos -->
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
+        // Desvanecer créditos a los 5 segundos
+        setTimeout(() => {
             const flotante = document.getElementById('creditos-flotante');
-            setTimeout(() => {
+            if (flotante) {
                 flotante.classList.add('fade-out');
                 setTimeout(() => flotante.remove(), 1000);
-            }, 5000);
-        });
+            }
+        }, 5000);
     </script>
-
 </body>
 </html>
