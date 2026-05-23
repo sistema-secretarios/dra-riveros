@@ -98,13 +98,32 @@
             max-width: 45%;
         }
 
+        /* === TÍTULO PRINCIPAL CON EFECTO MAGNÉTICO RÁPIDO (VERDE) === */
         .titulo-principal {
             font-size: clamp(3rem, 8vw, 5.5rem);
             font-weight: 900;
             line-height: 1.1;
             letter-spacing: -0.05em;
             margin-bottom: 20px;
-            color: oklch(0.55 0.08 145);
+            /* Gradiente de tonos verdes para efecto magnético */
+            background: linear-gradient(90deg, 
+                #1e6b3b 0%,      /* verde oscuro */
+                #2ecc71 25%,     /* verde esmeralda */
+                #00ff88 50%,     /* verde neón */
+                #28a745 75%,     /* verde medio */
+                #1e6b3b 100%);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            /* Sombra luminosa que resalta el color verde */
+            text-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+            animation: brilloMagnetico 1.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes brilloMagnetico {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
         .subtitulo-azul {
@@ -488,7 +507,7 @@
     <div class="contenedor-principal">
         <div class="panel-unico">
             <div class="brand-container">
-                <!-- Título en una sola línea: Dra. Riveros -->
+                <!-- Título con efecto magnético verde -->
                 <h1 class="titulo-principal">Dra. Riveros</h1>
                 <p class="subtitulo-azul">Defensoría Civil y Comercial 6</p>
                 <div class="info-institucional">
