@@ -54,6 +54,17 @@
             margin-top: 2px;
         }
 
+        /* Imagen RF más grande para mejor visibilidad */
+        .img-rf {
+            display: block;
+            width: 44px;      /* Aumentado de 32px a 44px */
+            height: auto;
+            max-width: 100%;
+            margin-top: 6px;  /* Un poco más de separación */
+            border-radius: 4px;
+            opacity: 0.9;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -502,6 +513,8 @@
     <div id="creditos-flotante">
         <span class="texto-autor">Diseño y programación: Rómulo Fioravante</span>
         <span class="texto-version">Versión 4.0.2026</span>
+        <!-- Imagen RF aumentada para mejor visibilidad -->
+        <img src="https://github.com/sistemadigital/iconos/blob/main/rf.png?raw=true" alt="RF" class="img-rf">
     </div>
 
     <div class="contenedor-principal">
