@@ -1,314 +1,394 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Dra. Riveros - Secretaria</title>
-    
-    <!-- Fuente Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
+        /* ========== ESTILOS PRINCIPALES ========== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        body, html {
-            height: 100%;
             font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
-            overflow-x: hidden;
-            color: oklch(0.25 0.02 145);
         }
 
-        /* --- FLOTANTE DE CRÉDITOS Y VERSIÓN --- */
-        #creditos-flotante {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: oklch(0.55 0.08 145);
-            color: white;
-            padding: 10px 18px;
-            border-radius: 8px;
-            z-index: 1100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        body {
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            animation: fadeIn 0.5s ease-out forwards;
-            transition: opacity 1s ease-out, transform 1s ease-out;
+            height: 100vh;
+            height: 100dvh;
+            background-color: #e6f5ec;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.2) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232ecc71' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            overflow: hidden;
         }
 
-        .texto-autor {
-            font-size: 0.7rem;
-            font-weight: 400;
-        }
-
-        .texto-version {
-            font-size: 0.6rem;
-            opacity: 0.8;
-            margin-top: 2px;
-        }
-
-        /* Imagen RF más grande para mejor visibilidad */
-        .img-rf {
-            display: block;
-            width: 44px;      /* Aumentado de 32px a 44px */
-            height: auto;
-            max-width: 100%;
-            margin-top: 6px;  /* Un poco más de separación */
-            border-radius: 4px;
-            opacity: 0.9;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-out {
-            opacity: 0 !important;
-            transform: translateY(-20px) !important;
-        }
-
-        /* --- CONTENEDOR PRINCIPAL (sin panel derecho, todo centrado) --- */
-        .contenedor-principal {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            width: 100%;
-            padding: 2rem;
-        }
-
-        /* Panel izquierdo ahora es único y centrado */
-        .panel-unico {
+        main {
             flex: 1;
-            max-width: 1300px;
+            background: transparent;
             display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 3rem;
-            background: radial-gradient(circle at 10% 50%, #d9f0e0 0%, #ffffff 100%);
-            border-radius: 3rem;
-            padding: 2rem 3rem;
+            flex-direction: column;
             position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
-        }
-
-        .brand-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            z-index: 2;
-            max-width: 45%;
-        }
-
-        /* === TÍTULO PRINCIPAL CON EFECTO MAGNÉTICO RÁPIDO (VERDE) === */
-        .titulo-principal {
-            font-size: clamp(3rem, 8vw, 5.5rem);
-            font-weight: 900;
-            line-height: 1.1;
-            letter-spacing: -0.05em;
-            margin-bottom: 20px;
-            /* Gradiente de tonos verdes para efecto magnético */
-            background: linear-gradient(90deg, 
-                #1e6b3b 0%,      /* verde oscuro */
-                #2ecc71 25%,     /* verde esmeralda */
-                #00ff88 50%,     /* verde neón */
-                #28a745 75%,     /* verde medio */
-                #1e6b3b 100%);
-            background-size: 300% 100%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            /* Sombra luminosa que resalta el color verde */
-            text-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
-            animation: brilloMagnetico 1.2s ease-in-out infinite alternate;
-        }
-
-        @keyframes brilloMagnetico {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
-
-        .subtitulo-azul {
-            font-size: 1.3rem;
-            color: oklch(0.40 0.04 145);
-            font-weight: 700;
-            margin-bottom: 30px;
-        }
-
-        .info-institucional {
-            border-left: 4px solid oklch(0.65 0.10 145);
-            padding-left: 20px;
-            font-size: 1.1rem;
-        }
-
-        .info-institucional p:first-child {
-            font-weight: 700;
-            color: oklch(0.25 0.02 145);
-        }
-
-        /* CONTENEDOR IMAGEN CON ANIMACIÓN VERDE + AUDIO (sin badge) */
-        .img-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            overflow: hidden;
+            padding-bottom: 0;
             z-index: 1;
         }
 
-        .img-wrapper {
+        #homeContent {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
             position: relative;
-            display: inline-block;
+        }
+
+        #dynamicContent {
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+            animation: fadeIn 1s ease;
+            background: transparent;
+            padding: 10px 20px 0 20px;
+            width: 100%;
+            position: relative;
+        }
+
+        .welcome-bar {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #2ecc71;
+            width: 100%;
+            justify-content: space-between;
+            cursor: default;
+            transition: background-color 0.2s;
+        }
+        .welcome-bar:hover {
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .left-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .welcome-message {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1e6b3b;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            white-space: nowrap;
+            cursor: default;
+        }
+
+        .sistema-digital-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1e6b3b;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            white-space: nowrap;
+            margin-left: auto;
+            cursor: default;
+        }
+
+        .top-image-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0;
+            overflow: hidden;
+            cursor: default;
+        }
+
+        .image-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 80%;
+            max-height: 80%;
+            justify-content: center;
+            position: relative;
+        }
+
+        .image-large {
+            width: 100%;
+            max-width: 420px;
+            aspect-ratio: 1 / 1;
             border-radius: 50%;
-            animation: float 6s ease-in-out infinite, softPulseGreen 3s ease-in-out infinite;
+            overflow: hidden;
+            border: 4px solid #2ecc71;
+            background: #ffffff;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 20;
+            box-shadow: 
+                0 0 30px rgba(46, 204, 113, 0.3),
+                0 0 60px rgba(46, 204, 113, 0.15),
+                inset 0 0 20px rgba(46, 204, 113, 0.1);
+            animation: glowPulse 3s ease-in-out infinite;
             cursor: pointer;
-            outline: none;
+            transition: transform 0.2s;
         }
 
-        .img-wrapper:focus-visible {
-            box-shadow: 0 0 0 4px oklch(0.65 0.10 145);
+        .image-large:hover {
+            transform: scale(1.02);
+        }
+
+        .image-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @keyframes glowPulse {
+            0% {
+                box-shadow: 0 0 30px rgba(46, 204, 113, 0.3), 0 0 60px rgba(46, 204, 113, 0.15), inset 0 0 20px rgba(46, 204, 113, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(46, 204, 113, 0.6), 0 0 100px rgba(46, 204, 113, 0.3), inset 0 0 30px rgba(46, 204, 113, 0.2);
+            }
+            100% {
+                box-shadow: 0 0 30px rgba(46, 204, 113, 0.3), 0 0 60px rgba(46, 204, 113, 0.15), inset 0 0 20px rgba(46, 204, 113, 0.1);
+            }
+        }
+
+        #spinnerCarga {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .spinner-wrapper {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .spinner-circle {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-        }
-
-        /* Anillo giratorio principal verde */
-        .img-wrapper::before {
-            content: '';
+            border: 4px solid transparent;
+            border-top: 4px solid #2ecc71;
+            border-right: 4px solid #00ff88;
+            border-bottom: 4px solid #1e6b3b;
+            border-left: 4px solid #28a745;
+            animation: spinCircle 1s linear infinite;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.6), 0 0 20px rgba(0, 255, 136, 0.6), 0 0 20px rgba(30, 107, 59, 0.6), 0 0 20px rgba(40, 167, 69, 0.6);
             position: absolute;
-            top: -15px;
-            left: -15px;
-            right: -15px;
-            bottom: -15px;
-            border-radius: 50%;
-            background: conic-gradient(
-                from 0deg,
-                #00ff88,
-                #00cc66,
-                #2e8b57,
-                #00994d,
-                #00ff88
-            );
-            opacity: 0.8;
-            z-index: -1;
-            animation: rotateRing 4s linear infinite;
-            box-shadow: 0 0 20px rgba(0, 255, 128, 0.5);
-            transition: all 0.3s ease;
+            top: 0;
+            left: 0;
         }
-
-        /* Segundo anillo externo blur */
-        .img-wrapper::after {
-            content: '';
-            position: absolute;
-            top: -25px;
-            left: -25px;
-            right: -25px;
-            bottom: -25px;
-            border-radius: 50%;
-            background: conic-gradient(
-                from 90deg,
-                rgba(0, 255, 136, 0.3),
-                rgba(0, 204, 102, 0.3),
-                rgba(46, 139, 86, 0.3),
-                rgba(0, 153, 77, 0.3),
-                rgba(0, 255, 136, 0.3)
-            );
-            z-index: -2;
-            animation: rotateRingReverse 6s linear infinite;
-            filter: blur(8px);
+        .spinner-text {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1e6b3b;
+            z-index: 2;
+            text-shadow: 0 0 8px rgba(255,255,255,0.8);
+            user-select: none;
         }
-
-        /* Estados del audio */
-        .img-wrapper.cargando::before {
-            animation: rotateRing 1s linear infinite;
-            filter: saturate(1.5);
-        }
-
-        .img-wrapper.reproduciendo::before {
-            animation: rotateRing 2s linear infinite;
-            box-shadow: 0 0 35px rgba(40, 167, 69, 0.7);
-            background: conic-gradient(
-                from 0deg,
-                #00ff88,
-                #28a745,
-                #00ff88,
-                #28a745,
-                #00ff88
-            );
-        }
-
-        @keyframes rotateRing {
+        @keyframes spinCircle {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        @keyframes rotateRingReverse {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(-360deg); }
-        }
-
-        @keyframes softPulseGreen {
-            0% { filter: drop-shadow(0 0 5px rgba(0, 200, 100, 0.3)); }
-            50% { filter: drop-shadow(0 0 22px rgba(0, 255, 128, 0.7)); }
-            100% { filter: drop-shadow(0 0 5px rgba(0, 200, 100, 0.3)); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .img-3d {
+        /* ===== NUEVO ELEMENTO INFERIOR: Dra. Riveros (solo móvil) ===== */
+        #draRiverosInferior {
+            display: none;
             width: 100%;
-            max-width: 420px;
-            height: auto;
-            display: block;
-            border-radius: 50%;
-            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
-            object-fit: cover;
-            aspect-ratio: 1 / 1;
-            pointer-events: none;
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e6b3b;
+            padding: 0.5rem 1rem 0.25rem 1rem;
+            background: transparent;
+            letter-spacing: -0.02em;
+            flex-shrink: 0;
         }
 
-        .img-3d:hover {
-            transform: scale(1.02);
-        }
-
-        /* Cintas decorativas */
-        .panel-unico::before, .panel-unico::after {
-            content: "";
-            position: absolute;
-            left: 30px;
-            right: 30px;
+        /* ===== FRANJA VERDE CON EFECTO LUMINOSO ===== */
+        .franja-verde {
+            width: 100%;
             height: 8px;
-            background: oklch(0.65 0.10 145);
-            opacity: 0.25;
-            border-radius: 4px;
+            flex-shrink: 0;
+            z-index: 10;
+            margin-top: auto;
+            background: linear-gradient(90deg, #1e6b3b, #2ecc71, #1e6b3b);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.7), 0 0 30px rgba(46, 204, 113, 0.3);
         }
-        .panel-unico::before { top: 30px; }
-        .panel-unico::after { bottom: 30px; }
 
-        /* --- MODALES ESTILO VERDE --- */
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        footer {
+            height: 70px;
+            background: transparent;
+            color: #1e6b3b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid rgba(30, 107, 59, 0.2);
+            z-index: 3000;
+            flex-shrink: 0;
+            backdrop-filter: blur(4px);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .fecha-actual {
+            color: #1e6b3b;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .btn-hora {
+            background: #1e6b3b;
+            border: 2px solid #ffffff;
+            border-radius: 40px;
+            padding: 0.2rem 0.7rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-hora:hover,
+        .btn-hora:active {
+            background: #28a745;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(30, 107, 59, 0.4);
+        }
+
+        .hora-actual {
+            color: inherit;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .footer-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .footer-center .btn-credenciales {
+            background: #1e6b3b;
+            border: 2px solid #ffffff;
+            border-radius: 40px;
+            padding: 0.4rem 1.6rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+        }
+
+        .footer-center .btn-credenciales:hover,
+        .footer-center .btn-credenciales:active {
+            background: #28a745;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(30, 107, 59, 0.4);
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .version-text {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1e6b3b;
+            cursor: pointer;
+            transition: color 0.2s;
+            letter-spacing: 0.3px;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .version-text:hover {
+            color: #2ecc71;
+        }
+
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 30, 15, 0.85);
-            backdrop-filter: blur(6px);
+            background-color: rgba(10, 45, 25, 0.85);
+            backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
+            z-index: 4000;
             visibility: hidden;
             opacity: 0;
             transition: visibility 0.2s, opacity 0.2s ease;
@@ -325,11 +405,12 @@
             width: 90%;
             border-radius: 2rem;
             padding: 2rem 1.8rem;
-            box-shadow: 0 30px 50px rgba(0,0,0,0.4);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2);
             position: relative;
-            transform: scale(0.95);
+            transform: scale(0.96);
             transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            border-top: 6px solid oklch(0.65 0.10 145);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            text-align: center;
         }
 
         .modal-overlay.active .modal-contenido {
@@ -344,223 +425,542 @@
             border: none;
             font-size: 1.8rem;
             cursor: pointer;
-            color: #aaa;
+            color: #8ba0b5;
             transition: 0.2s;
             line-height: 1;
         }
 
         .btn-cerrar-modal:hover {
-            color: oklch(0.55 0.08 145);
+            color: #1e6b3b;
         }
 
         .modal-contenido h3 {
-            font-weight: 900;
+            font-weight: 800;
             font-size: 1.8rem;
+            background: linear-gradient(135deg, #1e6b3b, #2ecc71);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.2rem;
+        }
+
+        .modal-contenido .modal-sub {
+            color: #3a5a4a;
+            font-weight: 600;
+            font-size: 0.95rem;
             margin-bottom: 1.5rem;
-            color: oklch(0.55 0.08 145);
-            letter-spacing: -0.02em;
+            line-height: 1.4;
         }
 
         .grupo-input {
             margin-bottom: 1.2rem;
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 6px;
+            width: 100%;
         }
 
         .grupo-input label {
             font-size: 0.7rem;
             font-weight: 700;
-            color: #4a6e5a;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #3a5a4a;
         }
 
         .grupo-input input {
-            padding: 14px;
-            border: 1px solid #d5ebe0;
-            border-radius: 18px;
+            padding: 14px 16px;
+            border: 1.5px solid #c8e6d9;
+            border-radius: 20px;
             font-size: 0.95rem;
-            background-color: #f9fff9;
+            font-family: 'Inter', monospace;
+            background: white;
             transition: all 0.2s;
             width: 100%;
+            max-width: 320px;
+            color: #0d2a1a;
+            text-align: center;
         }
 
         .grupo-input input:focus {
             outline: none;
-            border-color: #00cc66;
-            box-shadow: 0 0 0 3px rgba(0, 204, 102, 0.2);
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
         }
 
         .mostrar-clave {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             font-size: 0.8rem;
-            color: #2d3e2d;
+            font-weight: 500;
+            color: #0d2a1a;
             margin: -5px 0 12px 0;
             cursor: pointer;
         }
 
         .btn-modal-primario {
             width: 100%;
+            max-width: 320px;
             padding: 14px;
-            background: oklch(0.65 0.10 145);
+            background: #1e6b3b;
             color: white;
             border: none;
             border-radius: 40px;
-            font-weight: 800;
+            font-weight: 700;
             font-size: 1rem;
             cursor: pointer;
             margin-top: 8px;
-            transition: 0.2s;
+            transition: all 0.2s;
         }
 
         .btn-modal-primario:hover {
-            background: oklch(0.55 0.08 145);
+            background: #28a745;
             transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(30, 107, 59, 0.25);
         }
 
         .enlace-modal {
             text-align: center;
             margin-top: 1.2rem;
             font-size: 0.85rem;
+            font-weight: 500;
+            color: #3a5a4a;
         }
 
         .enlace-modal span {
-            color: #00994d;
+            color: #2ecc71;
             font-weight: 700;
             cursor: pointer;
+        }
+
+        .enlace-modal span:hover {
             text-decoration: underline;
         }
 
-        /* Toast de mensajes global */
         .auth-message-global {
             position: fixed;
-            bottom: 30px;
+            bottom: 130px;
             left: 50%;
             transform: translateX(-50%);
-            background: #1e2a36;
+            background: #0d2a1a;
             color: white;
             padding: 12px 24px;
             border-radius: 60px;
             font-size: 0.9rem;
-            z-index: 2100;
-            display: none;
-            backdrop-filter: blur(8px);
-            background: rgba(30, 60, 40, 0.95);
             font-weight: 500;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+            z-index: 5000;
+            display: none;
+            backdrop-filter: blur(12px);
+            background: rgba(13, 42, 26, 0.95);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
             text-align: center;
             max-width: 85vw;
         }
 
         .auth-message-global.error {
-            background: #c0392b;
+            background: #bc4742;
         }
 
         .auth-message-global.success {
-            background: #2c6e2f;
+            background: #2a9d8f;
         }
 
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .panel-unico {
+        .version-info-container {
+            position: fixed;
+            bottom: 76px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #1e6b3b;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+            border: 0.5px solid #2ecc71;
+            z-index: 6000;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            padding: 5px 8px 5px 12px;
+        }
+
+        .version-info-container.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .version-text-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 400;
+            font-size: 0.65rem;
+            line-height: 1.3;
+            white-space: nowrap;
+        }
+        .version-text-left .nombre {
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .version-image-right {
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .version-image-right img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .welcome-bar {
+                justify-content: center;
+                padding: 0.5rem 1rem;
+            }
+            .left-group {
+                display: none;
+            }
+            .sistema-digital-text {
+                font-size: 2.2rem;
+                margin-left: 0;
+                text-align: center;
+                width: 100%;
+            }
+            .welcome-message {
+                cursor: default;
+            }
+
+            /* Mostrar el nombre en la franja inferior */
+            #draRiverosInferior {
+                display: block;
+                font-size: 2.2rem;
+                padding: 0.3rem 1rem 0.1rem 1rem;
+            }
+
+            .image-large {
+                max-width: 380px;
+                border-width: 4px;
+            }
+            .image-wrapper {
+                max-width: 90%;
+            }
+
+            footer {
+                height: auto;
+                min-height: 60px;
+                padding: 8px 16px;
+                background: rgba(255, 255, 255, 0.5);
                 flex-direction: column;
-                text-align: center;
-                padding: 2rem 1.5rem;
-                gap: 2rem;
             }
-            .brand-container {
+            .footer-content {
+                flex-direction: column;
+                gap: 6px;
+                width: 100%;
+            }
+            .footer-left {
+                display: flex !important;
+                flex-direction: row;
+                justify-content: center;
                 align-items: center;
+                gap: 10px;
+                width: 100%;
+                order: 1;
+                flex-shrink: 1;
+                background: transparent;
+                padding: 0;
+            }
+            .footer-left .fecha-actual {
+                color: #1e6b3b !important;
+                font-weight: 600;
+                font-size: 0.85rem;
+                background: transparent;
+                padding: 0;
+            }
+            .footer-left .btn-hora {
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                color: #1e6b3b !important;
+                font-weight: 700;
+                font-size: 0.85rem;
+                transform: none !important;
+                border-radius: 0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .footer-left .btn-hora:hover,
+            .footer-left .btn-hora:active {
+                background: transparent !important;
+                color: #28a745 !important;
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            .footer-left .hora-actual {
+                color: #1e6b3b !important;
+                font-weight: 700;
+                font-size: 0.85rem;
+            }
+
+            .footer-center {
+                order: 2;
+                width: 100%;
+                flex: none;
+                padding: 4px 0;
+            }
+            .footer-center .btn-credenciales {
+                width: 100%;
                 max-width: 100%;
+                font-size: 0.9rem;
+                padding: 0.6rem 1.5rem;
+                white-space: normal;
+                border-width: 2px;
+                background: #1e6b3b !important;
+                border-color: #ffffff !important;
+                color: #ffffff !important;
+                box-shadow: 0 0 20px rgba(30, 107, 59, 0.3) !important;
             }
-            .info-institucional {
-                border-left: none;
-                border-top: 3px solid oklch(0.65 0.10 145);
-                padding: 15px 0 0 0;
-                text-align: center;
+            .footer-center .btn-credenciales:hover,
+            .footer-center .btn-credenciales:active {
+                background: #28a745 !important;
+                color: #ffffff !important;
+                transform: scale(0.98) !important;
+                box-shadow: 0 0 30px rgba(30, 107, 59, 0.5) !important;
             }
-            .img-3d {
-                max-width: 280px;
+
+            .footer-right {
+                display: none;
             }
-            .img-wrapper::before {
-                top: -10px;
-                left: -10px;
-                right: -10px;
-                bottom: -10px;
+
+            .version-info-container {
+                position: fixed;
+                left: 50%;
+                transform: translateX(-50%) scale(0.9);
+                bottom: auto;
+                right: auto;
+                top: auto;
+                padding: 3px 6px 3px 8px;
+                gap: 4px;
+                border-radius: 8px;
+                border-width: 0.5px;
             }
-            .img-wrapper::after {
-                top: -18px;
-                left: -18px;
-                right: -18px;
-                bottom: -18px;
+            .version-info-container.show {
+                transform: translateX(-50%) scale(1);
+            }
+            .version-image-right {
+                width: 32px;
+                height: 32px;
+                border-radius: 6px;
+            }
+            .version-text-left {
+                font-size: 0.45rem;
+                line-height: 1.2;
+            }
+            .version-text-left .nombre {
+                font-size: 0.5rem;
             }
         }
 
-        @media (max-width: 640px) {
-            .modal-contenido {
-                padding: 1.5rem;
+        /* ===== ESCRITORIO: POPUP MÁS PEQUEÑO ===== */
+        @media (min-width: 769px) {
+            .version-info-container {
+                padding: 3px 5px 3px 8px;
+                gap: 4px;
+                border-radius: 8px;
             }
-            .titulo-principal {
-                font-size: 3rem;
-                line-height: 1.1;
+            .version-image-right {
+                width: 40px;
+                height: 40px;
+                border-radius: 6px;
+            }
+            .version-text-left {
+                font-size: 0.5rem;
+                line-height: 1.2;
+            }
+            .version-text-left .nombre {
+                font-size: 0.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .image-large {
+                max-width: 300px;
+                border-width: 3px;
+            }
+            .image-wrapper {
+                max-width: 95%;
+            }
+            .footer-center .btn-credenciales {
+                font-size: 0.85rem;
+                padding: 0.5rem 1rem;
+            }
+            .modal-contenido {
+                padding: 1rem;
+            }
+            .modal-contenido h3 {
+                font-size: 1.2rem;
+            }
+            .btn-modal-primario {
+                font-size: 0.85rem;
+                padding: 10px;
+            }
+            .grupo-input input {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
+            .version-info-container {
+                padding: 2px 4px 2px 6px;
+                gap: 3px;
+            }
+            .version-image-right {
+                width: 28px;
+                height: 28px;
+            }
+            .version-text-left {
+                font-size: 0.4rem;
+            }
+            .version-text-left .nombre {
+                font-size: 0.45rem;
+            }
+            .sistema-digital-text {
+                font-size: 1.8rem;
+            }
+            #draRiverosInferior {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .image-large {
+                max-width: 250px;
+                border-width: 3px;
+            }
+            .image-wrapper {
+                max-width: 98%;
+            }
+            .sistema-digital-text {
+                font-size: 1.6rem;
+            }
+            .footer-center .btn-credenciales {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.8rem;
+            }
+            .version-info-container {
+                padding: 2px 3px 2px 5px;
+                gap: 2px;
+            }
+            .version-image-right {
+                width: 24px;
+                height: 24px;
+            }
+            .version-text-left {
+                font-size: 0.35rem;
+            }
+            .version-text-left .nombre {
+                font-size: 0.4rem;
+            }
+            #draRiverosInferior {
+                font-size: 1.6rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <div id="creditos-flotante">
-        <span class="texto-autor">Diseño y programación: Rómulo Fioravante</span>
-        <span class="texto-version">Versión 4.0.2026</span>
-        <!-- Imagen RF aumentada para mejor visibilidad -->
-        <img src="https://github.com/sistemadigital/iconos/blob/main/rf.png?raw=true" alt="RF" class="img-rf">
-    </div>
-
-    <div class="contenedor-principal">
-        <div class="panel-unico">
-            <div class="brand-container">
-                <!-- Título con efecto magnético verde -->
-                <h1 class="titulo-principal">Dra. Riveros</h1>
-                <p class="subtitulo-azul">Defensoría Civil y Comercial 6</p>
-                <div class="info-institucional">
-                    <p>MINISTERIO PÚBLICO DE MISIONES</p>
-                    <p>Acceso Exclusivo de Secretaria</p>
-                    <p style="font-size: 0.85rem; margin-top: 10px;">Haz clic en la imagen para acceder</p>
+    <main>
+        <div id="homeContent">
+            <div id="dynamicContent">
+                <div class="welcome-container">
+                    <div class="welcome-bar" id="welcomeBar">
+                        <div class="left-group" id="leftGroup">
+                            <div>
+                                <div class="welcome-message" id="welcomeMessage">Hola, Dra. Riveros</div>
+                            </div>
+                        </div>
+                        <span class="sistema-digital-text" id="sistemaDigitalText">Sistema Digital Secretarios</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="img-container">
-                <!-- Wrapper con anillos giratorios (sin badge de audio) -->
-                <div class="img-wrapper" id="imagenClickAudio" 
-                     role="button" 
-                     tabindex="0" 
-                     aria-label="Abrir acceso al sistema y escuchar saludo institucional" 
-                     title="Haz clic: abre inicio de sesión + audio">
-                    <img src="https://github.com/sistemadigital/iconos/blob/main/5.png?raw=true"
-                         alt="Sistema Digital" 
-                         class="img-3d">
+            <div class="top-image-container">
+                <div class="image-wrapper">
+                    <div class="image-large" id="imagenClickAudio">
+                        <img src="https://github.com/sistemadigital/iconos/blob/main/5.png?raw=true" alt="Dra. Riveros - Defensoría" />
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- NUEVO ELEMENTO INFERIOR: solo visible en móvil -->
+        <div id="draRiverosInferior">Dra. Riveros</div>
+
+        <!-- FRANJA VERDE CON EFECTO LUMINOSO -->
+        <div class="franja-verde"></div>
+    </main>
+
+    <div id="spinnerCarga">
+        <div class="spinner-wrapper">
+            <div class="spinner-circle"></div>
+            <span class="spinner-text" id="spinnerText">0%</span>
+        </div>
     </div>
 
-    <!-- MODAL LOGIN -->
+    <footer id="mainFooter">
+        <div class="footer-content">
+            <div class="footer-left">
+                <span class="fecha-actual" id="currentDateText"></span>
+                <button class="btn-hora"><span class="hora-actual" id="currentTimeText"></span></button>
+            </div>
+            <div class="footer-center">
+                <button class="btn-credenciales" id="btnFooterCredenciales">Ingresa tus credenciales para comenzar</button>
+            </div>
+            <div class="footer-right">
+                <span class="version-text" id="versionText">Versión 4.0.2026</span>
+            </div>
+        </div>
+    </footer>
+
     <div id="modalLogin" class="modal-overlay">
         <div class="modal-contenido">
             <button class="btn-cerrar-modal" id="cerrarModalLoginBtn">&times;</button>
-            <h3>Bienvenida</h3>
+            <h3>Dra. Riveros</h3>
+            <p class="modal-sub">Defensoría Civil y Comercial 6<br><span style="font-weight:400;font-size:0.85rem;">Ministerio Público de Misiones</span></p>
             <div>
                 <div class="grupo-input">
                     <label>Correo electrónico</label>
-                    <input type="email" id="loginEmail" placeholder="usuario o email@mpmisiones.gob.ar" autocomplete="email">
+                    <input type="email" id="loginEmail" placeholder="usuario@mpmisiones.gob.ar" autocomplete="email" />
                 </div>
                 <div class="grupo-input">
                     <label>Contraseña</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+                    <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
                 </div>
                 <label class="mostrar-clave">
-                    <input type="checkbox" id="mostrarLoginPass"> Mostrar contraseña
+                    <input type="checkbox" id="mostrarLoginPass" /> Mostrar contraseña
                 </label>
                 <button class="btn-modal-primario" id="btnLoginAction">Entrar al sistema</button>
                 <div class="enlace-modal">
@@ -570,26 +970,26 @@
         </div>
     </div>
 
-    <!-- MODAL REGISTRO -->
     <div id="modalRegistro" class="modal-overlay">
         <div class="modal-contenido">
             <button class="btn-cerrar-modal" id="cerrarModalRegistroBtn">&times;</button>
-            <h3>Registro</h3>
+            <h3>Dra. Riveros</h3>
+            <p class="modal-sub">Defensoría Civil y Comercial 6<br><span style="font-weight:400;font-size:0.85rem;">Ministerio Público de Misiones</span></p>
             <div>
                 <div class="grupo-input">
                     <label>Nombre completo</label>
-                    <input type="text" id="registerName" placeholder="Nombre y apellido" autocomplete="name">
+                    <input type="text" id="registerName" placeholder="Nombre y apellido" autocomplete="name" />
                 </div>
                 <div class="grupo-input">
                     <label>Correo electrónico</label>
-                    <input type="email" id="registerEmail" placeholder="usuario o email@mpmisiones.gob.ar" autocomplete="email">
+                    <input type="email" id="registerEmail" placeholder="usuario@mpmisiones.gob.ar" autocomplete="email" />
                 </div>
                 <div class="grupo-input">
                     <label>Contraseña</label>
-                    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
                 </div>
                 <label class="mostrar-clave">
-                    <input type="checkbox" id="mostrarRegPass"> Mostrar contraseña
+                    <input type="checkbox" id="mostrarRegPass" /> Mostrar contraseña
                 </label>
                 <button class="btn-modal-primario" id="btnRegisterAction">Registrarse</button>
                 <div class="enlace-modal">
@@ -599,14 +999,26 @@
         </div>
     </div>
 
-    <!-- Toast para mensajes -->
     <div id="globalAuthMessage" class="auth-message-global"></div>
 
-    <!-- FIREBASE (configuración original de Riveros) y lógica de autenticación + audio modal (sin badge) -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    <div id="versionInfoContainer" class="version-info-container">
+        <div class="version-text-left">
+            <span>Diseño y Programación:</span>
+            <span class="nombre">Rómulo Fioravante</span>
+        </div>
+        <div class="version-image-right">
+            <img src="https://github.com/sistemadigital/iconos/blob/main/rf.png?raw=true" alt="Rómulo Fioravante" />
+        </div>
+    </div>
 
+    <!-- FIREBASE y lógica de autenticación + audio -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js">
+    </script>
+
+    <script>
+        // ─── CONFIGURACIÓN DE FIREBASE (RIVEROS) ───
         const firebaseConfig = {
             apiKey: "AIzaSyDJZiGAhByx5zCIVg79fIMlzE1njuauW3k",
             authDomain: "secretarios-def.firebaseapp.com",
@@ -616,19 +1028,75 @@
             appId: "1:533584198983:web:f51f57146ed16c813ca062"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const DEFAULT_DOMAIN = "@mpmisiones.gob.ar";
 
-        let isRegistering = false;
-        let isLoggingIn = false;
+        // ─── ELEMENTOS DOM ───
+        const modalLogin = document.getElementById('modalLogin');
+        const modalRegistro = document.getElementById('modalRegistro');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const btnFooter = document.getElementById('btnFooterCredenciales');
+        const welcomeBar = document.getElementById('welcomeBar');
+        const sistemaDigitalText = document.getElementById('sistemaDigitalText');
 
-        function formatEmail(input) {
-            let email = input.trim();
-            if (email && !email.includes('@')) {
-                email += DEFAULT_DOMAIN;
+        const spinnerCarga = document.getElementById('spinnerCarga');
+        const spinnerText = document.getElementById('spinnerText');
+
+        let currentState = 'idle';
+
+        // ─── AUDIO ───
+        let currentAudio = null;
+        const AUDIO_URL = 'https://github.com/sistema-secretarios/dra-riveros/raw/refs/heads/main/dra%20riveros.mp3';
+
+        // ─── FUNCIONES DE AUTENTICACIÓN ───
+        function normalizeEmail(input) {
+            input = input.trim();
+            if (!input) return null;
+            if (input.includes('@')) {
+                return input.toLowerCase();
+            } else {
+                return input.toLowerCase() + DEFAULT_DOMAIN;
             }
-            return email;
+        }
+
+        function resetToInitial() {
+            modalLogin.classList.remove('active');
+            modalRegistro.classList.remove('active');
+            currentState = 'idle';
+        }
+
+        function abrirLogin() {
+            if (currentState === 'idle') {
+                modalLogin.classList.add('active');
+                currentState = 'modalOpen';
+                document.getElementById('loginEmail').focus();
+            }
+        }
+
+        function abrirRegistro() {
+            if (currentState === 'idle') {
+                modalRegistro.classList.add('active');
+                currentState = 'modalOpen';
+                document.getElementById('registerName').focus();
+            }
+        }
+
+        function updateUI(user) {
+            if (user) {
+                const displayName = user.displayName || user.email || 'Usuario';
+                welcomeMessage.textContent = `Hola, ${displayName}`;
+                btnFooter.textContent = 'Cerrar sesión';
+                btnFooter.onclick = () => {
+                    auth.signOut().catch((error) => {
+                        showMessage('Error al cerrar sesión: ' + error.message, 'error');
+                    });
+                };
+            } else {
+                welcomeMessage.textContent = 'Hola, Dra. Riveros';
+                btnFooter.textContent = 'Ingresa tus credenciales para comenzar';
+                btnFooter.onclick = abrirLogin;
+            }
         }
 
         function showMessage(msg, type) {
@@ -641,40 +1109,80 @@
             setTimeout(() => {
                 div.style.display = 'none';
                 div.classList.remove('error', 'success');
-            }, 4000);
+            }, 5000);
         }
 
-        // === LOGIN desde modal ===
-        window.loginUser = async function() {
-            const rawEmail = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const email = formatEmail(rawEmail);
+        function mostrarSpinnerConContador() {
+            spinnerCarga.style.display = 'flex';
+            let progreso = 0;
+            spinnerText.textContent = '0%';
+            const intervalo = setInterval(() => {
+                progreso += 1;
+                if (progreso > 100) {
+                    clearInterval(intervalo);
+                    window.location.href = 'app.html';
+                    return;
+                }
+                spinnerText.textContent = progreso + '%';
+            }, 35);
+            window._intervaloCarga = intervalo;
+        }
 
-            if (!email || !password) {
+        window.loginUser = function() {
+            const rawEmail = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!rawEmail || !password) {
                 showMessage('Completa todos los campos', 'error');
                 return;
             }
-            try {
-                isLoggingIn = true;
-                await signInWithEmailAndPassword(auth, email, password);
-                showMessage('Acceso concedido. Redirigiendo...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'app.html';
-                }, 2000);
-            } catch (error) {
-                isLoggingIn = false;
-                showMessage('Credenciales inválidas', 'error');
+
+            const email = normalizeEmail(rawEmail);
+            if (!email) {
+                showMessage('Correo electrónico inválido', 'error');
+                return;
             }
+
+            mostrarSpinnerConContador();
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    showMessage('✅ Inicio de sesión exitoso', 'success');
+                    resetToInitial();
+                })
+                .catch((error) => {
+                    if (window._intervaloCarga) {
+                        clearInterval(window._intervaloCarga);
+                        window._intervaloCarga = null;
+                    }
+                    spinnerCarga.style.display = 'none';
+                    let msg = 'Error al iniciar sesión: ';
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            msg += 'Usuario no encontrado.';
+                            break;
+                        case 'auth/wrong-password':
+                            msg += 'Contraseña incorrecta.';
+                            break;
+                        case 'auth/invalid-email':
+                            msg += 'Correo electrónico inválido.';
+                            break;
+                        case 'auth/too-many-requests':
+                            msg += 'Demasiados intentos. Intenta más tarde.';
+                            break;
+                        default:
+                            msg += error.message;
+                    }
+                    showMessage(msg, 'error');
+                });
         };
 
-        // === REGISTRO desde modal ===
-        window.registerUser = async function() {
+        window.registerUser = function() {
             const name = document.getElementById('registerName').value.trim();
-            const rawEmail = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const email = formatEmail(rawEmail);
+            const rawEmail = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value.trim();
 
-            if (!name || !email || !password) {
+            if (!name || !rawEmail || !password) {
                 showMessage('Completa todos los campos', 'error');
                 return;
             }
@@ -682,140 +1190,313 @@
                 showMessage('La contraseña debe tener al menos 6 caracteres', 'error');
                 return;
             }
-            isRegistering = true;
-            try {
-                const cred = await createUserWithEmailAndPassword(auth, email, password);
-                await updateProfile(cred.user, { displayName: name });
-                showMessage('Cuenta creada con éxito', 'success');
-                setTimeout(() => {
-                    window.location.href = 'app.html';
-                }, 2000);
-            } catch (error) {
-                isRegistering = false;
-                if (error.code === 'auth/email-already-in-use') {
-                    showMessage('El correo ya está registrado', 'error');
-                } else {
-                    showMessage('Error al crear la cuenta', 'error');
+
+            const email = normalizeEmail(rawEmail);
+            if (!email) {
+                showMessage('Correo electrónico inválido', 'error');
+                return;
+            }
+
+            mostrarSpinnerConContador();
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    return user.updateProfile({ displayName: name }).then(() => {
+                        showMessage('✅ Registro exitoso. ¡Bienvenido!', 'success');
+                        resetToInitial();
+                    });
+                })
+                .catch((error) => {
+                    if (window._intervaloCarga) {
+                        clearInterval(window._intervaloCarga);
+                        window._intervaloCarga = null;
+                    }
+                    spinnerCarga.style.display = 'none';
+                    let msg = 'Error al registrarse: ';
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            msg += 'El correo ya está registrado.';
+                            break;
+                        case 'auth/invalid-email':
+                            msg += 'Correo electrónico inválido.';
+                            break;
+                        case 'auth/weak-password':
+                            msg += 'La contraseña es demasiado débil.';
+                            break;
+                        default:
+                            msg += error.message;
+                    }
+                    showMessage(msg, 'error');
+                });
+        };
+
+        // ─── ACTUALIZAR TEXTO DE "Sistema Digital" según ancho ───
+        function actualizarTextoSistema() {
+            const esMovil = window.innerWidth <= 768;
+            if (esMovil) {
+                sistemaDigitalText.textContent = 'Sistema Secretarios';
+            } else {
+                sistemaDigitalText.textContent = 'Sistema Digital Secretarios';
+            }
+        }
+
+        // ─── EVENTOS DE MODALES ───
+        document.getElementById('btnLoginAction').addEventListener('click', window.loginUser);
+        document.getElementById('btnRegisterAction').addEventListener('click', window.registerUser);
+
+        const mostrarLogin = document.getElementById('mostrarLoginPass');
+        const loginPass = document.getElementById('loginPassword');
+        mostrarLogin.addEventListener('change', () => {
+            loginPass.type = mostrarLogin.checked ? 'text' : 'password';
+        });
+        const mostrarReg = document.getElementById('mostrarRegPass');
+        const regPass = document.getElementById('registerPassword');
+        mostrarReg.addEventListener('change', () => {
+            regPass.type = mostrarReg.checked ? 'text' : 'password';
+        });
+
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassInput = document.getElementById('loginPassword');
+        const handleLoginEnter = (e) => { if (e.key === 'Enter') window.loginUser(); };
+        loginEmail.addEventListener('keypress', handleLoginEnter);
+        loginPassInput.addEventListener('keypress', handleLoginEnter);
+
+        const regName = document.getElementById('registerName');
+        const regEmail = document.getElementById('registerEmail');
+        const regPassword = document.getElementById('registerPassword');
+        const handleRegEnter = (e) => { if (e.key === 'Enter') window.registerUser(); };
+        regName.addEventListener('keypress', handleRegEnter);
+        regEmail.addEventListener('keypress', handleRegEnter);
+        regPassword.addEventListener('keypress', handleRegEnter);
+
+        // ─── POPUP VERSIÓN ───
+        const versionText = document.getElementById('versionText');
+        const versionContainer = document.getElementById('versionInfoContainer');
+        let popupTimeout = null;
+
+        function cerrarPopup() {
+            versionContainer.classList.remove('show');
+            if (popupTimeout) {
+                clearTimeout(popupTimeout);
+                popupTimeout = null;
+            }
+        }
+
+        function mostrarPopupConTimeout() {
+            if (versionContainer.classList.contains('show')) {
+                if (popupTimeout) {
+                    clearTimeout(popupTimeout);
+                    popupTimeout = null;
+                }
+                popupTimeout = setTimeout(() => {
+                    cerrarPopup();
+                }, 3000);
+            } else {
+                versionContainer.classList.add('show');
+                if (popupTimeout) {
+                    clearTimeout(popupTimeout);
+                    popupTimeout = null;
+                }
+                popupTimeout = setTimeout(() => {
+                    cerrarPopup();
+                }, 3000);
+            }
+        }
+
+        function togglePopup(e) {
+            e.stopPropagation();
+            if (versionContainer.classList.contains('show')) {
+                cerrarPopup();
+            } else {
+                mostrarPopupConTimeout();
+            }
+        }
+
+        versionText.addEventListener('click', togglePopup);
+
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth > 768 && versionContainer.classList.contains('show')) {
+                if (!versionContainer.contains(e.target) && e.target !== versionText) {
+                    cerrarPopup();
                 }
             }
-        };
-
-        // Redirección si ya está autenticado
-        onAuthStateChanged(auth, user => {
-            if (user && !isRegistering && !isLoggingIn && (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '')) {
-                window.location.href = 'app.html';
-            }
         });
 
-        // === MANEJO DE MODALES ===
-        const modalLogin = document.getElementById('modalLogin');
-        const modalRegistro = document.getElementById('modalRegistro');
+        // ─── MODALES LOGIN/REGISTRO ───
+        function setupModalEvents() {
+            const cerrarLogin = document.getElementById('cerrarModalLoginBtn');
+            const cerrarRegistro = document.getElementById('cerrarModalRegistroBtn');
+            
+            const handleCloseModalAndReset = () => {
+                if (currentState === 'modalOpen') resetToInitial();
+            };
 
-        function abrirModalLogin() {
-            modalLogin.classList.add('active');
-            document.getElementById('loginEmail').focus();
+            cerrarLogin.addEventListener('click', handleCloseModalAndReset);
+            cerrarRegistro.addEventListener('click', handleCloseModalAndReset);
+
+            modalLogin.addEventListener('click', (e) => {
+                if (e.target === modalLogin) handleCloseModalAndReset();
+            });
+            modalRegistro.addEventListener('click', (e) => {
+                if (e.target === modalRegistro) handleCloseModalAndReset();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && currentState === 'modalOpen') {
+                    handleCloseModalAndReset();
+                }
+            });
+
+            const switchToReg = document.getElementById('cambiarARegistroDesdeLogin');
+            const switchToLogin = document.getElementById('cambiarALoginDesdeRegistro');
+            switchToReg.addEventListener('click', () => {
+                if (currentState === 'modalOpen') {
+                    modalLogin.classList.remove('active');
+                    modalRegistro.classList.add('active');
+                    document.getElementById('registerName').focus();
+                }
+            });
+            switchToLogin.addEventListener('click', () => {
+                if (currentState === 'modalOpen') {
+                    modalRegistro.classList.remove('active');
+                    modalLogin.classList.add('active');
+                    document.getElementById('loginEmail').focus();
+                }
+            });
         }
-        function cerrarModalLogin() {
-            modalLogin.classList.remove('active');
-        }
-        function abrirModalRegistro() {
-            modalRegistro.classList.add('active');
-            document.getElementById('registerName').focus();
-        }
-        function cerrarModalRegistro() {
-            modalRegistro.classList.remove('active');
-        }
 
-        // Cerrar con X
-        document.getElementById('cerrarModalLoginBtn').addEventListener('click', cerrarModalLogin);
-        document.getElementById('cerrarModalRegistroBtn').addEventListener('click', cerrarModalRegistro);
-
-        // Cerrar al hacer clic fuera
-        modalLogin.addEventListener('click', (e) => {
-            if (e.target === modalLogin) cerrarModalLogin();
-        });
-        modalRegistro.addEventListener('click', (e) => {
-            if (e.target === modalRegistro) cerrarModalRegistro();
-        });
-
-        // Botones acción
-        document.getElementById('btnLoginAction').addEventListener('click', () => loginUser());
-        document.getElementById('btnRegisterAction').addEventListener('click', () => registerUser());
-
-        // Mostrar/ocultar contraseña
-        const mostrarLoginCheck = document.getElementById('mostrarLoginPass');
-        const loginPassInput = document.getElementById('loginPassword');
-        mostrarLoginCheck.addEventListener('change', () => {
-            loginPassInput.type = mostrarLoginCheck.checked ? 'text' : 'password';
-        });
-        const mostrarRegCheck = document.getElementById('mostrarRegPass');
-        const regPassInput = document.getElementById('registerPassword');
-        mostrarRegCheck.addEventListener('change', () => {
-            regPassInput.type = mostrarRegCheck.checked ? 'text' : 'password';
-        });
-
-        // Navegación entre modales
-        document.getElementById('cambiarARegistroDesdeLogin').addEventListener('click', () => {
-            cerrarModalLogin();
-            abrirModalRegistro();
-        });
-        document.getElementById('cambiarALoginDesdeRegistro').addEventListener('click', () => {
-            cerrarModalRegistro();
-            abrirModalLogin();
-        });
-
-        // Enter para login y registro
-        const loginEmailInput = document.getElementById('loginEmail');
-        const loginPasswordInput = document.getElementById('loginPassword');
-        const handleLoginEnter = (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                loginUser();
+        // ─── FECHA Y HORA ───
+        function actualizarFechaYHora() {
+            const ahora = new Date();
+            
+            const opcionesFecha = { day: '2-digit', month: 'long', year: 'numeric' };
+            let fechaString = ahora.toLocaleDateString('es-ES', opcionesFecha);
+            const partesFecha = fechaString.split(' de ');
+            if (partesFecha.length === 3) {
+                 partesFecha[1] = partesFecha[1].charAt(0).toUpperCase() + partesFecha[1].slice(1);
             }
-        };
-        loginEmailInput.addEventListener('keypress', handleLoginEnter);
-        loginPasswordInput.addEventListener('keypress', handleLoginEnter);
+            document.getElementById('currentDateText').textContent = partesFecha.join(' de ');
 
-        const regNameInput = document.getElementById('registerName');
-        const regEmailInput = document.getElementById('registerEmail');
-        const regPasswordInput = document.getElementById('registerPassword');
-        const handleRegisterEnter = (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                registerUser();
-            }
-        };
-        regNameInput.addEventListener('keypress', handleRegisterEnter);
-        regEmailInput.addEventListener('keypress', handleRegisterEnter);
-        regPasswordInput.addEventListener('keypress', handleRegisterEnter);
+            const opcionesHora = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const horaString = ahora.toLocaleTimeString('es-ES', opcionesHora);
+            document.getElementById('currentTimeText').textContent = horaString;
+        }
+        
+        setInterval(actualizarFechaYHora, 1000);
+        actualizarFechaYHora();
 
-        // Escape cierra modales
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (modalLogin.classList.contains('active')) cerrarModalLogin();
-                if (modalRegistro.classList.contains('active')) cerrarModalRegistro();
-            }
-        });
-
-        // === AUDIO SIN BADGE (MP3 Riveros) y apertura de modal ===
-        let currentAudio = null;
-        const imgWrapper = document.getElementById('imagenClickAudio');
-        const AUDIO_URL = 'https://github.com/sistema-secretarios/dra-riveros/raw/refs/heads/main/dra%20riveros.mp3';
-
-        function setAudioState(state) {
-            if (state === 'loading') {
-                imgWrapper.classList.add('cargando');
-                imgWrapper.classList.remove('reproduciendo');
-            } else if (state === 'playing') {
-                imgWrapper.classList.remove('cargando');
-                imgWrapper.classList.add('reproduciendo');
+        // ─── OBSERVADOR DE AUTENTICACIÓN ───
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                if (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '') {
+                    window.location.href = 'app.html';
+                }
             } else {
-                imgWrapper.classList.remove('cargando', 'reproduciendo');
+                updateUI(null);
+                if (currentState === 'modalOpen') {
+                    resetToInitial();
+                }
+            }
+        });
+
+        // ─── INICIALIZACIÓN ───
+        resetToInitial();
+        setupModalEvents();
+        updateUI(null);
+        actualizarTextoSistema();
+
+        // ─── INTERCAMBIO DE IMAGEN (opcional) ───
+        const imgElement = document.querySelector('.image-large img');
+        const imageUrls = [
+            'https://github.com/sistemadigital/iconos/blob/main/5.png?raw=true'
+        ];
+        let currentIndex = 0;
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % imageUrls.length;
+            imgElement.src = imageUrls[currentIndex];
+        }, 2000);
+
+        // ─── ACTUALIZAR TEXTO AL REDIMENSIONAR ───
+        window.addEventListener('resize', actualizarTextoSistema);
+
+        // ─── POSICIONAMIENTO DEL POPUP EN MÓVIL ───
+        function posicionarPopupDebajoDeWelcome() {
+            if (window.innerWidth <= 768) {
+                const rect = welcomeBar.getBoundingClientRect();
+                const topPos = rect.bottom + 4;
+                versionContainer.style.top = topPos + 'px';
+                versionContainer.style.bottom = 'auto';
+                versionContainer.style.right = 'auto';
+            } else {
+                versionContainer.style.top = '';
+                versionContainer.style.bottom = '';
+                versionContainer.style.right = '';
+                versionContainer.style.left = '';
             }
         }
 
-        function toggleSaludoYAbrirModal() {
-            abrirModalLogin(); // Abre el modal de login al hacer clic
+        function autoShowVersionInDesktop() {
+            if (window.innerWidth > 768) {
+                setTimeout(() => {
+                    if (!versionContainer.classList.contains('show')) {
+                        mostrarPopupConTimeout();
+                    }
+                }, 600);
+            }
+        }
+
+        function autoShowVersionInMobile() {
+            if (window.innerWidth <= 768) {
+                posicionarPopupDebajoDeWelcome();
+                setTimeout(() => {
+                    if (!versionContainer.classList.contains('show')) {
+                        mostrarPopupConTimeout();
+                    }
+                }, 600);
+            }
+        }
+
+        window.addEventListener('load', function() {
+            if (window.innerWidth > 768) {
+                autoShowVersionInDesktop();
+            } else {
+                autoShowVersionInMobile();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                posicionarPopupDebajoDeWelcome();
+            } else {
+                versionContainer.style.top = '';
+                versionContainer.style.bottom = '';
+                versionContainer.style.right = '';
+                versionContainer.style.left = '';
+                if (versionContainer.classList.contains('show')) {
+                    if (popupTimeout) {
+                        clearTimeout(popupTimeout);
+                        popupTimeout = null;
+                    }
+                    popupTimeout = setTimeout(() => {
+                        cerrarPopup();
+                    }, 3000);
+                }
+            }
+        });
+
+        versionText.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                posicionarPopupDebajoDeWelcome();
+            }
+        });
+
+        // ─── AUDIO Y APERTURA DE MODAL AL HACER CLIC EN LA IMAGEN ───
+        const imagenWrapper = document.getElementById('imagenClickAudio');
+
+        function toggleSaludoYAbrirModal(e) {
+            e.stopPropagation();
+            abrirLogin();
 
             if (currentAudio && !currentAudio.paused) {
                 currentAudio.pause();
@@ -824,45 +1505,26 @@
             if (!currentAudio) {
                 currentAudio = new Audio(AUDIO_URL);
                 currentAudio.preload = 'auto';
-                currentAudio.addEventListener('waiting', () => setAudioState('loading'));
-                currentAudio.addEventListener('playing', () => setAudioState('playing'));
-                currentAudio.addEventListener('pause', () => setAudioState('stopped'));
-                currentAudio.addEventListener('ended', () => {
-                    setAudioState('stopped');
-                    currentAudio.currentTime = 0;
-                });
                 currentAudio.addEventListener('error', () => {
-                    setAudioState('stopped');
                     console.warn('Error en el audio');
                 });
             }
-            setAudioState('loading');
             currentAudio.play().catch(err => {
-                setAudioState('stopped');
                 console.warn('Audio bloqueado:', err);
             });
         }
 
-        imgWrapper.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleSaludoYAbrirModal();
-        });
-        imgWrapper.addEventListener('keydown', (e) => {
+        imagenWrapper.addEventListener('click', toggleSaludoYAbrirModal);
+        imagenWrapper.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 e.stopPropagation();
-                toggleSaludoYAbrirModal();
+                toggleSaludoYAbrirModal(e);
             }
         });
-
-        // Desvanecer créditos a los 5 segundos
-        setTimeout(() => {
-            const flotante = document.getElementById('creditos-flotante');
-            if (flotante) {
-                flotante.classList.add('fade-out');
-                setTimeout(() => flotante.remove(), 1000);
-            }
-        }, 5000);
+        imagenWrapper.setAttribute('role', 'button');
+        imagenWrapper.setAttribute('tabindex', '0');
+        imagenWrapper.setAttribute('aria-label', 'Abrir acceso al sistema y escuchar saludo institucional');
     </script>
 </body>
 </html>
