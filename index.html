@@ -522,24 +522,6 @@
             box-shadow: 0 8px 18px rgba(30, 107, 59, 0.25);
         }
 
-        .enlace-modal {
-            text-align: center;
-            margin-top: 1.2rem;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #3a5a4a;
-        }
-
-        .enlace-modal span {
-            color: #2ecc71;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .enlace-modal span:hover {
-            text-decoration: underline;
-        }
-
         .auth-message-global {
             position: fixed;
             bottom: 130px;
@@ -945,6 +927,7 @@
         </div>
     </footer>
 
+    <!-- ===== MODAL DE LOGIN (sin registro) ===== -->
     <div id="modalLogin" class="modal-overlay">
         <div class="modal-contenido">
             <button class="btn-cerrar-modal" id="cerrarModalLoginBtn">&times;</button>
@@ -963,38 +946,7 @@
                     <input type="checkbox" id="mostrarLoginPass" /> Mostrar contraseña
                 </label>
                 <button class="btn-modal-primario" id="btnLoginAction">Entrar al sistema</button>
-                <div class="enlace-modal">
-                    ¿No tienes cuenta? <span id="cambiarARegistroDesdeLogin">Regístrate aquí</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="modalRegistro" class="modal-overlay">
-        <div class="modal-contenido">
-            <button class="btn-cerrar-modal" id="cerrarModalRegistroBtn">&times;</button>
-            <h3>Dra. Riveros</h3>
-            <p class="modal-sub">Defensoría Civil y Comercial 6<br><span style="font-weight:400;font-size:0.85rem;">Ministerio Público de Misiones</span></p>
-            <div>
-                <div class="grupo-input">
-                    <label>Nombre completo</label>
-                    <input type="text" id="registerName" placeholder="Nombre y apellido" autocomplete="name" />
-                </div>
-                <div class="grupo-input">
-                    <label>Correo electrónico</label>
-                    <input type="email" id="registerEmail" placeholder="usuario@mpmisiones.gob.ar" autocomplete="email" />
-                </div>
-                <div class="grupo-input">
-                    <label>Contraseña</label>
-                    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
-                </div>
-                <label class="mostrar-clave">
-                    <input type="checkbox" id="mostrarRegPass" /> Mostrar contraseña
-                </label>
-                <button class="btn-modal-primario" id="btnRegisterAction">Registrarse</button>
-                <div class="enlace-modal">
-                    ¿Ya tienes cuenta? <span id="cambiarALoginDesdeRegistro">Inicia sesión</span>
-                </div>
+                <!-- Sin enlace a registro -->
             </div>
         </div>
     </div>
@@ -1034,7 +986,6 @@
 
         // ─── ELEMENTOS DOM ───
         const modalLogin = document.getElementById('modalLogin');
-        const modalRegistro = document.getElementById('modalRegistro');
         const welcomeMessage = document.getElementById('welcomeMessage');
         const btnFooter = document.getElementById('btnFooterCredenciales');
         const welcomeBar = document.getElementById('welcomeBar');
@@ -1062,7 +1013,6 @@
 
         function resetToInitial() {
             modalLogin.classList.remove('active');
-            modalRegistro.classList.remove('active');
             currentState = 'idle';
         }
 
@@ -1071,14 +1021,6 @@
                 modalLogin.classList.add('active');
                 currentState = 'modalOpen';
                 document.getElementById('loginEmail').focus();
-            }
-        }
-
-        function abrirRegistro() {
-            if (currentState === 'idle') {
-                modalRegistro.classList.add('active');
-                currentState = 'modalOpen';
-                document.getElementById('registerName').focus();
             }
         }
 
@@ -1177,60 +1119,6 @@
                 });
         };
 
-        window.registerUser = function() {
-            const name = document.getElementById('registerName').value.trim();
-            const rawEmail = document.getElementById('registerEmail').value.trim();
-            const password = document.getElementById('registerPassword').value.trim();
-
-            if (!name || !rawEmail || !password) {
-                showMessage('Completa todos los campos', 'error');
-                return;
-            }
-            if (password.length < 6) {
-                showMessage('La contraseña debe tener al menos 6 caracteres', 'error');
-                return;
-            }
-
-            const email = normalizeEmail(rawEmail);
-            if (!email) {
-                showMessage('Correo electrónico inválido', 'error');
-                return;
-            }
-
-            mostrarSpinnerConContador();
-
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    return user.updateProfile({ displayName: name }).then(() => {
-                        showMessage('✅ Registro exitoso. ¡Bienvenido!', 'success');
-                        resetToInitial();
-                    });
-                })
-                .catch((error) => {
-                    if (window._intervaloCarga) {
-                        clearInterval(window._intervaloCarga);
-                        window._intervaloCarga = null;
-                    }
-                    spinnerCarga.style.display = 'none';
-                    let msg = 'Error al registrarse: ';
-                    switch (error.code) {
-                        case 'auth/email-already-in-use':
-                            msg += 'El correo ya está registrado.';
-                            break;
-                        case 'auth/invalid-email':
-                            msg += 'Correo electrónico inválido.';
-                            break;
-                        case 'auth/weak-password':
-                            msg += 'La contraseña es demasiado débil.';
-                            break;
-                        default:
-                            msg += error.message;
-                    }
-                    showMessage(msg, 'error');
-                });
-        };
-
         // ─── ACTUALIZAR TEXTO DE "Sistema Digital" según ancho ───
         function actualizarTextoSistema() {
             const esMovil = window.innerWidth <= 768;
@@ -1243,17 +1131,11 @@
 
         // ─── EVENTOS DE MODALES ───
         document.getElementById('btnLoginAction').addEventListener('click', window.loginUser);
-        document.getElementById('btnRegisterAction').addEventListener('click', window.registerUser);
 
         const mostrarLogin = document.getElementById('mostrarLoginPass');
         const loginPass = document.getElementById('loginPassword');
         mostrarLogin.addEventListener('change', () => {
             loginPass.type = mostrarLogin.checked ? 'text' : 'password';
-        });
-        const mostrarReg = document.getElementById('mostrarRegPass');
-        const regPass = document.getElementById('registerPassword');
-        mostrarReg.addEventListener('change', () => {
-            regPass.type = mostrarReg.checked ? 'text' : 'password';
         });
 
         const loginEmail = document.getElementById('loginEmail');
@@ -1261,14 +1143,6 @@
         const handleLoginEnter = (e) => { if (e.key === 'Enter') window.loginUser(); };
         loginEmail.addEventListener('keypress', handleLoginEnter);
         loginPassInput.addEventListener('keypress', handleLoginEnter);
-
-        const regName = document.getElementById('registerName');
-        const regEmail = document.getElementById('registerEmail');
-        const regPassword = document.getElementById('registerPassword');
-        const handleRegEnter = (e) => { if (e.key === 'Enter') window.registerUser(); };
-        regName.addEventListener('keypress', handleRegEnter);
-        regEmail.addEventListener('keypress', handleRegEnter);
-        regPassword.addEventListener('keypress', handleRegEnter);
 
         // ─── POPUP VERSIÓN ───
         const versionText = document.getElementById('versionText');
@@ -1323,45 +1197,22 @@
             }
         });
 
-        // ─── MODALES LOGIN/REGISTRO ───
+        // ─── MODAL LOGIN ───
         function setupModalEvents() {
             const cerrarLogin = document.getElementById('cerrarModalLoginBtn');
-            const cerrarRegistro = document.getElementById('cerrarModalRegistroBtn');
             
             const handleCloseModalAndReset = () => {
                 if (currentState === 'modalOpen') resetToInitial();
             };
 
             cerrarLogin.addEventListener('click', handleCloseModalAndReset);
-            cerrarRegistro.addEventListener('click', handleCloseModalAndReset);
-
             modalLogin.addEventListener('click', (e) => {
                 if (e.target === modalLogin) handleCloseModalAndReset();
-            });
-            modalRegistro.addEventListener('click', (e) => {
-                if (e.target === modalRegistro) handleCloseModalAndReset();
             });
 
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && currentState === 'modalOpen') {
                     handleCloseModalAndReset();
-                }
-            });
-
-            const switchToReg = document.getElementById('cambiarARegistroDesdeLogin');
-            const switchToLogin = document.getElementById('cambiarALoginDesdeRegistro');
-            switchToReg.addEventListener('click', () => {
-                if (currentState === 'modalOpen') {
-                    modalLogin.classList.remove('active');
-                    modalRegistro.classList.add('active');
-                    document.getElementById('registerName').focus();
-                }
-            });
-            switchToLogin.addEventListener('click', () => {
-                if (currentState === 'modalOpen') {
-                    modalRegistro.classList.remove('active');
-                    modalLogin.classList.add('active');
-                    document.getElementById('loginEmail').focus();
                 }
             });
         }
